@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.6 - 2026-11-23
+
+- Timer klaxon is louder (compressor with make-up gain, about +1.6 dB).
+
 ## 0.8.5 - 2026-11-23
 
 - Timer klaxon is longer (about 4 seconds).

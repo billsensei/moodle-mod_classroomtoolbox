@@ -168,7 +168,9 @@ class behat_mod_classroomtoolbox extends behat_base {
             '(function () { window.__sounds = 0; var Spy = function () { this.currentTime = 0; this.state = \'running\';' .
             ' this.destination = {}; };' .
             ' Spy.prototype.resume = function () {};' .
-            ' Spy.prototype.createGain = function () { return { connect: function () {}, gain: {' .
+            ' Spy.prototype.createDynamicsCompressor = function () { return { threshold: {}, knee: {}, ratio: {}, attack: {},' .
+            ' release: {}, connect: function () {} }; };' .
+            ' Spy.prototype.createGain = function () { return { connect: function () {}, gain: { value: 1,' .
             ' setValueAtTime: function () {}, exponentialRampToValueAtTime: function () {} } }; };' .
             ' Spy.prototype.createOscillator = function () { window.__sounds++; return { frequency: { setValueAtTime: function () {},' .
             ' linearRampToValueAtTime: function () {} }, connect: function () {},' .
