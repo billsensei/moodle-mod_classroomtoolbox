@@ -65,6 +65,7 @@ export const init = (config) => {
         nameInput.type = 'text';
         nameInput.className = 'form-control form-control-lg text-center fw-bold mb-2';
         nameInput.id = uid + '-name';
+        nameInput.name = 'counter_name_' + created;
         nameInput.value = fill(strings.counter_title, created);
         nameInput.maxLength = 40;
         nameInput.setAttribute('aria-label', strings.counter_name);

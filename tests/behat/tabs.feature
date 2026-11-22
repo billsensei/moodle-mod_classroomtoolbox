@@ -20,20 +20,20 @@ Feature: Switch between the classroom tools
 
   Scenario: Every tool has a tab and only one shows at a time
     Given I am on the "Toolbox" "classroomtoolbox activity" page logged in as teacher1
-    Then I should see "Name wheel" in the "[role='tablist']" "css_element"
-    And I should see "Group generator" in the "[role='tablist']" "css_element"
-    And I should see "Stopwatch" in the "[role='tablist']" "css_element"
-    And I should see "Timer" in the "[role='tablist']" "css_element"
-    And I should see "Counter" in the "[role='tablist']" "css_element"
+    Then I should see "Name wheel" in the "[data-region='toolbox'] [role='tablist']" "css_element"
+    And I should see "Group generator" in the "[data-region='toolbox'] [role='tablist']" "css_element"
+    And I should see "Stopwatch" in the "[data-region='toolbox'] [role='tablist']" "css_element"
+    And I should see "Timer" in the "[data-region='toolbox'] [role='tablist']" "css_element"
+    And I should see "Counter" in the "[data-region='toolbox'] [role='tablist']" "css_element"
     And "[data-region='wheel-canvas']" "css_element" should be visible
     And "[data-region='sw-display']" "css_element" should not be visible
-    When I click on "Stopwatch" "button" in the "[role='tablist']" "css_element"
+    When I click on "Stopwatch" "button" in the "[data-region='toolbox'] [role='tablist']" "css_element"
     Then "[data-region='sw-display']" "css_element" should be visible
     And "[data-region='wheel-canvas']" "css_element" should not be visible
-    When I click on "Counter" "button" in the "[role='tablist']" "css_element"
+    When I click on "Counter" "button" in the "[data-region='toolbox'] [role='tablist']" "css_element"
     Then "[data-region='counter-list']" "css_element" should be visible
     And "[data-region='sw-display']" "css_element" should not be visible
-    When I click on "Name wheel" "button" in the "[role='tablist']" "css_element"
+    When I click on "Name wheel" "button" in the "[data-region='toolbox'] [role='tablist']" "css_element"
     Then "[data-region='wheel-canvas']" "css_element" should be visible
 
   Scenario: A toolbox with one tool has no tab bar
@@ -41,5 +41,5 @@ Feature: Switch between the classroom tools
       | activity         | name | course | idnumber | tools   |
       | classroomtoolbox | Solo | C1     | tb2      | counter |
     When I am on the "Solo" "classroomtoolbox activity" page logged in as teacher1
-    Then "[role='tablist']" "css_element" should not exist
+    Then "[data-region='toolbox'] [role='tablist']" "css_element" should not exist
     And "[data-region='counter-list']" "css_element" should be visible

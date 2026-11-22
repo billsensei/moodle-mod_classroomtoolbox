@@ -121,16 +121,24 @@ function classroomtoolbox_clean_timer_presets(?string $csv): string {
 /**
  * Build the stored tools list from the tool_<id> checkboxes of the settings form.
  *
+ * Data that did not come from the form (generators, imports) has no tool_<id> fields; in that case a plain
+ * comma-separated "tools" value is honoured.
+ *
  * @param stdClass $data Form data.
  * @return string Comma-separated tool ids.
  */
 function classroomtoolbox_tools_from_data(stdClass $data): string {
+    $fromform = false;
     $ids = [];
     foreach (\mod_classroomtoolbox\local\toolbox::all_ids() as $id) {
         $field = 'tool_' . $id;
+        $fromform = $fromform || property_exists($data, $field);
         if (!empty($data->$field)) {
             $ids[] = $id;
         }
+    }
+    if (!$fromform && isset($data->tools)) {
+        $ids = explode(',', (string) $data->tools);
     }
     return \mod_classroomtoolbox\local\toolbox::serialise($ids);
 }

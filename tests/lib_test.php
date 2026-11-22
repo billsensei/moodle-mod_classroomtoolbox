@@ -149,6 +149,8 @@ final class lib_test extends \advanced_testcase {
         $this->assertSame('wheel,timer', $record->tools);
         $this->assertSame('0.5,2', $record->timerpresets);
         $this->assertSame('wheel', classroomtoolbox_tools_from_data((object) ['tool_wheel' => 1, 'tool_bogus' => 1]));
+        $this->assertSame('groups,timer', classroomtoolbox_tools_from_data((object) ['tools' => 'timer,groups,bogus']));
+        $this->assertSame('wheel', classroomtoolbox_tools_from_data((object) ['tools' => 'timer', 'tool_wheel' => 1]));
         $picked = (object) ['tool_counter' => 1, 'tool_stopwatch' => 1];
         $this->assertSame('stopwatch,counter', classroomtoolbox_tools_from_data($picked));
         $this->assertSame('wheel', classroomtoolbox_tools_from_data((object) []));

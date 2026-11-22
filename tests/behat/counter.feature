@@ -31,9 +31,9 @@ Feature: Counters
 
   Scenario: Name a counter and add another
     Given I am on the "Counting" "classroomtoolbox activity" page logged in as teacher1
-    When I set the field "Counter name" to "Team Red"
+    When I set the field "counter_name_1" to "Team Red"
     And I press "Increase Team Red"
     Then I should see "1" in the "output" "css_element"
     When I press "Add counter"
-    Then I should see "Counter 2"
+    Then the field "counter_name_2" matches value "Counter 2"
     And I should see "Remove" in the "[data-region='counter-list']" "css_element"

@@ -46,5 +46,5 @@ Feature: Countdown timers
     When I press "Add timer"
     Then I should see "Timer 2"
     And I should see "Remove timer"
-    When I click on "Remove timer" "button" in the "Timer 2" "text"
+    When I click on "(//button[@data-action='timer-remove'])[2]" "xpath_element"
     Then I should not see "Timer 2"

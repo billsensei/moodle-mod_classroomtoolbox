@@ -94,7 +94,7 @@ final class toolbox_test extends \advanced_testcase {
         $this->assertStringContainsString('role="tablist"', $html);
         $this->assertSame(2, substr_count($html, 'role="tab"'));
         $this->assertSame(2, substr_count($html, 'data-region="tool-panel"'));
-        $this->assertSame(1, substr_count($html, ' hidden'));
+        $this->assertSame(1, preg_match_all('/<div id="toolbox-panel-[^>]*\shidden>/s', $html));
         $this->assertStringContainsString('WHEELBODY', $html);
         $this->assertStringContainsString('aria-selected="true"', $html);
 
@@ -103,7 +103,7 @@ final class toolbox_test extends \advanced_testcase {
         ]);
         $this->assertStringNotContainsString('tablist', $single);
         $this->assertStringNotContainsString('role="tabpanel"', $single);
-        $this->assertStringNotContainsString(' hidden', $single);
+        $this->assertDoesNotMatchRegularExpression('/<div id="toolbox-panel-[^>]*\shidden/s', $single);
         $this->assertStringContainsString('WHEELBODY', $single);
         $this->assertStringContainsString('data-action="fullscreen"', $single);
     }
