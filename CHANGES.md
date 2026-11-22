@@ -1,3 +1,9 @@
+# Changes since 0.4.0
+
+- Privacy: clearer privacy statement (extra names are teacher-typed text, not linked to user accounts). No code or database changes.
+
+---
+
 # Changes in 0.4.0 (2026-11-25)
 
 - New **High contrast** colour scheme: dark colours with white text, at least 7:1 contrast (WCAG AAA). No database change.

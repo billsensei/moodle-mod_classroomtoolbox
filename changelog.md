@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Privacy: clarified the privacy provider statement.
+
 ## 0.4.0 - 2026-11-25
 
 - Added a High contrast colour scheme (WCAG AAA text contrast).
