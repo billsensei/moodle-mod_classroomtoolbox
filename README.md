@@ -13,7 +13,7 @@ Each tool is a tab. Teachers choose which tools are on in the activity settings 
 | **Name wheel** | Spin a wheel of student names; remove the winner or keep them. |
 | **Group generator** | Split the class into random groups, by number of groups or people per group. |
 | **Stopwatch** | Start, stop, lap and reset, with a lap list. |
-| **Timer** | Countdown timers with preset buttons, a submarine-style dive klaxon (about 3 seconds) and a flash at the end, and up to four timers at once. |
+| **Timer** | Countdown timers with preset buttons, a submarine-style dive klaxon (three blasts, about 3 seconds) and a flash at the end, and up to four timers at once. |
 | **Counter** | Up to eight named counters with plus, minus and reset. |
 | **Scoreboard** | Teams or names with points, ranked live; teachers give points, students watch. |
 

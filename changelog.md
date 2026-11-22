@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.3 - 2026-11-23
+
+- Timer klaxon sounds three times (shorter blasts, still about 3 seconds in all).
+
 ## 0.8.2 - 2026-11-23
 
 - Timer alarm is now a submarine dive klaxon (two horn blasts, about 3 seconds).

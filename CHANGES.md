@@ -1,5 +1,5 @@
-# Changes in 0.8.2 (2026-11-23)
+# Changes in 0.8.3 (2026-11-23)
 
-- **Timer alarm**: a finished timer now sounds like an old submarine dive klaxon: two long "ah-OOO-gah" horn blasts, about 3 seconds in all, instead of the alarm-clock beeps. The Sound switch still silences it.
+- **Timer alarm**: the dive klaxon now sounds three times instead of two. Each blast is a little shorter so the whole alarm still lasts about 3 seconds. The Sound switch still silences it.
 - No database changes (version number bump only).
-- Tests: the Behat audio spy now understands pitch sweeps; the alarm scenario expects at least 4 sounds.
+- Tests: the Behat alarm scenario expects at least 6 sounds (three blasts).
