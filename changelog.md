@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Docs: added a screenshot to the README (no code changes).
+
 ## 0.3.0 - 2026-11-24
 
 - Added selectable colour schemes (Classic, Ocean, Sunset, Pastel).

@@ -1,3 +1,9 @@
+# Changes since 0.3.0 (docs only)
+
+- Added `docs/screenshot.png` and showed it in the README. No code changes, so the plugin version is unchanged.
+
+---
+
 # Changes in 0.3.0 (2026-11-24)
 
 - New **Colour scheme** setting with four palettes: Classic, Ocean, Sunset and Pastel (dark text for readability).

@@ -2,6 +2,8 @@
 
 A Moodle activity that shows an animated spinning wheel of student names, in the style of wheelofnames.com.
 
+![The Name wheel activity: a colourful wheel of student names with the names list beside it](docs/screenshot.png)
+
 - **Click the wheel** (or the centre button, or press Enter/Space on it) to spin. A random name is chosen with the browser's crypto random source.
 - A pop-up announces the winner and offers **Remove from wheel** or **Keep on wheel**.
 - The wheel is filled from the course participants (students by default). In group mode, tick any combination of groups to combine them on one wheel plus an optional list of extra names typed in the activity settings.
