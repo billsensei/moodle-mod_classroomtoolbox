@@ -39,6 +39,7 @@ class toolbox {
             tools\stopwatch::class,
             tools\timer::class,
             tools\counter::class,
+            tools\scoreboard::class,
         ];
     }
 

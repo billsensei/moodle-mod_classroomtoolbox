@@ -15,8 +15,8 @@ Feature: Switch between the classroom tools
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
     And the following "activities" exist:
-      | activity         | name    | course | idnumber | tools                                |
-      | classroomtoolbox | Toolbox | C1     | tb1      | wheel,groups,stopwatch,timer,counter |
+      | activity         | name    | course | idnumber | tools                                           |
+      | classroomtoolbox | Toolbox | C1     | tb1      | wheel,groups,stopwatch,timer,counter,scoreboard |
 
   Scenario: Every tool has a tab and only one shows at a time
     Given I am on the "Toolbox" "classroomtoolbox activity" page logged in as teacher1
@@ -25,6 +25,7 @@ Feature: Switch between the classroom tools
     And I should see "Stopwatch" in the "[data-region='toolbox'] [role='tablist']" "css_element"
     And I should see "Timer" in the "[data-region='toolbox'] [role='tablist']" "css_element"
     And I should see "Counter" in the "[data-region='toolbox'] [role='tablist']" "css_element"
+    And I should see "Scoreboard" in the "[data-region='toolbox'] [role='tablist']" "css_element"
     And "[data-region='wheel-canvas']" "css_element" should be visible
     And "[data-region='sw-display']" "css_element" should not be visible
     When I click on "Stopwatch" "button" in the "[data-region='toolbox'] [role='tablist']" "css_element"

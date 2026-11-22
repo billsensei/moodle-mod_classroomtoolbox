@@ -49,4 +49,24 @@ class mod_classroomtoolbox_generator extends testing_module_generator {
         }
         return parent::create_instance($record, (array) $options);
     }
+
+    /**
+     * Add a scoreboard entry.
+     *
+     * @param int $toolboxid Toolbox instance id.
+     * @param string $label Entry label.
+     * @param int $score Points.
+     * @return \stdClass The entry row.
+     */
+    public function create_score(int $toolboxid, string $label, int $score = 0): \stdClass {
+        global $DB;
+
+        \mod_classroomtoolbox\local\scores::add($toolboxid, [$label]);
+        $row = $DB->get_record('classroomtoolbox_scores', ['toolboxid' => $toolboxid, 'label' => $label], '*', MUST_EXIST);
+        if ($score) {
+            \mod_classroomtoolbox\local\scores::update($toolboxid, $row->id, $label, $score);
+            $row->score = $score;
+        }
+        return $row;
+    }
 }

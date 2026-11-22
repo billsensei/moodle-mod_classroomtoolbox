@@ -59,6 +59,9 @@ final class backup_test extends \advanced_testcase {
             'tools' => 'wheel,timer',
             'timerpresets' => '0.5,2',
         ]);
+        \mod_classroomtoolbox\local\scores::add($wheel->id, ['Red', 'Blue']);
+        $first = \mod_classroomtoolbox\local\scores::get_all($wheel->id)[0];
+        \mod_classroomtoolbox\local\scores::update($wheel->id, $first['id'], $first['label'], 7);
         $cm = get_coursemodule_from_instance('classroomtoolbox', $wheel->id, $course->id);
 
         $newcm = duplicate_module($course, get_fast_modinfo($course)->get_cm($cm->id));
@@ -73,5 +76,9 @@ final class backup_test extends \advanced_testcase {
         $this->assertEquals(0, $copy->usenrolled);
         $this->assertSame('wheel,timer', $copy->tools);
         $this->assertSame('0.5,2', $copy->timerpresets);
+        $copied = \mod_classroomtoolbox\local\scores::get_all($copy->id);
+        $this->assertSame(['Red', 'Blue'], array_column($copied, 'label'));
+        $this->assertSame([7, 0], array_column($copied, 'score'));
+        $this->assertCount(2, \mod_classroomtoolbox\local\scores::get_all($wheel->id), 'The original keeps its own entries');
     }
 }

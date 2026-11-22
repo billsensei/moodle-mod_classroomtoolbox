@@ -53,5 +53,24 @@ function xmldb_classroomtoolbox_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2026120100, 'classroomtoolbox');
     }
 
+    if ($oldversion < 2026120800) {
+        // Scoreboard entries.
+        $table = new xmldb_table('classroomtoolbox_scores');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('toolboxid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('label', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('score', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('sortorder', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('toolboxid', XMLDB_KEY_FOREIGN, ['toolboxid'], 'classroomtoolbox', ['id']);
+        $table->add_index('toolboxid-sortorder', XMLDB_INDEX_NOTUNIQUE, ['toolboxid', 'sortorder']);
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+        upgrade_mod_savepoint(true, 2026120800, 'classroomtoolbox');
+    }
+
     return true;
 }

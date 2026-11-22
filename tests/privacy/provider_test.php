@@ -54,8 +54,10 @@ final class provider_test extends \advanced_testcase {
      */
     public function test_table_has_no_user_columns(): void {
         global $DB;
-        $columns = array_keys($DB->get_columns('classroomtoolbox'));
-        $this->assertNotContains('userid', $columns);
-        $this->assertNotContains('user', $columns);
+        foreach (['classroomtoolbox', 'classroomtoolbox_scores'] as $table) {
+            $columns = array_keys($DB->get_columns($table));
+            $this->assertNotContains('userid', $columns, $table);
+            $this->assertNotContains('user', $columns, $table);
+        }
     }
 }

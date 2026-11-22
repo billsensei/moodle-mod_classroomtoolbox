@@ -195,6 +195,7 @@ function classroomtoolbox_delete_instance($id) {
     if (!$DB->record_exists('classroomtoolbox', ['id' => $id])) {
         return false;
     }
+    \mod_classroomtoolbox\local\scores::delete_all($id);
     $DB->delete_records('classroomtoolbox', ['id' => $id]);
     return true;
 }

@@ -32,6 +32,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(stopwatch::class)]
 #[CoversClass(timer::class)]
 #[CoversClass(counter::class)]
+#[CoversClass(scoreboard::class)]
 /**
  * Tests that every tool renders.
  *
@@ -45,6 +46,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
  * @covers \mod_classroomtoolbox\local\tools\stopwatch
  * @covers \mod_classroomtoolbox\local\tools\timer
  * @covers \mod_classroomtoolbox\local\tools\counter
+ * @covers \mod_classroomtoolbox\local\tools\scoreboard
  */
 final class tools_test extends \advanced_testcase {
     /**
@@ -74,6 +76,7 @@ final class tools_test extends \advanced_testcase {
             'stopwatch' => 'data-region="sw-display"',
             'timer' => 'data-region="timer-list"',
             'counter' => 'data-region="counter-list"',
+            'scoreboard' => 'data-region="score-list"',
         ];
         $tools = \mod_classroomtoolbox\local\toolbox::enabled($row);
         $this->assertSame(array_keys($expected), array_keys($tools));
@@ -82,5 +85,33 @@ final class tools_test extends \advanced_testcase {
             $html = $tool->render($cm, $course, $row, $context);
             $this->assertStringContainsString($expected[$id], $html, $id);
         }
+    }
+
+    /**
+     * Only people who may change the scoreboard get the controls for it.
+     */
+    public function test_scoreboard_controls_are_for_teachers(): void {
+        global $DB, $PAGE;
+        $this->resetAfterTest();
+        $gen = $this->getDataGenerator();
+        $course = $gen->create_course();
+        $student = $gen->create_and_enrol($course, 'student');
+        $teacher = $gen->create_and_enrol($course, 'editingteacher');
+        $toolbox = $gen->create_module('classroomtoolbox', ['course' => $course->id, 'tools' => 'scoreboard']);
+        $cm = get_fast_modinfo($course)->get_cm($toolbox->cmid);
+        $context = \context_module::instance($cm->id);
+        $row = $DB->get_record('classroomtoolbox', ['id' => $toolbox->id], '*', MUST_EXIST);
+        $PAGE->set_url('/mod/classroomtoolbox/view.php', ['id' => $cm->id]);
+
+        $this->setUser($student);
+        $html = (new scoreboard())->render($cm, $course, $row, $context);
+        $this->assertStringContainsString('data-region="score-list"', $html);
+        $this->assertStringNotContainsString('score-add-form', $html);
+        $this->assertStringNotContainsString('score-reset', $html);
+
+        $this->setUser($teacher);
+        $html = (new scoreboard())->render($cm, $course, $row, $context);
+        $this->assertStringContainsString('score-add-form', $html);
+        $this->assertStringContainsString('score-reset', $html);
     }
 }

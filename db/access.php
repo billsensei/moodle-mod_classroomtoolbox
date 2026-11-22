@@ -45,6 +45,16 @@ $capabilities = [
             'manager' => CAP_ALLOW,
         ],
     ],
+    // Change the scoreboard: add and remove entries, change points, reset.
+    'mod/classroomtoolbox:managescores' => [
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => [
+            'teacher' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW,
+        ],
+    ],
     // Users holding this capability appear as names on the wheel.
     'mod/classroomtoolbox:appear' => [
         'captype' => 'read',

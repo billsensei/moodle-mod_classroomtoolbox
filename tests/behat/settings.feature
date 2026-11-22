@@ -45,6 +45,7 @@ Feature: Configure a name wheel
     And the field "id_tool_stopwatch" matches value "1"
     And the field "id_tool_timer" matches value "1"
     And the field "id_tool_counter" matches value "1"
+    And the field "id_tool_scoreboard" matches value "1"
 
   Scenario: At least one tool must stay ticked
     Given I am on the "Course 1" course page logged in as teacher1
@@ -57,6 +58,7 @@ Feature: Configure a name wheel
       | id_tool_stopwatch | 0        |
       | id_tool_timer     | 0        |
       | id_tool_counter   | 0        |
+      | id_tool_scoreboard | 0       |
     And I press "Save and display"
     Then I should see "Choose at least one tool."
 

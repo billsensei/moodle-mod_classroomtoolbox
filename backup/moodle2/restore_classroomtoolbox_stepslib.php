@@ -42,7 +42,10 @@ class restore_classroomtoolbox_activity_structure_step extends restore_activity_
      * @return array
      */
     protected function define_structure() {
-        return $this->prepare_activity_structure([new restore_path_element('classroomtoolbox', '/activity/classroomtoolbox')]);
+        return $this->prepare_activity_structure([
+            new restore_path_element('classroomtoolbox', '/activity/classroomtoolbox'),
+            new restore_path_element('classroomtoolbox_score', '/activity/classroomtoolbox/scores/score'),
+        ]);
     }
 
     /**
@@ -61,6 +64,24 @@ class restore_classroomtoolbox_activity_structure_step extends restore_activity_
         $data->timemodified = $this->apply_date_offset($data->timemodified);
         $newitemid = $DB->insert_record('classroomtoolbox', $data);
         $this->apply_activity_instance($newitemid);
+    }
+
+    /**
+     * Restore one scoreboard entry.
+     *
+     * @param array $data Row data.
+     */
+    protected function process_classroomtoolbox_score($data) {
+        global $DB;
+
+        $data = (object) $data;
+        $data->toolboxid = $this->get_new_parentid('classroomtoolbox');
+        $data->label = \mod_classroomtoolbox\local\scores::clean_label((string) $data->label);
+        $limit = \mod_classroomtoolbox\local\scores::LIMIT;
+        $data->score = max(-$limit, min($limit, (int) $data->score));
+        if ($data->label !== '') {
+            $DB->insert_record('classroomtoolbox_scores', $data);
+        }
     }
 
     /**

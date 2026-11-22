@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.0 - 2026-12-08
+
+- Added the Scoreboard tool: teachers manage teams or names and points, students watch a live, read-only board.
+- New capability `managescores`, new table `classroomtoolbox_scores` (upgrade step), six AJAX web services and a `scoreboard_changed` event.
+- Backup, restore and duplication include scoreboard entries.
+
 ## 0.6.0 - 2026-12-01
 
 - Added the Group generator, Stopwatch, Timer and Counter tools and a Full screen button.

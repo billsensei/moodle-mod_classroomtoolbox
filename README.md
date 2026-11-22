@@ -15,7 +15,7 @@ Each tool is a tab. Teachers choose which tools are on in the activity settings 
 | **Stopwatch** | Start, stop, lap and reset, with a lap list. |
 | **Timer** | Countdown timers with preset buttons, a sound and a flash at the end, and up to four timers at once. |
 | **Counter** | Up to eight named counters with plus, minus and reset. |
-| Scoreboard | Planned (phase 3) |
+| **Scoreboard** | Teams or names with points, ranked live; teachers give points, students watch. |
 
 ![The Name wheel tool with the tab bar](docs/screenshot.png)
 
@@ -53,9 +53,20 @@ Start, stop, **Lap** and reset. Time comes from timestamps, so it stays accurate
 
 Up to eight counters. Rename each one, then raise, lower or reset it.
 
+### Scoreboard
+
+![The scoreboard as a teacher sees it](docs/scoreboard.png)
+
+- A teacher adds teams or names (several at once, separated by commas), or copies in the Moodle **groups** or the **participants** with one click. Names are copied as plain text and are **not linked to user accounts**.
+- **+** and **−** give or take points; **Points per click** sets the step. You can also type an exact score or rename an entry. **Reset scores** asks first and keeps the entries.
+- The board is ranked by points (ties share a place) and re-orders with a short animation. Use **Full screen** to project it.
+- Students see the same ranked board, read-only. It refreshes itself every few seconds while the tab is open and visible, so a teacher's change appears without reloading.
+- Who may change it: the capability `mod/classroomtoolbox:managescores` (teachers, non-editing teachers and managers by default). Everyone who can view the toolbox can read it.
+- Scores are saved in the database, so they survive reloads and are included in backup, restore and duplication. Up to 100 entries per scoreboard. Every change is logged as a `scoreboard_changed` event.
+
 ### Privacy
 
-Nothing a tool does is stored: spins, groups, laps, timers and counts live only in the open page. The plugin holds no personal data.
+Spins, groups, laps, timers and counts live only in the open page. The scoreboard stores the labels and points a teacher types in; they are plain text, never tied to a user account, and are removed when the entry or the activity is deleted. The plugin keeps no data about users, so it is a null privacy provider. Teachers should not type more personal data than they need into names.
 
 ## Install
 
@@ -77,6 +88,7 @@ Back up the site first. After checking the activities, uninstall the old plugin.
 - `mod/classroomtoolbox:addinstance` - add a toolbox (teachers, managers).
 - `mod/classroomtoolbox:view` - see the toolbox.
 - `mod/classroomtoolbox:appear` - appear as a name on the wheel (students by default).
+- `mod/classroomtoolbox:managescores` - change the scoreboard (teachers, non-editing teachers, managers).
 
 ## Licence
 

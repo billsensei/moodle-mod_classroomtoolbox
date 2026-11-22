@@ -44,7 +44,7 @@ final class toolbox_test extends \advanced_testcase {
      */
     public function test_all_tools_are_well_formed(): void {
         $ids = toolbox::all_ids();
-        $this->assertSame(['wheel', 'groups', 'stopwatch', 'timer', 'counter'], $ids);
+        $this->assertSame(['wheel', 'groups', 'stopwatch', 'timer', 'counter', 'scoreboard'], $ids);
         $this->assertSame($ids, array_values(array_unique($ids)));
         foreach (toolbox::enabled((object) ['tools' => implode(',', $ids)]) as $id => $tool) {
             $this->assertInstanceOf(tool_interface::class, $tool);

@@ -155,7 +155,9 @@ final class lib_test extends \advanced_testcase {
         $this->assertSame('stopwatch,counter', classroomtoolbox_tools_from_data($picked));
         $this->assertSame('wheel', classroomtoolbox_tools_from_data((object) []));
 
+        \mod_classroomtoolbox\local\scores::add($wheel->id, ['Red', 'Blue']);
         $this->assertTrue(classroomtoolbox_delete_instance($wheel->id));
+        $this->assertSame(0, $DB->count_records('classroomtoolbox_scores', ['toolboxid' => $wheel->id]));
         $this->assertFalse($DB->record_exists('classroomtoolbox', ['id' => $wheel->id]));
         $this->assertFalse(classroomtoolbox_delete_instance($wheel->id));
     }
