@@ -46,7 +46,10 @@ class participants {
         $groups = [];
         // Also require the right to see the participants list, so sites that hide classmates from students stay private.
         if (!empty($record->usenrolled) && !isguestuser() && has_capability('moodle/course:viewparticipants', $context)) {
-            $users = get_enrolled_users($context, 'mod/classroomtoolbox:appear', 0, 'u.*', 'u.lastname, u.firstname', 0, 0, true);
+            // Only the columns the display name needs: never load e-mail addresses or password hashes.
+            $namefields = \core_user\fields::for_name()->get_required_fields();
+            $select = 'u.id, ' . implode(', ', array_map(fn($field) => 'u.' . $field, $namefields));
+            $users = get_enrolled_users($context, 'mod/classroomtoolbox:appear', 0, $select, 'u.lastname, u.firstname', 0, 0, true);
             $membership = [];
             $restricted = false;
             if ($cm->groupmode) {

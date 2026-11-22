@@ -152,4 +152,24 @@ final class participants_test extends \advanced_testcase {
         $this->assertSame(['Group A', 'Group B'], array_column($groups, 'name'));
         $this->assertCount(3, $entries);
     }
+
+    /**
+     * Narrowing the loaded columns must not break display names: the site's name format decides which fields are needed.
+     */
+    public function test_name_formats(): void {
+        global $CFG, $DB;
+        $this->resetAfterTest();
+        [$course, $cm, $row, $context, $students] = $this->setup_course(['usenrolled' => 1]);
+        $user = $students[0];
+        $this->setUser($user);
+
+        $CFG->fullnamedisplay = 'lastname, firstname';
+        [$entries] = $this->entries($cm, $row, $context);
+        $this->assertContains('Anderson, Alice', array_column($entries, 'name'));
+
+        $CFG->fullnamedisplay = 'firstname middlename lastname';
+        $DB->set_field('user', 'middlename', 'Mid', ['id' => $user->id]);
+        [$entries] = $this->entries($cm, $row, $context);
+        $this->assertContains('Alice Mid Anderson', array_column($entries, 'name'));
+    }
 }

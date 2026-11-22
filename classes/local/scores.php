@@ -89,6 +89,26 @@ class scores {
      * @return int How many were added.
      */
     public static function add(int $toolboxid, array $labels): int {
+        // One adder at a time per toolbox, so simultaneous requests cannot go past the size limit or add a name twice.
+        $lock = \core\lock\lock_config::get_lock_factory('mod_classroomtoolbox')->get_lock('scores_' . $toolboxid, 10);
+        if (!$lock) {
+            throw new \moodle_exception('locktimeout');
+        }
+        try {
+            return self::add_locked($toolboxid, $labels);
+        } finally {
+            $lock->release();
+        }
+    }
+
+    /**
+     * The work of add(), run while holding the toolbox lock.
+     *
+     * @param int $toolboxid Toolbox instance id.
+     * @param string[] $labels Raw labels.
+     * @return int How many were added.
+     */
+    private static function add_locked(int $toolboxid, array $labels): int {
         global $DB;
 
         $existing = $DB->get_records(

@@ -40,6 +40,7 @@ require_once(__DIR__ . '/../lib.php');
 #[CoversFunction('classroomtoolbox_supports')]
 #[CoversFunction('classroomtoolbox_tools_from_data')]
 #[CoversFunction('classroomtoolbox_timer_presets')]
+#[CoversFunction('classroomtoolbox_clean_names')]
 #[CoversFunction('classroomtoolbox_clean_timer_presets')]
 /**
  * Tests for the module library functions.
@@ -58,6 +59,7 @@ require_once(__DIR__ . '/../lib.php');
  * @covers ::classroomtoolbox_supports
  * @covers ::classroomtoolbox_tools_from_data
  * @covers ::classroomtoolbox_timer_presets
+ * @covers ::classroomtoolbox_clean_names
  * @covers ::classroomtoolbox_clean_timer_presets
  */
 final class lib_test extends \advanced_testcase {
@@ -83,13 +85,39 @@ final class lib_test extends \advanced_testcase {
     }
 
     /**
-     * Every scheme has valid hex colours, a text colour and a distinct neighbour for each wedge.
+     * Relative luminance of a #rrggbb colour (WCAG).
+     *
+     * @param string $hex Colour.
+     * @return float
+     */
+    private static function luminance(string $hex): float {
+        $channels = array_map(function ($part) {
+            $c = hexdec($part) / 255;
+            return $c <= 0.03928 ? $c / 12.92 : (($c + 0.055) / 1.055) ** 2.4;
+        }, str_split(substr($hex, 1), 2));
+        return 0.2126 * $channels[0] + 0.7152 * $channels[1] + 0.0722 * $channels[2];
+    }
+
+    /**
+     * Contrast ratio between two colours.
+     *
+     * @param string $a Colour.
+     * @param string $b Colour.
+     * @return float
+     */
+    private static function contrast(string $a, string $b): float {
+        $la = self::luminance($a) + 0.05;
+        $lb = self::luminance($b) + 0.05;
+        return max($la, $lb) / min($la, $lb);
+    }
+
+    /**
+     * Every scheme has valid hex colours and no two neighbouring wedges (including last and first) match.
      */
     public function test_color_schemes_are_well_formed(): void {
         $schemes = classroomtoolbox_color_schemes();
         $this->assertEqualsCanonicalizing(['classic', 'ocean', 'sunset', 'pastel', 'highcontrast'], array_keys($schemes));
         foreach ($schemes as $id => $scheme) {
-            $this->assertMatchesRegularExpression('/^#[0-9a-f]{6}$/i', $scheme['text'], $id);
             $this->assertGreaterThanOrEqual(6, count($scheme['colors']), $id);
             foreach ($scheme['colors'] as $i => $colour) {
                 $this->assertMatchesRegularExpression('/^#[0-9a-f]{6}$/i', $colour, "$id colour $i");
@@ -100,22 +128,32 @@ final class lib_test extends \advanced_testcase {
     }
 
     /**
-     * The high contrast scheme keeps white text at 7:1 or better on every colour.
+     * The wheel prints white or dark text on each wedge, whichever reads better; that must be at least 4.5:1 on every
+     * wedge of every scheme (WCAG AA), and the high contrast scheme must give 7:1 with white text (AAA).
      */
-    public function test_highcontrast_meets_wcag_aaa(): void {
-        $luminance = function (string $hex): float {
-            $channels = array_map(function ($part) {
-                $c = hexdec($part) / 255;
-                return $c <= 0.03928 ? $c / 12.92 : (($c + 0.055) / 1.055) ** 2.4;
-            }, str_split(substr($hex, 1), 2));
-            return 0.2126 * $channels[0] + 0.7152 * $channels[1] + 0.0722 * $channels[2];
-        };
-        $scheme = classroomtoolbox_color_schemes()['highcontrast'];
-        $this->assertSame('#ffffff', $scheme['text']);
-        foreach ($scheme['colors'] as $colour) {
-            $ratio = 1.05 / ($luminance($colour) + 0.05);
-            $this->assertGreaterThanOrEqual(7.0, $ratio, $colour);
+    public function test_every_wedge_has_readable_text(): void {
+        foreach (classroomtoolbox_color_schemes() as $id => $scheme) {
+            foreach ($scheme['colors'] as $colour) {
+                $best = max(self::contrast($colour, '#ffffff'), self::contrast($colour, '#212529'));
+                $this->assertGreaterThanOrEqual(4.5, $best, "$id $colour has only " . round($best, 2) . ':1');
+            }
         }
+        foreach (classroomtoolbox_color_schemes()['highcontrast']['colors'] as $colour) {
+            $this->assertGreaterThanOrEqual(7.0, self::contrast($colour, '#ffffff'), $colour);
+        }
+    }
+
+    /**
+     * The typed names list is limited: blanks dropped, at most 1000 names and 50000 characters.
+     */
+    public function test_clean_names(): void {
+        $this->assertSame("A\nB", classroomtoolbox_clean_names("A\r\n\n  B  \n"));
+        $this->assertSame('', classroomtoolbox_clean_names(null));
+        $many = implode("\n", array_map(fn($i) => "Name $i", range(1, CLASSROOMTOOLBOX_MAX_NAMES + 50)));
+        $cleaned = classroomtoolbox_clean_names($many);
+        $this->assertLessThanOrEqual(CLASSROOMTOOLBOX_MAX_NAMES, count(explode("\n", $cleaned)));
+        $long = classroomtoolbox_clean_names(str_repeat('é', CLASSROOMTOOLBOX_MAX_NAMES_CHARS + 500));
+        $this->assertSame(CLASSROOMTOOLBOX_MAX_NAMES_CHARS, \core_text::strlen($long));
     }
 
     /**

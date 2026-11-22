@@ -59,6 +59,7 @@ class restore_classroomtoolbox_activity_structure_step extends restore_activity_
         $data = (object) $data;
         $data->course = $this->get_courseid();
         $data->colorscheme = classroomtoolbox_clean_color_scheme($data->colorscheme ?? null);
+        $data->names = classroomtoolbox_clean_names($data->names ?? '');
         $data->timerpresets = classroomtoolbox_clean_timer_presets($data->timerpresets ?? null);
         $data->tools = \mod_classroomtoolbox\local\toolbox::serialise(explode(',', $data->tools ?? ''));
         $data->timemodified = $this->apply_date_offset($data->timemodified);

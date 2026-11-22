@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.1 - 2026-12-15
+
+- Accessibility: readable text on every wheel wedge (4.5:1), focus trap and Escape in the winner dialog, h2 tool headings, no sideways scroll at 320 px, clearer names for assistive technology, pause switch for the live scoreboard.
+- Security hardening: narrower participants query, backup restore limits for the names list, lock on adding scoreboard entries, slower refresh while the board is idle.
+- New axe-core accessibility Behat feature.
+
 ## 0.7.0 - 2026-12-08
 
 - Added the Scoreboard tool: teachers manage teams or names and points, students watch a live, read-only board.

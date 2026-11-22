@@ -70,6 +70,7 @@ class scoreboard implements tool_interface {
                 'score_up' => get_string('score_up', 'mod_classroomtoolbox'),
                 'score_down' => get_string('score_down', 'mod_classroomtoolbox'),
                 'score_name' => get_string('score_name', 'mod_classroomtoolbox'),
+                'score_namefor' => get_string('score_namefor', 'mod_classroomtoolbox'),
                 'score_points' => get_string('score_points', 'mod_classroomtoolbox'),
                 'score_delete' => get_string('score_delete', 'mod_classroomtoolbox'),
                 'score_announce' => get_string('score_announce', 'mod_classroomtoolbox'),

@@ -84,6 +84,8 @@ final class tools_test extends \advanced_testcase {
             $this->assertSame($id, $tool::get_id());
             $html = $tool->render($cm, $course, $row, $context);
             $this->assertStringContainsString($expected[$id], $html, $id);
+            // The page title is the h1, so tool headings start at h2 (no skipped level).
+            $this->assertStringNotContainsString('<h3', $html, $id);
         }
     }
 

@@ -129,7 +129,10 @@ class mod_classroomtoolbox_mod_form extends moodleform_mod {
             }
         }
         $names = $data['names'] ?? '';
-        if (core_text::strlen($names) > 50000 || count(classroomtoolbox_parse_names($names)) > 1000) {
+        if (
+            core_text::strlen($names) > CLASSROOMTOOLBOX_MAX_NAMES_CHARS
+            || count(classroomtoolbox_parse_names($names)) > CLASSROOMTOOLBOX_MAX_NAMES
+        ) {
             $errors['names'] = get_string('toomanynames', 'mod_classroomtoolbox');
         }
         return $errors;

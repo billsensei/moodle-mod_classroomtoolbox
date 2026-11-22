@@ -31,7 +31,7 @@
         "hasgroups": true
     }
 }}
-<div class="mod_classroomtoolbox row" data-region="wheel">
+<div class="mod_classroomtoolbox row mx-0" data-region="wheel">
     <div class="col-lg-8 mb-3">
         <div class="mod_classroomtoolbox-wheel-stage position-relative mx-auto">
             <div class="mod_classroomtoolbox-wheel-pointer" aria-hidden="true"></div>
@@ -61,9 +61,9 @@
         {{/hasgroups}}
         <div class="card">
             <div class="card-body">
-                <h3 class="h5 card-title">
+                <h2 class="h5 card-title">
                     <label for="wheel-entries-{{uniqid}}">{{#str}} entries, mod_classroomtoolbox {{/str}}</label>
-                </h3>
+                </h2>
                 <textarea id="wheel-entries-{{uniqid}}" class="form-control mb-2" rows="12" data-region="wheel-entries"></textarea>
                 <p class="small text-muted mb-2" data-region="wheel-count"></p>
                 <div class="d-flex flex-wrap gap-2">
@@ -77,9 +77,9 @@
 
     <div class="mod_classroomtoolbox-wheel-result" data-region="wheel-result" hidden>
         <div class="mod_classroomtoolbox-wheel-result-box card shadow" role="dialog" aria-modal="true"
-            aria-labelledby="wheel-winner-{{uniqid}}">
+            aria-labelledby="wheel-winnerlabel-{{uniqid}} wheel-winner-{{uniqid}}">
             <div class="card-body text-center">
-                <p class="mb-1 text-muted">{{#str}} winner, mod_classroomtoolbox {{/str}}</p>
+                <p class="mb-1 text-muted" id="wheel-winnerlabel-{{uniqid}}">{{#str}} winner, mod_classroomtoolbox {{/str}}</p>
                 <p class="mod_classroomtoolbox-wheel-winner display-4 mb-3" id="wheel-winner-{{uniqid}}" data-region="wheel-winner"></p>
                 <div class="d-flex justify-content-center flex-wrap gap-2">
                     <button type="button" class="btn btn-danger" data-action="remove">{{#str}} removename, mod_classroomtoolbox {{/str}}</button>

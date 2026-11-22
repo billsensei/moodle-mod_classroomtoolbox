@@ -104,4 +104,56 @@ class behat_mod_classroomtoolbox extends behat_base {
             );
         }
     }
+
+    /**
+     * Press a key while an element has the focus (the page scripts listen for the keydown event).
+     *
+     * @When /^I press the "(?P<key>Tab|Shift\+Tab|Escape)" key in "(?P<selector>(?:[^"]|\\")*)"$/
+     * @param string $key Tab, Shift+Tab or Escape.
+     * @param string $selector CSS selector of the element receiving the key.
+     */
+    public function i_press_the_key_in(string $key, string $selector): void {
+        $shift = $key === 'Shift+Tab';
+        $name = $shift ? 'Tab' : $key;
+        $this->evaluate_script(
+            '(function () { var el = document.querySelector(' . json_encode($this->escape($selector)) . ');' .
+            ' el.dispatchEvent(new KeyboardEvent(\'keydown\', {key: ' . json_encode($name) . ', shiftKey: ' .
+            ($shift ? 'true' : 'false') . ', bubbles: true, cancelable: true})); })()'
+        );
+    }
+
+    /**
+     * Check which element has the keyboard focus.
+     *
+     * @Then /^the focus should be on "(?P<selector>(?:[^"]|\\")*)"$/
+     * @param string $selector CSS selector.
+     */
+    public function the_focus_should_be_on(string $selector): void {
+        $this->wait_for_pending_js();
+        $has = $this->evaluate_script(
+            'document.activeElement === document.querySelector(' . json_encode($this->escape($selector)) . ')'
+        );
+        if (!$has) {
+            throw new ExpectationException('The focus is not on "' . $selector . '"', $this->getSession());
+        }
+    }
+
+    /**
+     * Check whether an element is inert (not focusable and hidden from assistive technology).
+     *
+     * @Then /^"(?P<selector>(?:[^"]|\\")*)" should (?P<not>not )?be inert$/
+     * @param string $selector CSS selector.
+     * @param string $not "not " when it must not be inert.
+     */
+    public function should_be_inert(string $selector, string $not = ''): void {
+        $inert = $this->evaluate_script(
+            '!!document.querySelector(' . json_encode($this->escape($selector)) . ').closest(\'[inert]\')'
+        );
+        if ((bool) $inert === ($not !== '')) {
+            throw new ExpectationException(
+                '"' . $selector . '" is ' . ($inert ? '' : 'not ') . 'inert',
+                $this->getSession()
+            );
+        }
+    }
 }

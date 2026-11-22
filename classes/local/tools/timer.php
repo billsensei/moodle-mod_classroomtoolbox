@@ -55,6 +55,9 @@ class timer implements tool_interface {
                 'timer_presetmin' => get_string('timer_presetmin', 'mod_classroomtoolbox'),
                 'timer_presetsec' => get_string('timer_presetsec', 'mod_classroomtoolbox'),
                 'timer_presets' => get_string('timer_presets', 'mod_classroomtoolbox'),
+                'timer_presetsfor' => get_string('timer_presetsfor', 'mod_classroomtoolbox'),
+                'timer_minutesfor' => get_string('timer_minutesfor', 'mod_classroomtoolbox'),
+                'timer_secondsfor' => get_string('timer_secondsfor', 'mod_classroomtoolbox'),
                 'timer_set' => get_string('timer_set', 'mod_classroomtoolbox'),
             ],
         ]]);

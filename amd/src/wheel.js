@@ -24,8 +24,63 @@
 import Pending from 'core/pending';
 
 const TWO_PI = Math.PI * 2;
+const LIGHT_TEXT = '#ffffff';
+const DARK_TEXT = '#212529';
 // The pointer sits at the top of the wheel (canvas angle 3 * PI / 2).
 const POINTER = Math.PI * 1.5;
+
+/**
+ * Relative luminance of a #rrggbb colour (WCAG).
+ *
+ * @param {string} hex Colour.
+ * @returns {number}
+ */
+const luminance = (hex) => {
+    const [r, g, b] = [1, 3, 5].map((i) => {
+        const c = parseInt(hex.slice(i, i + 2), 16) / 255;
+        return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+    });
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+};
+
+/**
+ * White or dark text, whichever has the better contrast on a wedge colour.
+ *
+ * @param {string} hex Wedge colour.
+ * @returns {string} Text colour.
+ */
+export const readableText = (hex) => {
+    const bg = luminance(hex) + 0.05;
+    const withLight = 1.05 / bg;
+    const withDark = bg / (luminance(DARK_TEXT) + 0.05);
+    return withLight >= withDark ? LIGHT_TEXT : DARK_TEXT;
+};
+
+/**
+ * Make a dialog modal: everything outside it becomes inert (not focusable, hidden from assistive technology), except
+ * live regions so that announcements still work.
+ *
+ * @param {HTMLElement} dialog The dialog container.
+ * @returns {Function} Call to undo.
+ */
+const makeModal = (dialog) => {
+    const inerted = [];
+    const ancestors = [];
+    for (let node = dialog; node && node !== document.body; node = node.parentElement) {
+        ancestors.push(node);
+    }
+    ancestors.forEach((ancestor) => {
+        [...ancestor.parentElement.children].forEach((sibling) => {
+            if (sibling !== ancestor && !sibling.inert && sibling.tagName !== 'SCRIPT' && !sibling.matches('[role="status"]')) {
+                sibling.inert = true;
+                inerted.push(sibling);
+            }
+        });
+    });
+    return () => inerted.forEach((el) => {
+        el.inert = false;
+    });
+};
 
 /**
  * Random float in [0, 1) from the browser's crypto source.
@@ -59,7 +114,6 @@ export const init = (config) => {
     const hub = root.querySelector('[data-action="spin"]');
     const strings = config.strings;
     const COLORS = config.scheme.colors;
-    const TEXT = config.scheme.text;
     const pool = config.names;
     const groups = config.groups || [];
     const selected = new Set(groups.map((g) => g.id));
@@ -128,8 +182,9 @@ export const init = (config) => {
             ctx.translate(cx, cx);
             ctx.rotate(start + seg / 2);
             ctx.textAlign = 'right';
-            ctx.fillStyle = TEXT;
-            ctx.shadowColor = TEXT === '#ffffff' ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.5)';
+            const textColour = readableText(colour);
+            ctx.fillStyle = textColour;
+            ctx.shadowColor = textColour === LIGHT_TEXT ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.5)';
             ctx.shadowBlur = 2;
             ctx.fillText(name, r - 14, 0, r * 0.62);
             ctx.restore();
@@ -155,16 +210,51 @@ export const init = (config) => {
         }, 50);
     };
 
+    let releaseModal = null;
+    let hideResult;
+
+    // While the winner dialog is open, Tab stays inside it and Escape closes it, wherever focus happens to be.
+    const onDialogKey = (e) => {
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            hideResult();
+            return;
+        }
+        if (e.key !== 'Tab') {
+            return;
+        }
+        const buttons = [...resultEl.querySelectorAll('button:not([disabled])')];
+        const first = buttons[0];
+        const last = buttons[buttons.length - 1];
+        const active = document.activeElement;
+        if (!resultEl.contains(active)) {
+            e.preventDefault();
+            first.focus();
+        } else if (e.shiftKey && active === first) {
+            e.preventDefault();
+            last.focus();
+        } else if (!e.shiftKey && active === last) {
+            e.preventDefault();
+            first.focus();
+        }
+    };
+
     const showResult = (index) => {
         winnerIndex = index;
         winnerEl.textContent = names[index];
         resultEl.hidden = false;
+        releaseModal = makeModal(resultEl);
+        document.addEventListener('keydown', onDialogKey);
         announce(strings.winner + ' ' + names[index]);
-        const btn = resultEl.querySelector('[data-action="keep"]');
-        btn.focus();
+        resultEl.querySelector('[data-action="keep"]').focus();
     };
 
-    const hideResult = () => {
+    hideResult = () => {
+        document.removeEventListener('keydown', onDialogKey);
+        if (releaseModal) {
+            releaseModal();
+            releaseModal = null;
+        }
         resultEl.hidden = true;
         winnerIndex = -1;
         canvas.focus();
@@ -242,11 +332,6 @@ export const init = (config) => {
         syncText();
         hideResult();
         announce(strings.removed.replace('{$a}', () => gone));
-    });
-    resultEl.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            hideResult();
-        }
     });
 
     root.querySelector('[data-action="shuffle"]').addEventListener('click', () => {

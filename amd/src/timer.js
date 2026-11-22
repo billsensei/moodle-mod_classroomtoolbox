@@ -129,6 +129,11 @@ export const init = (config) => {
         const number = created;
         const uid = 'timer-' + number + '-' + Math.random().toString(36).slice(2, 8);
         const title = fill(strings.timer_title, number);
+        // Button text plus the timer's name, so that several timers do not all say just "Start timer".
+        const named = (el, text) => {
+            el.textContent = text;
+            el.setAttribute('aria-label', text + ' (' + title + ')');
+        };
         let total = Math.round(presets[0] * 60000);
         let remaining = total;
         let endAt = 0;
@@ -142,7 +147,7 @@ export const init = (config) => {
         const body = document.createElement('div');
         body.className = 'card-body';
 
-        const heading = document.createElement('h3');
+        const heading = document.createElement('h2');
         heading.className = 'h5';
         heading.textContent = title;
 
@@ -162,11 +167,11 @@ export const init = (config) => {
         const presetRow = document.createElement('div');
         presetRow.className = 'd-flex justify-content-center flex-wrap gap-2 mb-3';
         presetRow.setAttribute('role', 'group');
-        presetRow.setAttribute('aria-label', strings.timer_presets);
+        presetRow.setAttribute('aria-label', fill(strings.timer_presetsfor, title));
 
         const custom = document.createElement('div');
         custom.className = 'd-flex justify-content-center align-items-end gap-2 mb-3';
-        const makeInput = (suffix, label, max) => {
+        const makeInput = (suffix, label, spoken, max) => {
             const wrap = document.createElement('div');
             const lab = document.createElement('label');
             lab.className = 'form-label small mb-0';
@@ -176,6 +181,7 @@ export const init = (config) => {
             input.type = 'number';
             input.className = 'form-control text-center';
             input.id = uid + '-' + suffix;
+            input.setAttribute('aria-label', spoken);
             input.min = '0';
             input.max = String(max);
             input.style.width = '6rem';
@@ -183,8 +189,8 @@ export const init = (config) => {
             custom.append(wrap);
             return input;
         };
-        const minInput = makeInput('min', strings.timer_minutes, 999);
-        const secInput = makeInput('sec', strings.timer_seconds, 59);
+        const minInput = makeInput('min', strings.timer_minutes, fill(strings.timer_minutesfor, title), 999);
+        const secInput = makeInput('sec', strings.timer_seconds, fill(strings.timer_secondsfor, title), 59);
 
         const buttons = document.createElement('div');
         buttons.className = 'd-flex justify-content-center flex-wrap gap-2';
@@ -196,12 +202,12 @@ export const init = (config) => {
         reset.type = 'button';
         reset.className = 'btn btn-secondary';
         reset.dataset.action = 'timer-reset';
-        reset.textContent = strings.timer_reset;
+        named(reset, strings.timer_reset);
         const remove = document.createElement('button');
         remove.type = 'button';
         remove.className = 'btn btn-outline-danger';
         remove.dataset.action = 'timer-remove';
-        remove.textContent = strings.timer_remove;
+        named(remove, strings.timer_remove);
         buttons.append(toggle, reset, remove);
 
         const isRunning = () => interval !== null;
@@ -220,7 +226,7 @@ export const init = (config) => {
                 running--;
                 updateWakeLock();
             }
-            toggle.textContent = strings.timer_start;
+            named(toggle, strings.timer_start);
         };
         const finish = () => {
             stopTicking();
@@ -285,7 +291,7 @@ export const init = (config) => {
             interval = window.setInterval(tick, 200);
             running++;
             updateWakeLock();
-            toggle.textContent = strings.timer_pause;
+            named(toggle, strings.timer_pause);
             tick();
         });
         reset.addEventListener('click', () => setTotal(total));
@@ -300,7 +306,7 @@ export const init = (config) => {
         card.append(body);
         col.append(card);
         list.append(col);
-        toggle.textContent = strings.timer_start;
+        named(toggle, strings.timer_start);
         showInputs();
         paint();
         refresh();

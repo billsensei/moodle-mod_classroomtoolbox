@@ -29,7 +29,7 @@
         "hasgroups": true
     }
 }}
-<div class="mod_classroomtoolbox-groupgen row" data-region="groups">
+<div class="mod_classroomtoolbox-groupgen row mx-0" data-region="groups">
     <div class="col-lg-4 mb-3">
         <div class="card">
             <div class="card-body">
@@ -43,9 +43,9 @@
                     <div data-region="groupgen-filter"></div>
                 </fieldset>
                 {{/hasgroups}}
-                <h3 class="h5 card-title">
+                <h2 class="h5 card-title">
                     <label for="groupgen-names-{{uniqid}}">{{#str}} groupgen_people, mod_classroomtoolbox {{/str}}</label>
-                </h3>
+                </h2>
                 <textarea id="groupgen-names-{{uniqid}}" class="form-control mb-1" rows="10" data-region="groupgen-names"></textarea>
                 <p class="small text-muted mb-3" data-region="groupgen-count"></p>
                 <fieldset class="mb-3">
@@ -70,7 +70,7 @@
         </div>
     </div>
     <div class="col-lg-8">
-        <h3 class="visually-hidden">{{#str}} groupgen_result, mod_classroomtoolbox {{/str}}</h3>
+        <h2 class="visually-hidden">{{#str}} groupgen_result, mod_classroomtoolbox {{/str}}</h2>
         <div class="mod_classroomtoolbox-groupgen-result" data-region="groupgen-result"></div>
         <div class="visually-hidden" role="status" aria-live="polite" data-region="groupgen-live"></div>
     </div>

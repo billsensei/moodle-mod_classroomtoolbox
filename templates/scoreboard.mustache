@@ -63,6 +63,10 @@
     {{/canmanage}}
     <p class="text-muted" data-region="score-empty"></p>
     <ol class="list-unstyled mod_classroomtoolbox-score-list" data-region="score-list" aria-label="{{#str}} tool_scoreboard, mod_classroomtoolbox {{/str}}"></ol>
+    <div class="form-check form-switch mt-2">
+        <input class="form-check-input" type="checkbox" role="switch" id="score-pause-{{uniqid}}" data-action="score-pause">
+        <label class="form-check-label" for="score-pause-{{uniqid}}">{{#str}} score_pause, mod_classroomtoolbox {{/str}}</label>
+    </div>
     {{^canmanage}}
     <p class="small text-muted">{{#str}} score_autorefresh, mod_classroomtoolbox {{/str}}</p>
     {{/canmanage}}

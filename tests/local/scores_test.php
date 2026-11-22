@@ -173,4 +173,18 @@ final class scores_test extends \advanced_testcase {
             $this->assertCount(1, scores::get_all($b));
         }
     }
+
+    /**
+     * Adding takes a per-toolbox lock and always lets go of it, so a second add straight afterwards works.
+     */
+    public function test_add_releases_its_lock(): void {
+        $this->resetAfterTest();
+        $id = $this->toolbox();
+        scores::add($id, ['Red']);
+        $factory = \core\lock\lock_config::get_lock_factory('mod_classroomtoolbox');
+        $lock = $factory->get_lock('scores_' . $id, 0);
+        $this->assertNotFalse($lock, 'The lock must be free after add()');
+        $lock->release();
+        $this->assertSame(1, scores::add($id, ['Blue']));
+    }
 }

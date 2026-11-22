@@ -64,6 +64,10 @@ Up to eight counters. Rename each one, then raise, lower or reset it.
 - Who may change it: the capability `mod/classroomtoolbox:managescores` (teachers, non-editing teachers and managers by default). Everyone who can view the toolbox can read it.
 - Scores are saved in the database, so they survive reloads and are included in backup, restore and duplication. Up to 100 entries per scoreboard. Every change is logged as a `scoreboard_changed` event.
 
+### Accessibility
+
+Every tool is keyboard operable and announces results to screen readers. The wheel prints readable text on every wedge (at least 4.5:1) and offers a 7:1 High contrast scheme. Animations stop for people who ask their system for reduced motion. The scoreboard has a **Pause live updates** switch. An axe-core Behat feature (`tests/behat/accessibility.feature`) checks every tool.
+
 ### Privacy
 
 Spins, groups, laps, timers and counts live only in the open page. The scoreboard stores the labels and points a teacher types in; they are plain text, never tied to a user account, and are removed when the entry or the activity is deleted. The plugin keeps no data about users, so it is a null privacy provider. Teachers should not type more personal data than they need into names.

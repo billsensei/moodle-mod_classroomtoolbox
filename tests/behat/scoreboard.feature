@@ -90,3 +90,20 @@ Feature: Scoreboard
     And "[data-region='score-list'] input" "css_element" should not exist
     And "[data-region='score-list'] button" "css_element" should not exist
     And I should not see "Reset scores"
+
+  Scenario: A viewer can pause the live updates
+    Given the scoreboard of "Board" has these entries:
+      | label    | score |
+      | Team Red | 12    |
+    And I am on the "Board" "classroomtoolbox activity" page logged in as student1
+    And the scoreboard order should be "Team Red"
+    When I click on "Pause live updates" "checkbox"
+    And the scoreboard of "Board" has these entries:
+      | label     | score |
+      | Team Blue | 20    |
+    And I wait "7" seconds
+    Then the scoreboard order should be "Team Red"
+    When I click on "Pause live updates" "checkbox"
+    And I wait "2" seconds
+    Then the scoreboard order should be "Team Blue, Team Red"
+

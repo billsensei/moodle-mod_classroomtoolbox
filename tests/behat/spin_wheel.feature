@@ -73,3 +73,19 @@ Feature: Spin the name wheel
       One
       Two
       """
+
+  Scenario: The winner dialog keeps keyboard focus inside and closes with Escape
+    Given I am on the "Pick one" "classroomtoolbox activity" page logged in as student1
+    When I click on "[data-region='wheel-canvas']" "css_element"
+    And I wait until the page is ready
+    Then the focus should be on "[data-action='keep']"
+    And "[data-region='wheel-canvas']" should be inert
+    When I press the "Tab" key in "[data-action='keep']"
+    Then the focus should be on "[data-action='remove']"
+    When I press the "Shift+Tab" key in "[data-action='remove']"
+    Then the focus should be on "[data-action='keep']"
+    When I press the "Escape" key in "[data-action='keep']"
+    Then "[data-region='wheel-result']" "css_element" should not be visible
+    And the focus should be on "[data-region='wheel-canvas']"
+    And "[data-region='wheel-canvas']" should not be inert
+

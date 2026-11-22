@@ -26,6 +26,7 @@ import Notification from 'core/notification';
 import Pending from 'core/pending';
 
 const POLL_MS = 5000;
+const MAX_POLL_MS = 30000;
 const MAX_FAILED_POLLS = 3;
 
 /**
@@ -88,8 +89,14 @@ export const init = (config) => {
 
         const rankEl = document.createElement('span');
         rankEl.className = 'mod_classroomtoolbox-score-rank';
-        rankEl.textContent = String(rank);
-        rankEl.setAttribute('aria-label', fill(strings.score_rank, rank));
+        // The digit is for the eyes; the hidden text says "Place 1" to a screen reader.
+        const digit = document.createElement('span');
+        digit.setAttribute('aria-hidden', 'true');
+        digit.textContent = String(rank);
+        const spoken = document.createElement('span');
+        spoken.className = 'visually-hidden';
+        spoken.textContent = fill(strings.score_rank, rank);
+        rankEl.append(digit, spoken);
 
         if (!canManage) {
             const label = document.createElement('span');
@@ -107,7 +114,7 @@ export const init = (config) => {
         label.className = 'form-control mod_classroomtoolbox-score-label';
         label.value = entry.label;
         label.maxLength = config.maxlabel;
-        label.setAttribute('aria-label', strings.score_name);
+        label.setAttribute('aria-label', fill(strings.score_namefor, rank));
         label.dataset.id = String(entry.id);
         label.dataset.field = 'label';
 
@@ -193,6 +200,7 @@ export const init = (config) => {
         busy = true;
         try {
             entries = await Ajax.call([{methodname, args: {toolboxid: config.toolboxid, ...args}}])[0];
+            delay = POLL_MS;
             render();
             if (entry) {
                 const now = entries.find((e) => e.id === entry.id);
@@ -244,11 +252,23 @@ export const init = (config) => {
         });
     }
 
-    // Keep the board fresh for everyone, including a second teacher. Skipped while hidden, busy or being edited.
-    window.setInterval(async() => {
+    // Keep the board fresh for everyone, including a second teacher. It backs off while nothing changes, and is
+    // skipped while the page or tab is hidden, a teacher is typing, or the viewer has paused updates.
+    const pauseBox = root.querySelector('[data-action="score-pause"]');
+    let delay = POLL_MS;
+    let timer = null;
+    let poll;
+    const schedule = () => {
+        window.clearTimeout(timer);
+        if (failedPolls < MAX_FAILED_POLLS) {
+            timer = window.setTimeout(poll, delay);
+        }
+    };
+    poll = async() => {
         const panel = root.closest('[data-region="tool-panel"]');
         const editing = canManage && root.contains(document.activeElement) && document.activeElement.tagName === 'INPUT';
-        if (busy || document.hidden || (panel && panel.hidden) || editing || failedPolls >= MAX_FAILED_POLLS) {
+        if (busy || document.hidden || (panel && panel.hidden) || editing || (pauseBox && pauseBox.checked)) {
+            schedule();
             return;
         }
         try {
@@ -260,11 +280,33 @@ export const init = (config) => {
             if (JSON.stringify(fresh) !== JSON.stringify(entries) && !busy) {
                 entries = fresh;
                 render();
+                delay = POLL_MS;
+            } else {
+                delay = Math.min(delay * 1.5, MAX_POLL_MS);
             }
         } catch (e) {
             failedPolls++; // For example the session ended: stop asking after a few tries.
         }
-    }, POLL_MS);
+        schedule();
+    };
+    const pollNow = () => {
+        delay = POLL_MS;
+        window.clearTimeout(timer);
+        poll();
+    };
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+            pollNow();
+        }
+    });
+    if (pauseBox) {
+        pauseBox.addEventListener('change', () => {
+            if (!pauseBox.checked) {
+                pollNow();
+            }
+        });
+    }
+    schedule();
 
     render();
 };

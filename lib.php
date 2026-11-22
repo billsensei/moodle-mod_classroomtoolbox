@@ -22,6 +22,12 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+/** @var int Most names the typed names list may hold. */
+const CLASSROOMTOOLBOX_MAX_NAMES = 1000;
+
+/** @var int Most characters the typed names list may hold. */
+const CLASSROOMTOOLBOX_MAX_NAMES_CHARS = 50000;
+
 /**
  * Which features the module supports.
  *
@@ -48,33 +54,23 @@ function classroomtoolbox_supports($feature) {
 }
 
 /**
- * The colour schemes a teacher can pick: wedge colours plus the text colour that stays readable on them.
+ * The colour schemes a teacher can pick: the wedge colours of the wheel.
  *
- * @return array[] Keyed by scheme id.
+ * The wheel script picks white or dark text for each wedge, whichever reads better, and every colour here gives at
+ * least 4.5:1 with one of them (checked by a unit test). The high contrast scheme gives 7:1 with white.
+ *
+ * @return array[] Keyed by scheme id, each with a 'colors' list.
  */
 function classroomtoolbox_color_schemes(): array {
     return [
-        'classic' => [
-            'colors' => ['#3369e8', '#d50f25', '#eeb211', '#009925', '#8e44ad', '#e67e22', '#16a0a0', '#c2185b'],
-            'text' => '#ffffff',
-        ],
+        'classic' => ['colors' => ['#3369e8', '#d50f25', '#eeb211', '#00a327', '#8e44ad', '#e67e22', '#16a0a0', '#c2185b']],
         'highcontrast' => [
             // Every colour gives white text at least 7:1 contrast (WCAG AAA).
             'colors' => ['#000000', '#0033a0', '#8b0000', '#006400', '#4b0082', '#5a3500', '#00424d', '#7a0050'],
-            'text' => '#ffffff',
         ],
-        'ocean' => [
-            'colors' => ['#0b3c5d', '#1d70a2', '#328cc1', '#4fb3bf', '#1b9aaa', '#16697a', '#489fb5', '#145da0'],
-            'text' => '#ffffff',
-        ],
-        'sunset' => [
-            'colors' => ['#b5179e', '#d62828', '#e85d04', '#c77d00', '#9d0208', '#7209b7', '#c9184a', '#a4161a'],
-            'text' => '#ffffff',
-        ],
-        'pastel' => [
-            'colors' => ['#ffadad', '#ffd6a5', '#fdffb6', '#caffbf', '#9bf6ff', '#a0c4ff', '#bdb2ff', '#ffc6ff'],
-            'text' => '#212529',
-        ],
+        'ocean' => ['colors' => ['#0b3c5d', '#1d70a2', '#3995cc', '#4fb3bf', '#1b9cac', '#16697a', '#489fb5', '#145da0']],
+        'sunset' => ['colors' => ['#b5179e', '#d62828', '#f06004', '#c77d00', '#9d0208', '#7209b7', '#c9184a', '#a4161a']],
+        'pastel' => ['colors' => ['#ffadad', '#ffd6a5', '#fdffb6', '#caffbf', '#9bf6ff', '#a0c4ff', '#bdb2ff', '#ffc6ff']],
     ];
 }
 
@@ -158,7 +154,7 @@ function classroomtoolbox_add_instance($data, $mform = null) {
     $data->colorscheme = classroomtoolbox_clean_color_scheme($data->colorscheme ?? null);
     $data->tools = classroomtoolbox_tools_from_data($data);
     $data->timerpresets = classroomtoolbox_clean_timer_presets($data->timerpresets ?? null);
-    $data->names = $data->names ?? '';
+    $data->names = classroomtoolbox_clean_names($data->names ?? '');
     $data->id = $DB->insert_record('classroomtoolbox', $data);
     return $data->id;
 }
@@ -179,7 +175,7 @@ function classroomtoolbox_update_instance($data, $mform = null) {
     $data->colorscheme = classroomtoolbox_clean_color_scheme($data->colorscheme ?? null);
     $data->tools = classroomtoolbox_tools_from_data($data);
     $data->timerpresets = classroomtoolbox_clean_timer_presets($data->timerpresets ?? null);
-    $data->names = $data->names ?? '';
+    $data->names = classroomtoolbox_clean_names($data->names ?? '');
     return $DB->update_record('classroomtoolbox', $data);
 }
 
@@ -215,6 +211,20 @@ function classroomtoolbox_parse_names(string $text): array {
         }
     }
     return $names;
+}
+
+/**
+ * Keep a typed names list within its limits: blank lines dropped, at most 1000 names and 50000 characters.
+ *
+ * The settings form rejects a list that is too long; this is for data that did not come through the form, such as a
+ * restored backup.
+ *
+ * @param string|null $text One name per line.
+ * @return string
+ */
+function classroomtoolbox_clean_names(?string $text): string {
+    $names = array_slice(classroomtoolbox_parse_names((string) $text), 0, CLASSROOMTOOLBOX_MAX_NAMES);
+    return core_text::substr(implode("\n", $names), 0, CLASSROOMTOOLBOX_MAX_NAMES_CHARS);
 }
 
 /**

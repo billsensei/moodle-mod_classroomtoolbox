@@ -81,4 +81,25 @@ final class backup_test extends \advanced_testcase {
         $this->assertSame([7, 0], array_column($copied, 'score'));
         $this->assertCount(2, \mod_classroomtoolbox\local\scores::get_all($wheel->id), 'The original keeps its own entries');
     }
+
+    /**
+     * A backup whose names list is longer than the form allows is trimmed when restored.
+     */
+    public function test_restore_limits_the_names_list(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        $course = $this->getDataGenerator()->create_course();
+        $wheel = $this->getDataGenerator()->create_module('classroomtoolbox', ['course' => $course->id]);
+        // Written straight to the table, as a hand-edited backup would be.
+        $names = implode("\n", range(1, CLASSROOMTOOLBOX_MAX_NAMES + 300));
+        $DB->set_field('classroomtoolbox', 'names', $names, ['id' => $wheel->id]);
+        $cm = get_coursemodule_from_instance('classroomtoolbox', $wheel->id, $course->id);
+
+        duplicate_module($course, get_fast_modinfo($course)->get_cm($cm->id));
+        $records = $DB->get_records('classroomtoolbox', ['course' => $course->id], 'id');
+        $copy = end($records);
+        $this->assertNotEquals($wheel->id, $copy->id);
+        $this->assertCount(CLASSROOMTOOLBOX_MAX_NAMES, explode("\n", $copy->names));
+    }
 }
