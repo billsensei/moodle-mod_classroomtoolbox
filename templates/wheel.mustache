@@ -22,11 +22,13 @@
     Context variables required for this template:
     * uniqid - unique string used for element ids
     * hasnames - whether the wheel starts with any names
+    * hasgroups - whether the group chooser is shown
 
     Example context (json):
     {
         "uniqid": "abc123",
-        "hasnames": true
+        "hasnames": true,
+        "hasgroups": true
     }
 }}
 <div class="mod_namewheel row" data-region="namewheel">
@@ -43,6 +45,20 @@
         <div class="visually-hidden" role="status" aria-live="polite" data-region="namewheel-live"></div>
     </div>
     <div class="col-lg-4">
+        {{#hasgroups}}
+        <div class="card mb-3">
+            <div class="card-body">
+                <fieldset>
+                    <legend class="h5">{{#str}} groups, mod_namewheel {{/str}}</legend>
+                    <div class="d-flex flex-wrap gap-2 mb-2">
+                        <button type="button" class="btn btn-secondary btn-sm" data-action="groups-all">{{#str}} selectall, mod_namewheel {{/str}}</button>
+                        <button type="button" class="btn btn-secondary btn-sm" data-action="groups-none">{{#str}} selectnone, mod_namewheel {{/str}}</button>
+                    </div>
+                    <div data-region="namewheel-groups"></div>
+                </fieldset>
+            </div>
+        </div>
+        {{/hasgroups}}
         <div class="card">
             <div class="card-body">
                 <h3 class="h5 card-title">

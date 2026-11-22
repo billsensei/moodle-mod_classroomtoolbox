@@ -40,41 +40,60 @@ $PAGE->set_title(format_string($namewheel->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
 
-// Names: course participants (optionally limited to the active group) plus the typed list.
-$names = [];
-// Participant names are personal data: never show them to guests, and in separate-groups mode only
-// show the viewer's own group unless they can access all groups.
+// Names: course participants plus the typed list. Names are personal data: never shown to guests, and
+// only members of groups the viewer is allowed to see are sent to the browser.
+$entries = [];
+$groups = [];
 if (!empty($namewheel->usenrolled) && !isguestuser()) {
-    $groupid = 0;
-    $allowed = true;
+    $users = get_enrolled_users($context, 'mod/namewheel:appear', 0, 'u.*', 'u.lastname, u.firstname', 0, 0, true);
+    $membership = [];
+    $restricted = false;
     if ($cm->groupmode) {
-        $groupid = groups_get_activity_group($cm, true);
-        if ($cm->groupmode == SEPARATEGROUPS && !has_capability('moodle/site:accessallgroups', $context)) {
-            $allowed = !empty($groupid) && groups_group_visible($groupid, $course, $cm);
+        $restricted = $cm->groupmode == SEPARATEGROUPS && !has_capability('moodle/site:accessallgroups', $context);
+        foreach (groups_get_activity_allowed_groups($cm) as $group) {
+            $members = groups_get_members($group->id, 'u.id');
+            $count = 0;
+            foreach ($members as $member) {
+                if (isset($users[$member->id])) {
+                    $membership[$member->id][] = (int) $group->id;
+                    $count++;
+                }
+            }
+            $groups[] = ['id' => (int) $group->id, 'name' => format_string($group->name, true, ['context' => $context]),
+                'count' => $count];
+        }
+        if ($restricted) {
+            $users = array_intersect_key($users, $membership);
+        } else if (array_diff_key($users, $membership)) {
+            // Users in no group can be included or left out as a pseudo-group with id 0.
+            $groups[] = ['id' => 0, 'name' => get_string('ungrouped', 'mod_namewheel'),
+                'count' => count(array_diff_key($users, $membership))];
         }
     }
-    if ($allowed) {
-        $users = get_enrolled_users($context, 'mod/namewheel:appear', $groupid, 'u.*', 'u.lastname, u.firstname', 0, 0, true);
-        foreach ($users as $user) {
-            $names[] = fullname($user);
-        }
+    foreach ($users as $user) {
+        $entries[] = ['name' => fullname($user), 'groups' => $membership[$user->id] ?? [0]];
     }
 }
-$names = array_merge($names, namewheel_parse_names($namewheel->names));
-$names = array_values(array_unique($names));
+foreach (namewheel_parse_names($namewheel->names) as $extra) {
+    $entries[] = ['name' => $extra, 'groups' => null]; // Typed names are always on the wheel.
+}
+$seen = [];
+$entries = array_values(array_filter($entries, function ($entry) use (&$seen) {
+    $key = \core_text::strtolower($entry['name']);
+    return isset($seen[$key]) ? false : ($seen[$key] = true);
+}));
 
 echo $OUTPUT->header();
-if ($cm->groupmode) {
-    groups_print_activity_menu($cm, $PAGE->url);
-}
 
 echo $OUTPUT->render_from_template('mod_namewheel/wheel', [
     'uniqid' => uniqid(),
-    'hasnames' => !empty($names),
+    'hasnames' => !empty($entries),
+    'hasgroups' => !empty($groups),
 ]);
 
 $PAGE->requires->js_call_amd('mod_namewheel/wheel', 'init', [[
-    'names' => $names,
+    'names' => $entries,
+    'groups' => $groups,
     'strings' => [
         'winner' => get_string('winner', 'mod_namewheel'),
         'empty' => get_string('emptywheel', 'mod_namewheel'),
@@ -82,6 +101,7 @@ $PAGE->requires->js_call_amd('mod_namewheel/wheel', 'init', [[
         'clickhere' => get_string('clickhere', 'mod_namewheel'),
         'entriescount' => get_string('entriescount', 'mod_namewheel'),
         'removed' => get_string('removedannounce', 'mod_namewheel'),
+        'groupchanged' => get_string('groupchanged', 'mod_namewheel'),
     ],
 ]]);
 

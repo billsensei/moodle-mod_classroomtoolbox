@@ -1,3 +1,11 @@
+# Changes in 0.2.0 (2026-11-23)
+
+- Multi-group selection: in Separate or Visible groups mode, tick any combination of groups (plus "Not in any group" and Select all / Select none) to combine them on one wheel. Filtering happens in the browser, so names already removed stay removed when the selection changes.
+- Only members of groups the viewer is allowed to see are sent to the page.
+- Replaced the single-group dropdown.
+
+---
+
 # Changes in 0.1.1 (2026-11-22)
 
 - Security: guests no longer have `mod/namewheel:view` by default and never see participant names.

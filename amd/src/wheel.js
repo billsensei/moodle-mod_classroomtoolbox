@@ -57,9 +57,18 @@ export const init = (config) => {
     const winnerEl = root.querySelector('[data-region="namewheel-winner"]');
     const hub = root.querySelector('[data-action="spin"]');
     const strings = config.strings;
-    const original = [...config.names];
+    const pool = config.names;
+    const groups = config.groups || [];
+    const selected = new Set(groups.map((g) => g.id));
+    const removed = new Set();
 
-    let names = [...original];
+    // Names currently allowed on the wheel: typed names always, others when one of their groups is ticked.
+    const derive = () => pool
+        .filter((e) => !removed.has(e.name) && (e.groups === null || groups.length === 0 ||
+            e.groups.some((id) => selected.has(id))))
+        .map((e) => e.name);
+
+    let names = derive();
     let rotation = 0;
     let spinning = false;
     let winnerIndex = -1;
@@ -221,11 +230,12 @@ export const init = (config) => {
         if (winnerIndex < 0) {
             return;
         }
-        const removed = names[winnerIndex];
+        const gone = names[winnerIndex];
+        removed.add(gone);
         names.splice(winnerIndex, 1);
         syncText();
         hideResult();
-        announce(strings.removed.replace('{$a}', removed));
+        announce(strings.removed.replace('{$a}', gone));
     });
     resultEl.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
@@ -246,7 +256,8 @@ export const init = (config) => {
     });
     root.querySelector('[data-action="reset"]').addEventListener('click', () => {
         if (!spinning) {
-            names = [...original];
+            removed.clear();
+            names = derive();
             syncText();
         }
     });
@@ -260,6 +271,58 @@ export const init = (config) => {
         countEl.textContent = strings.entriescount.replace('{$a}', names.length);
         draw();
     });
+
+    // Group chooser: tick several groups to combine them on one wheel.
+    const groupBox = root.querySelector('[data-region="namewheel-groups"]');
+    const applyGroups = () => {
+        if (spinning) {
+            return;
+        }
+        names = derive();
+        syncText();
+        announce(strings.groupchanged.replace('{$a}', names.length));
+    };
+    if (groupBox) {
+        groups.forEach((g) => {
+            const wrap = document.createElement('div');
+            wrap.className = 'form-check';
+            const box = document.createElement('input');
+            box.type = 'checkbox';
+            box.className = 'form-check-input';
+            box.id = 'namewheel-group-' + g.id;
+            box.value = g.id;
+            box.checked = true;
+            box.addEventListener('change', () => {
+                if (box.checked) {
+                    selected.add(g.id);
+                } else {
+                    selected.delete(g.id);
+                }
+                applyGroups();
+            });
+            const label = document.createElement('label');
+            label.className = 'form-check-label';
+            label.htmlFor = box.id;
+            label.textContent = g.name + ' (' + g.count + ')';
+            wrap.append(box, label);
+            groupBox.append(wrap);
+        });
+        const setAll = (on) => {
+            groups.forEach((g) => {
+                if (on) {
+                    selected.add(g.id);
+                } else {
+                    selected.delete(g.id);
+                }
+            });
+            groupBox.querySelectorAll('input').forEach((b) => {
+                b.checked = on;
+            });
+            applyGroups();
+        };
+        root.querySelector('[data-action="groups-all"]').addEventListener('click', () => setAll(true));
+        root.querySelector('[data-action="groups-none"]').addEventListener('click', () => setAll(false));
+    }
 
     window.addEventListener('resize', draw);
     syncText();
