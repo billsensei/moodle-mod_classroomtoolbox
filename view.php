@@ -42,14 +42,22 @@ $PAGE->set_context($context);
 
 // Names: course participants (optionally limited to the active group) plus the typed list.
 $names = [];
-if (!empty($namewheel->usenrolled)) {
+// Participant names are personal data: never show them to guests, and in separate-groups mode only
+// show the viewer's own group unless they can access all groups.
+if (!empty($namewheel->usenrolled) && !isguestuser()) {
     $groupid = 0;
+    $allowed = true;
     if ($cm->groupmode) {
         $groupid = groups_get_activity_group($cm, true);
+        if ($cm->groupmode == SEPARATEGROUPS && !has_capability('moodle/site:accessallgroups', $context)) {
+            $allowed = !empty($groupid) && groups_group_visible($groupid, $course, $cm);
+        }
     }
-    $users = get_enrolled_users($context, 'mod/namewheel:appear', $groupid, 'u.*', 'u.lastname, u.firstname', 0, 0, true);
-    foreach ($users as $user) {
-        $names[] = fullname($user);
+    if ($allowed) {
+        $users = get_enrolled_users($context, 'mod/namewheel:appear', $groupid, 'u.*', 'u.lastname, u.firstname', 0, 0, true);
+        foreach ($users as $user) {
+            $names[] = fullname($user);
+        }
     }
 }
 $names = array_merge($names, namewheel_parse_names($namewheel->names));

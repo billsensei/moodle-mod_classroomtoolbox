@@ -1,3 +1,10 @@
+# Changes in 0.1.1 (2026-11-22)
+
+- Security: guests no longer have `mod/namewheel:view` by default and never see participant names.
+- Security: in separate-groups mode, users without `moodle/site:accessallgroups` only see names from their own visible group (none if they are in no group).
+
+---
+
 # Changes in 0.1.0 (2026-11-22)
 
 First release (since the first version, so this is everything):
