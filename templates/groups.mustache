@@ -1,0 +1,77 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_classroomtoolbox/groups
+
+    The random group generator tool. Behaviour is attached by the mod_classroomtoolbox/groups AMD module.
+
+    Context variables required for this template:
+    * uniqid - unique string used for element ids
+    * hasgroups - whether the group chooser is shown
+
+    Example context (json):
+    {
+        "uniqid": "abc123",
+        "hasgroups": true
+    }
+}}
+<div class="mod_classroomtoolbox-groupgen row" data-region="groups">
+    <div class="col-lg-4 mb-3">
+        <div class="card">
+            <div class="card-body">
+                {{#hasgroups}}
+                <fieldset class="mb-3">
+                    <legend class="h5">{{#str}} groupgen_filter, mod_classroomtoolbox {{/str}}</legend>
+                    <div class="d-flex flex-wrap gap-2 mb-2">
+                        <button type="button" class="btn btn-secondary btn-sm" data-action="groupgen-all">{{#str}} groupgen_all, mod_classroomtoolbox {{/str}}</button>
+                        <button type="button" class="btn btn-secondary btn-sm" data-action="groupgen-none">{{#str}} groupgen_none, mod_classroomtoolbox {{/str}}</button>
+                    </div>
+                    <div data-region="groupgen-filter"></div>
+                </fieldset>
+                {{/hasgroups}}
+                <h3 class="h5 card-title">
+                    <label for="groupgen-names-{{uniqid}}">{{#str}} groupgen_people, mod_classroomtoolbox {{/str}}</label>
+                </h3>
+                <textarea id="groupgen-names-{{uniqid}}" class="form-control mb-1" rows="10" data-region="groupgen-names"></textarea>
+                <p class="small text-muted mb-3" data-region="groupgen-count"></p>
+                <fieldset class="mb-3">
+                    <legend class="h6">{{#str}} groupgen_generate, mod_classroomtoolbox {{/str}}</legend>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="groupgen-mode-{{uniqid}}" id="groupgen-mode-count-{{uniqid}}" value="count" checked>
+                        <label class="form-check-label" for="groupgen-mode-count-{{uniqid}}">{{#str}} groupgen_modecount, mod_classroomtoolbox {{/str}}</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="groupgen-mode-{{uniqid}}" id="groupgen-mode-size-{{uniqid}}" value="size">
+                        <label class="form-check-label" for="groupgen-mode-size-{{uniqid}}">{{#str}} groupgen_modesize, mod_classroomtoolbox {{/str}}</label>
+                    </div>
+                    <label for="groupgen-amount-{{uniqid}}" class="form-label mb-1">{{#str}} groupgen_amount, mod_classroomtoolbox {{/str}}</label>
+                    <input type="number" id="groupgen-amount-{{uniqid}}" class="form-control" min="1" max="100" value="3" data-region="groupgen-amount">
+                </fieldset>
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="button" class="btn btn-primary" data-action="groupgen-generate">{{#str}} groupgen_generate, mod_classroomtoolbox {{/str}}</button>
+                    <button type="button" class="btn btn-secondary" data-action="groupgen-copy">{{#str}} groupgen_copy, mod_classroomtoolbox {{/str}}</button>
+                    <button type="button" class="btn btn-secondary" data-action="groupgen-reset">{{#str}} groupgen_reset, mod_classroomtoolbox {{/str}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <h3 class="visually-hidden">{{#str}} groupgen_result, mod_classroomtoolbox {{/str}}</h3>
+        <div class="mod_classroomtoolbox-groupgen-result" data-region="groupgen-result"></div>
+        <div class="visually-hidden" role="status" aria-live="polite" data-region="groupgen-live"></div>
+    </div>
+</div>

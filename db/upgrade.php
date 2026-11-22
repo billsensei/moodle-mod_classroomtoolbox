@@ -43,5 +43,15 @@ function xmldb_classroomtoolbox_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2026112400, 'classroomtoolbox');
     }
 
+    if ($oldversion < 2026120100) {
+        // Timer presets, set per activity.
+        $table = new xmldb_table('classroomtoolbox');
+        $field = new xmldb_field('timerpresets', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, '1,3,5,10', 'tools');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        upgrade_mod_savepoint(true, 2026120100, 'classroomtoolbox');
+    }
+
     return true;
 }

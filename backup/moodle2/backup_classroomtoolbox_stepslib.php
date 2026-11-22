@@ -39,7 +39,7 @@ class backup_classroomtoolbox_activity_structure_step extends backup_activity_st
      */
     protected function define_structure() {
         $classroomtoolbox = new backup_nested_element('classroomtoolbox', ['id'], [
-            'name', 'intro', 'introformat', 'tools', 'usenrolled', 'colorscheme', 'names', 'timemodified']);
+            'name', 'intro', 'introformat', 'tools', 'timerpresets', 'usenrolled', 'colorscheme', 'names', 'timemodified']);
         $classroomtoolbox->set_source_table('classroomtoolbox', ['id' => backup::VAR_ACTIVITYID]);
         $classroomtoolbox->annotate_files('mod_classroomtoolbox', 'intro', null);
         return $this->prepare_activity_structure($classroomtoolbox);

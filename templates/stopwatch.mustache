@@ -1,0 +1,42 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_classroomtoolbox/stopwatch
+
+    The stopwatch tool. Behaviour is attached by the mod_classroomtoolbox/stopwatch AMD module.
+
+    Context variables required for this template:
+    * uniqid - unique string used for element ids
+
+    Example context (json):
+    {
+        "uniqid": "abc123"
+    }
+}}
+<div class="mod_classroomtoolbox-stopwatch text-center" data-region="stopwatch">
+    <div class="mod_classroomtoolbox-display" data-region="sw-display" role="timer" aria-live="off">00:00.00</div>
+    <div class="d-flex justify-content-center flex-wrap gap-2 my-3">
+        <button type="button" class="btn btn-primary btn-lg" data-action="sw-toggle">{{#str}} sw_start, mod_classroomtoolbox {{/str}}</button>
+        <button type="button" class="btn btn-secondary btn-lg" data-action="sw-lap" disabled>{{#str}} sw_lap, mod_classroomtoolbox {{/str}}</button>
+        <button type="button" class="btn btn-secondary btn-lg" data-action="sw-reset">{{#str}} sw_reset, mod_classroomtoolbox {{/str}}</button>
+    </div>
+    <div class="mx-auto text-start mod_classroomtoolbox-laps" data-region="sw-laps-wrap" hidden>
+        <h3 class="h5">{{#str}} sw_laps, mod_classroomtoolbox {{/str}}</h3>
+        <ol class="list-group list-group-numbered" data-region="sw-laps"></ol>
+    </div>
+    <div class="visually-hidden" role="status" aria-live="polite" data-region="sw-live"></div>
+</div>

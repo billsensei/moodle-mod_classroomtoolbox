@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/classroomtoolbox/db" VERSION="2026113000" COMMENT="XMLDB file for Moodle mod_classroomtoolbox"
+<XMLDB PATH="mod/classroomtoolbox/db" VERSION="2026120100" COMMENT="XMLDB file for Moodle mod_classroomtoolbox"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd">
   <TABLES>
@@ -11,6 +11,7 @@
         <FIELD NAME="intro" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="tools" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="wheel" SEQUENCE="false" COMMENT="Comma-separated ids of the tools switched on"/>
+        <FIELD NAME="timerpresets" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="1,3,5,10" SEQUENCE="false" COMMENT="Timer presets in minutes, comma-separated"/>
         <FIELD NAME="usenrolled" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="1 = put the course participants on the wheel"/>
         <FIELD NAME="colorscheme" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="classic" SEQUENCE="false" COMMENT="Colour scheme id"/>
         <FIELD NAME="names" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Extra names, one per line"/>

@@ -39,6 +39,8 @@ require_once(__DIR__ . '/../lib.php');
 #[CoversFunction('classroomtoolbox_delete_instance')]
 #[CoversFunction('classroomtoolbox_supports')]
 #[CoversFunction('classroomtoolbox_tools_from_data')]
+#[CoversFunction('classroomtoolbox_timer_presets')]
+#[CoversFunction('classroomtoolbox_clean_timer_presets')]
 /**
  * Tests for the module library functions.
  *
@@ -55,6 +57,8 @@ require_once(__DIR__ . '/../lib.php');
  * @covers ::classroomtoolbox_delete_instance
  * @covers ::classroomtoolbox_supports
  * @covers ::classroomtoolbox_tools_from_data
+ * @covers ::classroomtoolbox_timer_presets
+ * @covers ::classroomtoolbox_clean_timer_presets
  */
 final class lib_test extends \advanced_testcase {
     /**
@@ -131,22 +135,40 @@ final class lib_test extends \advanced_testcase {
         $this->assertSame('classic', $record->colorscheme);
         $this->assertSame("A\nB", $record->names);
         $this->assertSame('wheel', $record->tools);
+        $this->assertSame('1,3,5,10', $record->timerpresets);
         $this->assertEquals(1, $record->usenrolled);
 
         $data = (object) ['instance' => $wheel->id, 'name' => 'Renamed', 'intro' => '', 'introformat' => FORMAT_HTML,
-            'usenrolled' => 0, 'names' => 'Z', 'colorscheme' => 'ocean', 'tool_wheel' => 1];
+            'usenrolled' => 0, 'names' => 'Z', 'colorscheme' => 'ocean', 'tool_wheel' => 1, 'tool_timer' => 1,
+            'timerpresets' => '2, 0.5'];
         $this->assertTrue(classroomtoolbox_update_instance($data));
         $record = $DB->get_record('classroomtoolbox', ['id' => $wheel->id], '*', MUST_EXIST);
         $this->assertSame('ocean', $record->colorscheme);
         $this->assertEquals(0, $record->usenrolled);
         $this->assertSame('Renamed', $record->name);
-        $this->assertSame('wheel', $record->tools);
+        $this->assertSame('wheel,timer', $record->tools);
+        $this->assertSame('0.5,2', $record->timerpresets);
         $this->assertSame('wheel', classroomtoolbox_tools_from_data((object) ['tool_wheel' => 1, 'tool_bogus' => 1]));
+        $picked = (object) ['tool_counter' => 1, 'tool_stopwatch' => 1];
+        $this->assertSame('stopwatch,counter', classroomtoolbox_tools_from_data($picked));
         $this->assertSame('wheel', classroomtoolbox_tools_from_data((object) []));
 
         $this->assertTrue(classroomtoolbox_delete_instance($wheel->id));
         $this->assertFalse($DB->record_exists('classroomtoolbox', ['id' => $wheel->id]));
         $this->assertFalse(classroomtoolbox_delete_instance($wheel->id));
+    }
+
+    /**
+     * Timer presets are cleaned: numbers only, 0.1 to 180, at most 8, sorted, no duplicates, never empty.
+     */
+    public function test_timer_presets(): void {
+        $this->assertSame([1.0, 3.0, 5.0, 10.0], classroomtoolbox_timer_presets(null));
+        $this->assertSame([1.0, 3.0, 5.0, 10.0], classroomtoolbox_timer_presets('abc, ,0,-5,500'));
+        $this->assertSame([0.5, 2.0, 15.0], classroomtoolbox_timer_presets(' 15, 0.5 ,2,2'));
+        $this->assertCount(8, classroomtoolbox_timer_presets('1,2,3,4,5,6,7,8,9,10'));
+        $this->assertSame('0.5,2,15', classroomtoolbox_clean_timer_presets('15,0.5,2'));
+        $this->assertSame('1,3,5,10', classroomtoolbox_clean_timer_presets(''));
+        $this->assertSame('2.25', classroomtoolbox_clean_timer_presets('2.254'));
     }
 
     /**

@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tests for the name wheel tool: who is put on the wheel.
+ * Tests for the participants helper: who may be put on the wheel or into groups.
  *
  * @package    mod_classroomtoolbox
  * @category   test
@@ -23,22 +23,22 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_classroomtoolbox\local\tools;
+namespace mod_classroomtoolbox\local;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 
-#[CoversClass(wheel::class)]
+#[CoversClass(participants::class)]
 /**
- * Tests for the name wheel tool.
+ * Tests for the participants helper.
  *
  * @package    mod_classroomtoolbox
  * @category   test
  * @copyright  2026 Bill <wrwjpn@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @covers \mod_classroomtoolbox\local\tools\wheel
+ * @covers \mod_classroomtoolbox\local\participants
  */
-final class wheel_test extends \advanced_testcase {
+final class participants_test extends \advanced_testcase {
     /**
      * Create a course with three students and one teacher and a toolbox.
      *
@@ -65,7 +65,7 @@ final class wheel_test extends \advanced_testcase {
     }
 
     /**
-     * Call the protected name builder.
+     * Call the name builder.
      *
      * @param \cm_info $cm Course module.
      * @param \stdClass $row Activity record.
@@ -73,8 +73,7 @@ final class wheel_test extends \advanced_testcase {
      * @return array [entries, groups]
      */
     private function entries(\cm_info $cm, \stdClass $row, \context_module $context): array {
-        $method = new \ReflectionMethod(wheel::class, 'get_entries');
-        return $method->invoke(new wheel(), $cm, $row, $context);
+        return participants::get($cm, $row, $context);
     }
 
     /**
@@ -152,19 +151,5 @@ final class wheel_test extends \advanced_testcase {
         [$entries, $groups] = $this->entries($cm, $row, $context);
         $this->assertSame(['Group A', 'Group B'], array_column($groups, 'name'));
         $this->assertCount(3, $entries);
-    }
-
-    /**
-     * Rendering returns the wheel markup.
-     */
-    public function test_render(): void {
-        global $PAGE;
-        $this->resetAfterTest();
-        [$course, $cm, $row, $context, $students] = $this->setup_course();
-        $this->setUser($students[0]);
-        $PAGE->set_url('/mod/classroomtoolbox/view.php', ['id' => $cm->id]);
-        $html = (new wheel())->render($cm, $course, $row, $context);
-        $this->assertStringContainsString('data-region="wheel-canvas"', $html);
-        $this->assertSame('wheel', wheel::get_id());
     }
 }

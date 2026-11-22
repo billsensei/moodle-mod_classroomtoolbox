@@ -33,7 +33,13 @@ class toolbox {
      * @return string[] Class names implementing tool_interface.
      */
     protected static function classes(): array {
-        return [tools\wheel::class];
+        return [
+            tools\wheel::class,
+            tools\groups::class,
+            tools\stopwatch::class,
+            tools\timer::class,
+            tools\counter::class,
+        ];
     }
 
     /**

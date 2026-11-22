@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.0 - 2026-12-01
+
+- Added the Group generator, Stopwatch, Timer and Counter tools and a Full screen button.
+- New Timer presets setting (`timerpresets` field, upgrade step).
+- Existing activities keep only the Name wheel on until their settings are changed.
+
 ## 0.5.0 - 2026-11-30
 
 - **Renamed to Classroom Toolbox** (`mod_classroomtoolbox`), a clean new plugin: the Moodle component cannot be renamed in place. The old `mod_namewheel` is left untouched; see `cli/migrate_from_namewheel.php` to move existing wheels across.

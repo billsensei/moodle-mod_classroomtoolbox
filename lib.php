@@ -89,6 +89,36 @@ function classroomtoolbox_clean_color_scheme(?string $id): string {
 }
 
 /**
+ * Timer presets as numbers of minutes: up to 8 values between 0.1 and 180, sorted, without duplicates.
+ *
+ * @param string|null $csv Stored comma-separated value.
+ * @return float[] Never empty: falls back to 1, 3, 5, 10.
+ */
+function classroomtoolbox_timer_presets(?string $csv): array {
+    $values = [];
+    foreach (explode(',', (string) $csv) as $part) {
+        $part = trim($part);
+        if ($part !== '' && is_numeric($part) && $part >= 0.1 && $part <= 180) {
+            $values[] = round((float) $part, 2);
+        }
+    }
+    $values = array_slice(array_values(array_unique($values)), 0, 8);
+    sort($values);
+    return $values ?: [1.0, 3.0, 5.0, 10.0];
+}
+
+/**
+ * The value stored for the timer presets: cleaned numbers, comma-separated.
+ *
+ * @param string|null $csv Submitted or stored value.
+ * @return string
+ */
+function classroomtoolbox_clean_timer_presets(?string $csv): string {
+    $format = fn($v) => rtrim(rtrim(number_format($v, 2, '.', ''), '0'), '.');
+    return implode(',', array_map($format, classroomtoolbox_timer_presets($csv)));
+}
+
+/**
  * Build the stored tools list from the tool_<id> checkboxes of the settings form.
  *
  * @param stdClass $data Form data.
@@ -119,6 +149,7 @@ function classroomtoolbox_add_instance($data, $mform = null) {
     $data->usenrolled = empty($data->usenrolled) ? 0 : 1;
     $data->colorscheme = classroomtoolbox_clean_color_scheme($data->colorscheme ?? null);
     $data->tools = classroomtoolbox_tools_from_data($data);
+    $data->timerpresets = classroomtoolbox_clean_timer_presets($data->timerpresets ?? null);
     $data->names = $data->names ?? '';
     $data->id = $DB->insert_record('classroomtoolbox', $data);
     return $data->id;
@@ -139,6 +170,7 @@ function classroomtoolbox_update_instance($data, $mform = null) {
     $data->usenrolled = empty($data->usenrolled) ? 0 : 1;
     $data->colorscheme = classroomtoolbox_clean_color_scheme($data->colorscheme ?? null);
     $data->tools = classroomtoolbox_tools_from_data($data);
+    $data->timerpresets = classroomtoolbox_clean_timer_presets($data->timerpresets ?? null);
     $data->names = $data->names ?? '';
     return $DB->update_record('classroomtoolbox', $data);
 }

@@ -1,10 +1,14 @@
-# Changes in 0.5.0 (2026-11-30)
+# Changes in 0.6.0 (2026-12-01)
 
-Phase 1 of the Classroom Toolbox.
+Phase 2 of the Classroom Toolbox: four new tools, all running in the browser.
 
-- **Renamed** from Name wheel (`mod_namewheel`) to **Classroom Toolbox** (`mod_classroomtoolbox`). This is a new plugin; the old one is not upgraded in place.
-- **Tab shell and tool registry.** Tools are tabs; teachers choose which are on (Settings > Tools). The tab bar is hidden when only one tool is on. Arrow keys, Home and End move between tabs.
-- **Name wheel** is the first tool, unchanged. Its settings are grouped under "Name wheel settings" and hidden when the wheel is off.
-- New database field `tools`; included in backup and restore.
-- `cli/migrate_from_namewheel.php` copies existing Name wheel activities into Classroom Toolbox (`--dry-run` available).
-- Tests: registry, shell template and wheel tool (names, guests, groups, permissions) in PHPUnit; Behat features updated, plus a "at least one tool" scenario.
+- **Group generator**: split the class into a number of groups or groups of a size; sizes differ by at most one; optional Moodle group filter; copy to clipboard.
+- **Stopwatch**: start, stop, lap, reset; timestamp based.
+- **Timer**: countdown with presets, custom minutes and seconds, sound and flash at the end, up to four timers, screen wake lock while running.
+- **Counter**: up to eight named counters.
+- **Full screen** button on the shell, for the projector.
+- New setting **Timer presets (minutes)** (database field `timerpresets`, upgrade step included).
+- Settings page: the names settings are now shared by the wheel and the group generator; the colour scheme only shows for the wheel.
+- Existing activities keep only the Name wheel switched on; open the activity settings and tick the new tools. New activities have every tool ticked.
+- Code: participant gathering moved to `\mod_classroomtoolbox\local\participants`, shared by the wheel and the group generator.
+- Tests: PHPUnit (registry order, every tool renders, presets cleaning, participants) and Behat features for each tool.

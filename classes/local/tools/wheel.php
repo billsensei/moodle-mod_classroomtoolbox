@@ -16,6 +16,7 @@
 
 namespace mod_classroomtoolbox\local\tools;
 
+use mod_classroomtoolbox\local\participants;
 use mod_classroomtoolbox\local\tool_interface;
 
 defined('MOODLE_INTERNAL') || die();
@@ -39,7 +40,7 @@ class wheel implements tool_interface {
     public function render(\cm_info $cm, \stdClass $course, \stdClass $record, \context_module $context): string {
         global $OUTPUT, $PAGE;
 
-        [$entries, $groups] = $this->get_entries($cm, $record, $context);
+        [$entries, $groups] = participants::get($cm, $record, $context);
 
         $html = $OUTPUT->render_from_template('mod_classroomtoolbox/wheel', [
             'uniqid' => uniqid(),
@@ -63,66 +64,5 @@ class wheel implements tool_interface {
             ],
         ]]);
         return $html;
-    }
-
-    /**
-     * Names and group choices for the wheel.
-     *
-     * Names are personal data: never shown to guests, and only members of groups the viewer is allowed to see are
-     * sent to the browser.
-     *
-     * @param \cm_info $cm Course module.
-     * @param \stdClass $record Activity record.
-     * @param \context_module $context Module context.
-     * @return array [entries, groups]
-     */
-    protected function get_entries(\cm_info $cm, \stdClass $record, \context_module $context): array {
-        global $USER;
-
-        $entries = [];
-        $groups = [];
-        // Also require the right to see the participants list, so sites that hide classmates from students stay private.
-        if (!empty($record->usenrolled) && !isguestuser() && has_capability('moodle/course:viewparticipants', $context)) {
-            $users = get_enrolled_users($context, 'mod/classroomtoolbox:appear', 0, 'u.*', 'u.lastname, u.firstname', 0, 0, true);
-            $membership = [];
-            $restricted = false;
-            if ($cm->groupmode) {
-                $restricted = $cm->groupmode == SEPARATEGROUPS && !has_capability('moodle/site:accessallgroups', $context);
-                // Same groups as groups_get_activity_allowed_groups(), but with members, so that core applies each group's
-                // visibility setting (hidden groups and members the viewer may not see are left out).
-                $userid = $restricted ? $USER->id : 0;
-                $allowedgroups = groups_get_all_groups($cm->course, $userid, $cm->groupingid, 'g.*', true, true);
-                foreach ($allowedgroups as $group) {
-                    $count = 0;
-                    foreach ($group->members as $memberid) {
-                        if (isset($users[$memberid])) {
-                            $membership[$memberid][] = (int) $group->id;
-                            $count++;
-                        }
-                    }
-                    $groups[] = ['id' => (int) $group->id,
-                        'name' => format_string($group->name, true, ['context' => $context]), 'count' => $count];
-                }
-                if ($restricted) {
-                    $users = array_intersect_key($users, $membership);
-                } else if (array_diff_key($users, $membership)) {
-                    // Users in no group can be included or left out as a pseudo-group with id 0.
-                    $groups[] = ['id' => 0, 'name' => get_string('ungrouped', 'mod_classroomtoolbox'),
-                        'count' => count(array_diff_key($users, $membership))];
-                }
-            }
-            foreach ($users as $user) {
-                $entries[] = ['name' => fullname($user), 'groups' => $membership[$user->id] ?? [0]];
-            }
-        }
-        foreach (classroomtoolbox_parse_names($record->names) as $extra) {
-            $entries[] = ['name' => $extra, 'groups' => null]; // Typed names are always on the wheel.
-        }
-        $seen = [];
-        $entries = array_values(array_filter($entries, function ($entry) use (&$seen) {
-            $key = \core_text::strtolower($entry['name']);
-            return isset($seen[$key]) ? false : ($seen[$key] = true);
-        }));
-        return [$entries, $groups];
     }
 }

@@ -1,0 +1,40 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_classroomtoolbox/timer
+
+    The timer tool. The timer cards are built by the mod_classroomtoolbox/timer AMD module.
+
+    Context variables required for this template:
+    * uniqid - unique string used for element ids
+
+    Example context (json):
+    {
+        "uniqid": "abc123"
+    }
+}}
+<div class="mod_classroomtoolbox-timer" data-region="timer">
+    <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+        <button type="button" class="btn btn-secondary" data-action="timer-add">{{#str}} timer_add, mod_classroomtoolbox {{/str}}</button>
+        <div class="form-check form-switch mb-0">
+            <input class="form-check-input" type="checkbox" role="switch" id="timer-sound-{{uniqid}}" data-action="timer-sound" checked>
+            <label class="form-check-label" for="timer-sound-{{uniqid}}">{{#str}} timer_sound, mod_classroomtoolbox {{/str}}</label>
+        </div>
+    </div>
+    <div class="row g-3" data-region="timer-list"></div>
+    <div class="visually-hidden" role="status" aria-live="polite" data-region="timer-live"></div>
+</div>

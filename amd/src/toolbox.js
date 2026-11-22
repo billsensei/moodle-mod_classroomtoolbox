@@ -14,7 +14,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tab behaviour for the Classroom Toolbox: click or use the arrow keys to switch tools.
+ * Behaviour of the Classroom Toolbox shell: tabs (click or arrow keys) and a full-screen toggle.
  *
  * @module     mod_classroomtoolbox/toolbox
  * @copyright  2026 Bill <wrwjpn@gmail.com>
@@ -22,7 +22,7 @@
  */
 
 /**
- * Initialise the tabs.
+ * Initialise the shell.
  */
 export const init = () => {
     const root = document.querySelector('[data-region="toolbox"]');
@@ -48,6 +48,26 @@ export const init = () => {
         // Tools that size themselves (such as the canvas wheel) redraw on resize.
         window.dispatchEvent(new Event('resize'));
     };
+
+    // Full screen, for projecting a tool onto a classroom screen.
+    const fullscreen = root.querySelector('[data-action="fullscreen"]');
+    if (fullscreen && document.fullscreenEnabled) {
+        const enterLabel = fullscreen.textContent.trim();
+        const exitLabel = fullscreen.dataset.exitLabel;
+        fullscreen.hidden = false;
+        fullscreen.addEventListener('click', () => {
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                root.requestFullscreen();
+            }
+        });
+        document.addEventListener('fullscreenchange', () => {
+            const on = document.fullscreenElement === root;
+            fullscreen.textContent = on ? exitLabel : enterLabel;
+            window.dispatchEvent(new Event('resize'));
+        });
+    }
 
     tabs.forEach((tab, index) => {
         tab.addEventListener('click', () => select(tab, false));

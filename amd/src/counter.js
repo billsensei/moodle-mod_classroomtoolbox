@@ -1,0 +1,141 @@
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Counters with plus and minus buttons.
+ *
+ * @module     mod_classroomtoolbox/counter
+ * @copyright  2026 Bill <wrwjpn@gmail.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+const MAX_COUNTERS = 8;
+const LIMIT = 999999;
+
+/**
+ * Initialise the counters.
+ *
+ * @param {Object} config Language strings from PHP.
+ */
+export const init = (config) => {
+    const root = document.querySelector('[data-region="counter"]');
+    if (!root) {
+        return;
+    }
+    const strings = config.strings;
+    const list = root.querySelector('[data-region="counter-list"]');
+    const addButton = root.querySelector('[data-action="counter-add"]');
+    const fill = (text, value) => text.replace('{$a}', () => value);
+    let created = 0;
+
+    const refresh = () => {
+        const cards = list.querySelectorAll('[data-region="counter-card"]');
+        cards.forEach((card) => {
+            card.querySelector('[data-action="counter-remove"]').hidden = cards.length < 2;
+        });
+        addButton.disabled = cards.length >= MAX_COUNTERS;
+    };
+
+    const addCounter = () => {
+        created++;
+        const uid = 'counter-' + created + '-' + Math.random().toString(36).slice(2, 8);
+        let value = 0;
+
+        const col = document.createElement('div');
+        col.className = 'col-md-6 col-xl-4';
+        col.dataset.region = 'counter-card';
+        const card = document.createElement('div');
+        card.className = 'card text-center h-100';
+        const body = document.createElement('div');
+        body.className = 'card-body';
+
+        const nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.className = 'form-control form-control-lg text-center fw-bold mb-2';
+        nameInput.id = uid + '-name';
+        nameInput.value = fill(strings.counter_title, created);
+        nameInput.maxLength = 40;
+        nameInput.setAttribute('aria-label', strings.counter_name);
+
+        const output = document.createElement('output');
+        output.className = 'mod_classroomtoolbox-display d-block';
+        output.setAttribute('aria-live', 'polite');
+        output.textContent = '0';
+
+        const buttons = document.createElement('div');
+        buttons.className = 'd-flex justify-content-center gap-2 my-3';
+        const down = document.createElement('button');
+        down.type = 'button';
+        down.className = 'btn btn-secondary btn-lg mod_classroomtoolbox-counter-button';
+        down.textContent = '\u2212';
+        const up = document.createElement('button');
+        up.type = 'button';
+        up.className = 'btn btn-primary btn-lg mod_classroomtoolbox-counter-button';
+        up.textContent = '+';
+        buttons.append(down, up);
+
+        const extra = document.createElement('div');
+        extra.className = 'd-flex justify-content-center gap-2';
+        const reset = document.createElement('button');
+        reset.type = 'button';
+        reset.className = 'btn btn-outline-secondary btn-sm';
+        reset.dataset.action = 'counter-reset';
+        reset.textContent = fill(strings.counter_reset, '').trim();
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'btn btn-outline-danger btn-sm';
+        remove.dataset.action = 'counter-remove';
+        remove.textContent = fill(strings.counter_remove, '').trim();
+        extra.append(reset, remove);
+
+        const labels = () => {
+            const name = nameInput.value.trim() || fill(strings.counter_title, created);
+            down.setAttribute('aria-label', fill(strings.counter_down, name));
+            up.setAttribute('aria-label', fill(strings.counter_up, name));
+            reset.setAttribute('aria-label', fill(strings.counter_reset, name));
+            remove.setAttribute('aria-label', fill(strings.counter_remove, name));
+        };
+        const show = () => {
+            output.textContent = String(value);
+        };
+        const change = (delta) => {
+            value = Math.max(-LIMIT, Math.min(LIMIT, value + delta));
+            show();
+        };
+
+        nameInput.addEventListener('input', labels);
+        up.addEventListener('click', () => change(1));
+        down.addEventListener('click', () => change(-1));
+        reset.addEventListener('click', () => {
+            value = 0;
+            show();
+        });
+        remove.addEventListener('click', () => {
+            col.remove();
+            refresh();
+            addButton.focus();
+        });
+
+        body.append(nameInput, output, buttons, extra);
+        card.append(body);
+        col.append(card);
+        list.append(col);
+        labels();
+        refresh();
+    };
+
+    addButton.addEventListener('click', addCounter);
+    addCounter();
+};

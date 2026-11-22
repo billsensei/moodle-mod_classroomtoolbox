@@ -86,3 +86,83 @@
         animation: none;
     }
 }
+
+/* Shell: full screen. */
+.mod_classroomtoolbox:fullscreen {
+    padding: 1.5rem;
+    overflow: auto;
+    background: var(--bs-body-bg, #fff);
+}
+
+/* Big numbers shared by the stopwatch, timer and counter. */
+.mod_classroomtoolbox-display {
+    font-size: clamp(3rem, 9vw, 7rem);
+    font-weight: 700;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+}
+
+.mod_classroomtoolbox-timer-card .mod_classroomtoolbox-display {
+    font-size: clamp(2.5rem, 7vw, 5rem);
+}
+
+.mod_classroomtoolbox-laps {
+    max-width: 32rem;
+}
+
+.mod_classroomtoolbox-counter-button {
+    min-width: 5rem;
+    font-size: 2rem;
+    line-height: 1.2;
+}
+
+/* A finished timer flashes. */
+.mod_classroomtoolbox-timer-done {
+    animation: mod_classroomtoolbox-flash 0.8s ease-in-out 6;
+    border-color: var(--bs-danger, #dc3545);
+}
+
+.mod_classroomtoolbox-timer-done .mod_classroomtoolbox-display {
+    color: var(--bs-danger, #dc3545);
+}
+
+.mod_classroomtoolbox-timer-done-static {
+    animation: none;
+    border-width: 3px;
+}
+
+@keyframes mod_classroomtoolbox-flash {
+    50% {
+        background-color: rgba(220, 53, 69, 0.2);
+    }
+}
+
+/* Generated groups pop in one after another. */
+.mod_classroomtoolbox-groupgen-result {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+    gap: 1rem;
+}
+
+.mod_classroomtoolbox-groupgen-card {
+    animation: mod_classroomtoolbox-reveal 0.4s ease-out backwards;
+}
+
+@keyframes mod_classroomtoolbox-reveal {
+    from {
+        opacity: 0;
+        transform: translateY(0.75rem) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mod_classroomtoolbox-groupgen-card,
+    .mod_classroomtoolbox-timer-done {
+        animation: none;
+    }
+}

@@ -56,8 +56,6 @@ echo $OUTPUT->render_from_template('mod_classroomtoolbox/toolbox', [
     'tabs' => $tabs,
     'hastabs' => count($tabs) > 1,
 ]);
-if (count($tabs) > 1) {
-    $PAGE->requires->js_call_amd('mod_classroomtoolbox/toolbox', 'init');
-}
+$PAGE->requires->js_call_amd('mod_classroomtoolbox/toolbox', 'init');
 
 echo $OUTPUT->footer();

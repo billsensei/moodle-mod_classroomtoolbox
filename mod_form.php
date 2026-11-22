@@ -56,11 +56,17 @@ class mod_classroomtoolbox_mod_form extends moodleform_mod {
         }
         $mform->addElement('static', 'toolshelp', '', get_string('tools_help', 'mod_classroomtoolbox'));
 
-        $mform->addElement('header', 'wheelhdr', get_string('wheelsettings', 'mod_classroomtoolbox'));
+        // Names are used by the name wheel and the group generator.
+        $mform->addElement('header', 'nameshdr', get_string('namesettings', 'mod_classroomtoolbox'));
         $mform->addElement('advcheckbox', 'usenrolled', get_string('usenrolled', 'mod_classroomtoolbox'));
         $mform->addHelpButton('usenrolled', 'usenrolled', 'mod_classroomtoolbox');
         $mform->setDefault('usenrolled', 1);
 
+        $mform->addElement('textarea', 'names', get_string('names', 'mod_classroomtoolbox'), ['rows' => 8, 'cols' => 40]);
+        $mform->setType('names', PARAM_TEXT);
+        $mform->addHelpButton('names', 'names', 'mod_classroomtoolbox');
+
+        $mform->addElement('header', 'wheelhdr', get_string('wheelsettings', 'mod_classroomtoolbox'));
         $options = [];
         foreach (array_keys(classroomtoolbox_color_schemes()) as $id) {
             $options[$id] = get_string('scheme_' . $id, 'mod_classroomtoolbox');
@@ -68,15 +74,14 @@ class mod_classroomtoolbox_mod_form extends moodleform_mod {
         $mform->addElement('select', 'colorscheme', get_string('colorscheme', 'mod_classroomtoolbox'), $options);
         $mform->addHelpButton('colorscheme', 'colorscheme', 'mod_classroomtoolbox');
         $mform->setDefault('colorscheme', 'classic');
+        $mform->hideIf('colorscheme', 'tool_wheel', 'notchecked');
 
-        $mform->addElement('textarea', 'names', get_string('names', 'mod_classroomtoolbox'), ['rows' => 10, 'cols' => 40]);
-        $mform->setType('names', PARAM_TEXT);
-        $mform->addHelpButton('names', 'names', 'mod_classroomtoolbox');
-
-        // The wheel's own settings only matter while the wheel is switched on.
-        foreach (['usenrolled', 'colorscheme', 'names'] as $field) {
-            $mform->hideIf($field, 'tool_wheel', 'notchecked');
-        }
+        $mform->addElement('header', 'timerhdr', get_string('timersettings', 'mod_classroomtoolbox'));
+        $mform->addElement('text', 'timerpresets', get_string('timerpresets', 'mod_classroomtoolbox'), ['size' => 30]);
+        $mform->setType('timerpresets', PARAM_RAW_TRIMMED);
+        $mform->setDefault('timerpresets', '1,3,5,10');
+        $mform->addHelpButton('timerpresets', 'timerpresets', 'mod_classroomtoolbox');
+        $mform->hideIf('timerpresets', 'tool_timer', 'notchecked');
 
         $this->standard_coursemodule_elements();
         $this->add_action_buttons();
@@ -112,6 +117,16 @@ class mod_classroomtoolbox_mod_form extends moodleform_mod {
         }
         if (!$anytool) {
             $errors['toolshelp'] = get_string('toolrequired', 'mod_classroomtoolbox');
+        }
+        if (!empty($data['tool_timer'])) {
+            $parts = array_filter(array_map('trim', explode(',', (string) ($data['timerpresets'] ?? ''))), 'strlen');
+            $valid = $parts && count($parts) <= 8;
+            foreach ($parts as $part) {
+                $valid = $valid && is_numeric($part) && $part >= 0.1 && $part <= 180;
+            }
+            if (!$valid) {
+                $errors['timerpresets'] = get_string('timerpresets_invalid', 'mod_classroomtoolbox');
+            }
         }
         $names = $data['names'] ?? '';
         if (core_text::strlen($names) > 50000 || count(classroomtoolbox_parse_names($names)) > 1000) {

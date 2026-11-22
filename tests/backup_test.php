@@ -56,6 +56,8 @@ final class backup_test extends \advanced_testcase {
             'names' => "Guest A\nGuest B",
             'colorscheme' => 'highcontrast',
             'usenrolled' => 0,
+            'tools' => 'wheel,timer',
+            'timerpresets' => '0.5,2',
         ]);
         $cm = get_coursemodule_from_instance('classroomtoolbox', $wheel->id, $course->id);
 
@@ -69,5 +71,7 @@ final class backup_test extends \advanced_testcase {
         $this->assertSame('highcontrast', $copy->colorscheme);
         $this->assertSame("Guest A\nGuest B", $copy->names);
         $this->assertEquals(0, $copy->usenrolled);
+        $this->assertSame('wheel,timer', $copy->tools);
+        $this->assertSame('0.5,2', $copy->timerpresets);
     }
 }

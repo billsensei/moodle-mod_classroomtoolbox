@@ -36,8 +36,9 @@
     }
 }}
 <div class="mod_classroomtoolbox" data-region="toolbox">
+    <div class="d-flex align-items-end mb-3">
     {{#hastabs}}
-    <ul class="nav nav-tabs mb-3" role="tablist" aria-label="{{#str}} toolslabel, mod_classroomtoolbox {{/str}}">
+    <ul class="nav nav-tabs flex-grow-1" role="tablist" aria-label="{{#str}} toolslabel, mod_classroomtoolbox {{/str}}">
         {{#tabs}}
         <li class="nav-item" role="presentation">
             <button type="button" class="nav-link{{#active}} active{{/active}}" role="tab"
@@ -49,6 +50,9 @@
         {{/tabs}}
     </ul>
     {{/hastabs}}
+    {{^hastabs}}<div class="flex-grow-1"></div>{{/hastabs}}
+    <button type="button" class="btn btn-outline-secondary btn-sm ms-2" data-action="fullscreen" data-exit-label="{{#str}} exitfullscreen, mod_classroomtoolbox {{/str}}" hidden>{{#str}} fullscreen, mod_classroomtoolbox {{/str}}</button>
+    </div>
     {{#tabs}}
     <div id="toolbox-panel-{{id}}-{{uniqid}}" data-region="tool-panel" data-tool="{{id}}"
         {{#hastabs}}role="tabpanel" aria-labelledby="toolbox-tab-{{id}}-{{uniqid}}"{{/hastabs}}{{^active}} hidden{{/active}}>

@@ -98,4 +98,6 @@ foreach ($cms as $cm) {
 foreach (array_keys($courses) as $courseid) {
     rebuild_course_cache($courseid, true);
 }
-cli_writeln($dry ? 'Dry run finished: nothing was changed.' : 'Done. Check the activities, then uninstall the old Name wheel plugin.');
+cli_writeln($dry
+    ? 'Dry run finished: nothing was changed.'
+    : 'Done. Check the activities, then uninstall the old Name wheel plugin.');

@@ -44,7 +44,7 @@ final class toolbox_test extends \advanced_testcase {
      */
     public function test_all_tools_are_well_formed(): void {
         $ids = toolbox::all_ids();
-        $this->assertContains('wheel', $ids);
+        $this->assertSame(['wheel', 'groups', 'stopwatch', 'timer', 'counter'], $ids);
         $this->assertSame($ids, array_values(array_unique($ids)));
         foreach (toolbox::enabled((object) ['tools' => implode(',', $ids)]) as $id => $tool) {
             $this->assertInstanceOf(tool_interface::class, $tool);
@@ -61,6 +61,7 @@ final class toolbox_test extends \advanced_testcase {
         $this->assertSame(['wheel'], toolbox::parse(''));
         $this->assertSame(['wheel'], toolbox::parse('bogus'));
         $this->assertSame(['wheel'], toolbox::parse(' bogus , wheel '));
+        $this->assertSame(['groups', 'counter'], toolbox::parse('counter,groups'));
         $this->assertSame('wheel', toolbox::serialise(['bogus', 'wheel']));
         $this->assertSame('wheel', toolbox::serialise([]));
     }
@@ -104,5 +105,6 @@ final class toolbox_test extends \advanced_testcase {
         $this->assertStringNotContainsString('role="tabpanel"', $single);
         $this->assertStringNotContainsString(' hidden', $single);
         $this->assertStringContainsString('WHEELBODY', $single);
+        $this->assertStringContainsString('data-action="fullscreen"', $single);
     }
 }
