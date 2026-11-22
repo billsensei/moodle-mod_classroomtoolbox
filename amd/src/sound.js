@@ -123,12 +123,38 @@ export const chime = () => guarded(() => {
 });
 
 /**
- * An alarm clock for a finished timer: bursts of four quick beeps ("beep-beep-beep-beep"), six times, about 3 seconds.
+ * One blast of a horn: a harsh tone whose pitch rises, holds and falls ("ah-OOO-gah"), like an old diving klaxon.
+ *
+ * Two slightly detuned saw waves are layered, which gives the horn its rough, beating buzz.
+ *
+ * @param {number} delay Seconds from now.
+ * @param {number} length Seconds the blast lasts.
+ */
+const blast = (delay, length) => {
+    const start = context.currentTime + delay;
+    const gain = context.createGain();
+    gain.gain.setValueAtTime(0.0001, start);
+    gain.gain.exponentialRampToValueAtTime(0.3, start + 0.08);
+    gain.gain.setValueAtTime(0.3, start + length - 0.15);
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + length);
+    gain.connect(context.destination);
+    [0, 6].forEach((detune) => {
+        const osc = context.createOscillator();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(300 + detune, start);
+        osc.frequency.linearRampToValueAtTime(520 + detune, start + length * 0.4);
+        osc.frequency.setValueAtTime(520 + detune, start + length * 0.6);
+        osc.frequency.linearRampToValueAtTime(300 + detune, start + length);
+        osc.connect(gain);
+        osc.start(start);
+        osc.stop(start + length + 0.02);
+    });
+};
+
+/**
+ * A submarine dive klaxon for a finished timer: two long "aoo-gah" blasts, about 3 seconds in all.
  */
 export const alarm = () => guarded(() => {
-    for (let burst = 0; burst < 6; burst++) {
-        for (let beep = 0; beep < 4; beep++) {
-            note(1800, burst * 0.5 + beep * 0.11, 0.07, 0.25, 'square');
-        }
-    }
+    blast(0, 1.4);
+    blast(1.5, 1.4);
 });

@@ -170,7 +170,8 @@ class behat_mod_classroomtoolbox extends behat_base {
             ' Spy.prototype.resume = function () {};' .
             ' Spy.prototype.createGain = function () { return { connect: function () {}, gain: {' .
             ' setValueAtTime: function () {}, exponentialRampToValueAtTime: function () {} } }; };' .
-            ' Spy.prototype.createOscillator = function () { window.__sounds++; return { frequency: {}, connect: function () {},' .
+            ' Spy.prototype.createOscillator = function () { window.__sounds++; return { frequency: { setValueAtTime: function () {},' .
+            ' linearRampToValueAtTime: function () {} }, connect: function () {},' .
             ' start: function () {}, stop: function () {} }; };' .
             ' window.AudioContext = Spy; window.webkitAudioContext = Spy; })()'
         );
