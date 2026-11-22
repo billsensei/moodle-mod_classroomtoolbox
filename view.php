@@ -36,9 +36,9 @@ require_capability('mod/namewheel:view', $context);
 namewheel_view($namewheel, $course, $cm, $context);
 
 $PAGE->set_url('/mod/namewheel/view.php', ['id' => $cm->id]);
-$PAGE->set_title(format_string($namewheel->name));
-$PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
+$PAGE->set_title(format_string($namewheel->name, true, ['context' => $context]));
+$PAGE->set_heading(format_string($course->fullname, true, ['context' => context_course::instance($course->id)]));
 
 // Names: course participants plus the typed list. Names are personal data: never shown to guests, and
 // only members of groups the viewer is allowed to see are sent to the browser.

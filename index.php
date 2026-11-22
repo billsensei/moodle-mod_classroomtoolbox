@@ -28,14 +28,20 @@ $id = required_param('id', PARAM_INT);
 $course = $DB->get_record('course', ['id' => $id], '*', MUST_EXIST);
 require_course_login($course);
 
+$coursecontext = context_course::instance($course->id);
 $PAGE->set_url('/mod/namewheel/index.php', ['id' => $id]);
+$PAGE->set_context($coursecontext);
 $PAGE->set_title(get_string('modulenameplural', 'mod_namewheel'));
-$PAGE->set_heading(format_string($course->fullname));
+$PAGE->set_heading(format_string($course->fullname, true, ['context' => $coursecontext]));
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('modulenameplural', 'mod_namewheel'));
 
-$instances = get_all_instances_in_course('namewheel', $course);
+// Only list wheels the user may open (same capability as view.php).
+$instances = array_filter(
+    get_all_instances_in_course('namewheel', $course),
+    fn($instance) => has_capability('mod/namewheel:view', context_module::instance($instance->coursemodule))
+);
 if (!$instances) {
     notice(
         get_string('thereareno', 'moodle', get_string('modulenameplural', 'mod_namewheel')),
@@ -48,7 +54,7 @@ $table->head = [get_string('name')];
 foreach ($instances as $instance) {
     $link = html_writer::link(
         new moodle_url('/mod/namewheel/view.php', ['id' => $instance->coursemodule]),
-        format_string($instance->name)
+        format_string($instance->name, true, ['context' => context_module::instance($instance->coursemodule)])
     );
     $table->data[] = [$link];
 }

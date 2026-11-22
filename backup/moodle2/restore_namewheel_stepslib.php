@@ -23,6 +23,10 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->dirroot . '/mod/namewheel/lib.php');
+
 /**
  * Defines the restore structure.
  *
@@ -51,6 +55,7 @@ class restore_namewheel_activity_structure_step extends restore_activity_structu
 
         $data = (object) $data;
         $data->course = $this->get_courseid();
+        $data->colorscheme = namewheel_clean_color_scheme($data->colorscheme ?? null);
         $data->timemodified = $this->apply_date_offset($data->timemodified);
         $newitemid = $DB->insert_record('namewheel', $data);
         $this->apply_activity_instance($newitemid);

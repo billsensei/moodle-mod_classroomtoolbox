@@ -69,4 +69,20 @@ class mod_namewheel_mod_form extends moodleform_mod {
         $this->standard_coursemodule_elements();
         $this->add_action_buttons();
     }
+
+    /**
+     * Keep the typed names list to a size the wheel can handle.
+     *
+     * @param array $data Submitted data.
+     * @param array $files Submitted files.
+     * @return array Errors keyed by field name.
+     */
+    public function validation($data, $files) {
+        $errors = parent::validation($data, $files);
+        $names = $data['names'] ?? '';
+        if (core_text::strlen($names) > 50000 || count(namewheel_parse_names($names)) > 1000) {
+            $errors['names'] = get_string('toomanynames', 'mod_namewheel');
+        }
+        return $errors;
+    }
 }

@@ -1,3 +1,13 @@
+# Changes in 0.4.2 (2026-11-27)
+
+- Hardening from the security review (no functional change for normal use):
+  - Titles, headings and activity names are formatted with an explicit context.
+  - The course index only lists wheels the user has `mod/namewheel:view` for.
+  - The extra-names box is limited to 1000 names / 50,000 characters.
+  - Restore sanitises the colour scheme from the backup file.
+
+---
+
 # Changes in 0.4.1 (2026-11-26)
 
 - Security hardening: participant names are only put on the wheel for viewers who hold `moodle/course:viewparticipants`.

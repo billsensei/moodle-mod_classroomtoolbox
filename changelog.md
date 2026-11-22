@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.2 - 2026-11-27
+
+- Security hardening: explicit format_string contexts, capability-filtered course index, names-list size limit, sanitised colour scheme on restore.
+
 ## 0.4.1 - 2026-11-26
 
 - Security: require `moodle/course:viewparticipants` to list participant names.

@@ -59,6 +59,7 @@ $string['shuffle'] = 'Shuffle';
 $string['sort'] = 'Sort A-Z';
 $string['spin'] = 'Spin';
 $string['spinning'] = 'Spinning…';
+$string['toomanynames'] = 'Please use at most 1000 names and 50,000 characters.';
 $string['ungrouped'] = 'Not in any group';
 $string['usenrolled'] = 'Use course participants';
 $string['usenrolled_help'] = 'Put every participant who can appear on the wheel (students by default) onto the wheel. In group mode only the selected group is used.';
