@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.1 - 2026-11-23
+
+- Timer alarm sounds like an alarm clock and lasts about 3 seconds.
+
 ## 0.8.0 - 2026-12-20
 
 - Group generator cards are coloured per group (from the colour scheme).

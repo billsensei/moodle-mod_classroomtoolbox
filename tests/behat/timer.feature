@@ -57,4 +57,4 @@ Feature: Countdown timers
     And I press "Start timer"
     And I wait "3" seconds
     Then ".mod_classroomtoolbox-timer-done" "css_element" should exist
-    And at least "3" sounds should have been played
+    And at least "24" sounds should have been played

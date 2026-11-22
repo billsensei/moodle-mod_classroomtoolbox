@@ -123,10 +123,12 @@ export const chime = () => guarded(() => {
 });
 
 /**
- * Three beeps for a finished timer.
+ * An alarm clock for a finished timer: bursts of four quick beeps ("beep-beep-beep-beep"), six times, about 3 seconds.
  */
 export const alarm = () => guarded(() => {
-    for (let i = 0; i < 3; i++) {
-        note(880, i * 0.4, 0.3, 0.4, 'sine');
+    for (let burst = 0; burst < 6; burst++) {
+        for (let beep = 0; beep < 4; beep++) {
+            note(1800, burst * 0.5 + beep * 0.11, 0.07, 0.25, 'square');
+        }
     }
 });
