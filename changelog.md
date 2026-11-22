@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1 - 2026-11-23
+
+- Security: respect group visibility when listing groups and members.
+
 ## 0.2.0 - 2026-11-23
 
 - Added multi-group selection to combine groups on one wheel; replaced the single-group dropdown.

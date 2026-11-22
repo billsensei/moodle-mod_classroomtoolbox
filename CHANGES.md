@@ -1,3 +1,9 @@
+# Changes in 0.2.1 (2026-11-23)
+
+- Security: group lists and memberships now honour each group's visibility setting (members only / own membership only / hidden), using core's `groups_get_all_groups()` with members.
+
+---
+
 # Changes in 0.2.0 (2026-11-23)
 
 - Multi-group selection: in Separate or Visible groups mode, tick any combination of groups (plus "Not in any group" and Select all / Select none) to combine them on one wheel. Filtering happens in the browser, so names already removed stay removed when the selection changes.

@@ -50,12 +50,14 @@ if (!empty($namewheel->usenrolled) && !isguestuser()) {
     $restricted = false;
     if ($cm->groupmode) {
         $restricted = $cm->groupmode == SEPARATEGROUPS && !has_capability('moodle/site:accessallgroups', $context);
-        foreach (groups_get_activity_allowed_groups($cm) as $group) {
-            $members = groups_get_members($group->id, 'u.id');
+        // Same groups as groups_get_activity_allowed_groups(), but with members, so that core applies each group's
+        // visibility setting (hidden groups and members the viewer may not see are left out).
+        $allowedgroups = groups_get_all_groups($cm->course, $restricted ? $USER->id : 0, $cm->groupingid, 'g.*', true, true);
+        foreach ($allowedgroups as $group) {
             $count = 0;
-            foreach ($members as $member) {
-                if (isset($users[$member->id])) {
-                    $membership[$member->id][] = (int) $group->id;
+            foreach ($group->members as $memberid) {
+                if (isset($users[$memberid])) {
+                    $membership[$memberid][] = (int) $group->id;
                     $count++;
                 }
             }
