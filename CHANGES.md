@@ -1,6 +1,7 @@
-# Changes since 0.3.0 (docs only)
+# Changes in 0.4.0 (2026-11-25)
 
-- Added `docs/screenshot.png` and showed it in the README. No code changes, so the plugin version is unchanged.
+- New **High contrast** colour scheme: dark colours with white text, at least 7:1 contrast (WCAG AAA). No database change.
+- Docs: README screenshot.
 
 ---
 

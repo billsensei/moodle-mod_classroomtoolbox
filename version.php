@@ -25,8 +25,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_namewheel';
-$plugin->version = 2026112400;
+$plugin->version = 2026112500;
 $plugin->requires = 2025041400; // Moodle 5.0.
 $plugin->supported = [500, 503];
 $plugin->maturity = MATURITY_BETA;
-$plugin->release = '0.3.0';
+$plugin->release = '0.4.0';

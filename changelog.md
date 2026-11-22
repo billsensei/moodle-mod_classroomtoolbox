@@ -1,8 +1,9 @@
 # Changelog
 
-## Unreleased
+## 0.4.0 - 2026-11-25
 
-- Docs: added a screenshot to the README (no code changes).
+- Added a High contrast colour scheme (WCAG AAA text contrast).
+- Docs: added a screenshot to the README.
 
 ## 0.3.0 - 2026-11-24
 

@@ -58,6 +58,11 @@ function namewheel_color_schemes(): array {
             'colors' => ['#3369e8', '#d50f25', '#eeb211', '#009925', '#8e44ad', '#e67e22', '#16a0a0', '#c2185b'],
             'text' => '#ffffff',
         ],
+        'highcontrast' => [
+            // Every colour gives white text at least 7:1 contrast (WCAG AAA).
+            'colors' => ['#000000', '#0033a0', '#8b0000', '#006400', '#4b0082', '#5a3500', '#00424d', '#7a0050'],
+            'text' => '#ffffff',
+        ],
         'ocean' => [
             'colors' => ['#0b3c5d', '#1d70a2', '#328cc1', '#4fb3bf', '#1b9aaa', '#16697a', '#489fb5', '#145da0'],
             'text' => '#ffffff',
