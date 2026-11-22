@@ -1,3 +1,9 @@
+# Changes in 0.4.4 (2026-11-29)
+
+- Added PHPUnit tests (library, colour schemes, privacy provider, view event, backup/restore via duplication) and a data generator. No change to plugin behaviour.
+
+---
+
 # Changes in 0.4.3 (2026-11-28)
 
 - The spin animation is wrapped in `core/pending`, so Behat and other automation wait for the wheel to stop before continuing. No visible change.

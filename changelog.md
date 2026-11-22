@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.4 - 2026-11-29
+
+- Tests: PHPUnit suite and generator (11 tests).
+
 ## 0.4.3 - 2026-11-28
 
 - Wrap the spin in core/pending so automated tests wait for it.
