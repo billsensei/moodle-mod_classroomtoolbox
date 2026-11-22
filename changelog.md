@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.4 - 2026-11-23
+
+- Timer klaxon is louder.
+
 ## 0.8.3 - 2026-11-23
 
 - Timer klaxon sounds three times (shorter blasts, still about 3 seconds in all).

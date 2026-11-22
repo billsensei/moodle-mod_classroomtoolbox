@@ -94,5 +94,10 @@ function xmldb_classroomtoolbox_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2026122005, 'classroomtoolbox');
     }
 
+    if ($oldversion < 2026122006) {
+        // No schema change: the timer alarm volume is JavaScript only.
+        upgrade_mod_savepoint(true, 2026122006, 'classroomtoolbox');
+    }
+
     return true;
 }
