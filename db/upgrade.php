@@ -109,5 +109,10 @@ function xmldb_classroomtoolbox_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2026122008, 'classroomtoolbox');
     }
 
+    if ($oldversion < 2026122009) {
+        // No schema change: the timer alarm tone is JavaScript only.
+        upgrade_mod_savepoint(true, 2026122009, 'classroomtoolbox');
+    }
+
     return true;
 }

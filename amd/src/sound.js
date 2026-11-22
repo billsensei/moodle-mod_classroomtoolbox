@@ -125,23 +125,22 @@ export const chime = () => guarded(() => {
 /**
  * One blast of a horn: a harsh tone whose pitch rises, holds and falls ("ah-OOO-gah"), like an old diving klaxon.
  *
- * Two slightly detuned saw waves are layered, which gives the horn its rough, beating buzz.
+ * Two slightly detuned square waves are layered, which gives the horn its rough, beating buzz.
  *
  * @param {number} delay Seconds from now.
  * @param {number} length Seconds the blast lasts.
- * @param {AudioNode} output Where the sound goes.
  */
-const blast = (delay, length, output) => {
+const blast = (delay, length) => {
     const start = context.currentTime + delay;
     const gain = context.createGain();
     gain.gain.setValueAtTime(0.0001, start);
-    gain.gain.exponentialRampToValueAtTime(1, start + 0.08);
-    gain.gain.setValueAtTime(1, start + length - 0.15);
+    gain.gain.exponentialRampToValueAtTime(0.4, start + 0.08);
+    gain.gain.setValueAtTime(0.4, start + length - 0.15);
     gain.gain.exponentialRampToValueAtTime(0.0001, start + length);
-    gain.connect(output);
+    gain.connect(context.destination);
     [0, 6].forEach((detune) => {
         const osc = context.createOscillator();
-        osc.type = 'sawtooth';
+        osc.type = 'square';
         osc.frequency.setValueAtTime(300 + detune, start);
         osc.frequency.linearRampToValueAtTime(520 + detune, start + length * 0.4);
         osc.frequency.setValueAtTime(520 + detune, start + length * 0.6);
@@ -156,18 +155,7 @@ const blast = (delay, length, output) => {
  * A submarine dive klaxon for a finished timer: three "aoo-gah" blasts, about 4 seconds in all.
  */
 export const alarm = () => guarded(() => {
-    // The compressor evens out the horn's peaks, and the make-up gain after it then raises the overall level.
-    const makeup = context.createGain();
-    makeup.gain.value = 2.1;
-    makeup.connect(context.destination);
-    const limiter = context.createDynamicsCompressor();
-    limiter.threshold.value = -30;
-    limiter.knee.value = 6;
-    limiter.ratio.value = 12;
-    limiter.attack.value = 0.003;
-    limiter.release.value = 0.15;
-    limiter.connect(makeup);
     for (let i = 0; i < 3; i++) {
-        blast(i * 1.3, 1.2, limiter);
+        blast(i * 1.3, 1.2);
     }
 });
