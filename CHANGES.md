@@ -1,6 +1,6 @@
 # Changes in 0.4.4 (2026-11-29)
 
-- Added PHPUnit tests (library, colour schemes, privacy provider, view event, backup/restore via duplication) and a data generator. No change to plugin behaviour.
+- Added PHPUnit tests (library, colour schemes, privacy provider, view event, backup/restore via duplication), Behat features (spin, keep/remove, reset, group combining, separate groups, settings form) and a data generator. No change to plugin behaviour.
 
 ---
 

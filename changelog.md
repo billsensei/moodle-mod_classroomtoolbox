@@ -2,7 +2,7 @@
 
 ## 0.4.4 - 2026-11-29
 
-- Tests: PHPUnit suite and generator (11 tests).
+- Tests: PHPUnit suite and generator (11 tests) and Behat features (8 scenarios).
 
 ## 0.4.3 - 2026-11-28
 
