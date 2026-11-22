@@ -70,6 +70,21 @@ abstract class scores_base extends external_api {
     }
 
     /**
+     * Log that the scoreboard was changed.
+     *
+     * @param \stdClass $record Toolbox record.
+     * @param \context_module $context Activity context.
+     * @param string $action What happened.
+     */
+    protected static function log_change(\stdClass $record, \context_module $context, string $action): void {
+        scoreboard_changed::create([
+            'objectid' => $record->id,
+            'context' => $context,
+            'other' => ['action' => $action],
+        ])->trigger();
+    }
+
+    /**
      * Log a change and return the fresh list.
      *
      * @param \stdClass $record Toolbox record.
@@ -78,11 +93,7 @@ abstract class scores_base extends external_api {
      * @return array The entries.
      */
     protected static function finish(\stdClass $record, \context_module $context, string $action): array {
-        scoreboard_changed::create([
-            'objectid' => $record->id,
-            'context' => $context,
-            'other' => ['action' => $action],
-        ])->trigger();
+        self::log_change($record, $context, $action);
         return scores::get_all($record->id);
     }
 }

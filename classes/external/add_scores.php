@@ -54,8 +54,11 @@ class add_scores extends scores_base {
     public static function execute(int $toolboxid, array $labels): array {
         $params = self::validate_parameters(self::execute_parameters(), ['toolboxid' => $toolboxid, 'labels' => $labels]);
         [$record, $context] = self::check_access($params['toolboxid'], 'mod/classroomtoolbox:managescores');
-        scores::add($record->id, array_slice($params['labels'], 0, scores::MAX_ENTRIES));
-        return self::finish($record, $context, 'add');
+        $added = scores::add($record->id, array_slice($params['labels'], 0, scores::MAX_ENTRIES));
+        if ($added > 0) {
+            self::log_change($record, $context, 'add'); // An add that added nothing is not worth a log entry.
+        }
+        return scores::get_all($record->id);
     }
 
     /**

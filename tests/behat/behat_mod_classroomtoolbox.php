@@ -156,4 +156,73 @@ class behat_mod_classroomtoolbox extends behat_base {
             );
         }
     }
+
+    /**
+     * Replace the browser's audio with a counter, since a test browser cannot hear anything. Every note the page
+     * tries to play is counted, whether or not sound is switched on in the page (the page decides that).
+     *
+     * @Given /^I install an audio spy$/
+     */
+    public function i_install_an_audio_spy(): void {
+        $this->evaluate_script(
+            '(function () { window.__sounds = 0; var Spy = function () { this.currentTime = 0; this.state = \'running\';' .
+            ' this.destination = {}; };' .
+            ' Spy.prototype.resume = function () {};' .
+            ' Spy.prototype.createGain = function () { return { connect: function () {}, gain: {' .
+            ' setValueAtTime: function () {}, exponentialRampToValueAtTime: function () {} } }; };' .
+            ' Spy.prototype.createOscillator = function () { window.__sounds++; return { frequency: {}, connect: function () {},' .
+            ' start: function () {}, stop: function () {} }; };' .
+            ' window.AudioContext = Spy; window.webkitAudioContext = Spy; })()'
+        );
+    }
+
+    /**
+     * Check how many notes the page played.
+     *
+     * @Then /^at least "(?P<count>\d+)" sounds should have been played$/
+     * @param string $count Minimum number of notes.
+     */
+    public function at_least_sounds_should_have_been_played(string $count): void {
+        $this->wait_for_pending_js();
+        $heard = (int) $this->evaluate_script('window.__sounds || 0');
+        if ($heard < (int) $count) {
+            throw new ExpectationException(
+                'Only ' . $heard . ' sounds were played, expected at least ' . $count,
+                $this->getSession()
+            );
+        }
+    }
+
+    /**
+     * Check that the page played nothing.
+     *
+     * @Then /^no sounds should have been played$/
+     */
+    public function no_sounds_should_have_been_played(): void {
+        $this->wait_for_pending_js();
+        $heard = (int) $this->evaluate_script('window.__sounds || 0');
+        if ($heard !== 0) {
+            throw new ExpectationException($heard . ' sounds were played, expected none', $this->getSession());
+        }
+    }
+
+    /**
+     * Check that the generated groups are coloured, each differently.
+     *
+     * @Then /^the generated groups should have different background colours$/
+     */
+    public function the_generated_groups_should_have_different_colours(): void {
+        $this->wait_for_pending_js();
+        $colours = json_decode($this->evaluate_script(
+            'JSON.stringify([...document.querySelectorAll(\'.mod_classroomtoolbox-groupgen-card\')].map(function (card) {' .
+            ' return getComputedStyle(card).backgroundColor; }))'
+        ));
+        $plain = ['rgba(0, 0, 0, 0)', 'transparent', 'rgb(255, 255, 255)'];
+        if (count($colours) < 2 || count(array_unique($colours)) !== count($colours) || array_intersect($colours, $plain)) {
+            throw new ExpectationException(
+                'The groups are not each coloured differently: ' . implode(' | ', (array) $colours),
+                $this->getSession()
+            );
+        }
+    }
 }

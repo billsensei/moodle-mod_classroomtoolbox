@@ -176,34 +176,47 @@ class scores {
     }
 
     /**
-     * Rename an entry and set its points.
+     * Rename an entry and/or set its points. Anything left null is kept, so renaming never overwrites points that
+     * another teacher has just given.
      *
      * @param int $toolboxid Toolbox instance id.
      * @param int $id Entry id.
-     * @param string $label New label (an empty or duplicate label keeps the old one).
-     * @param int $score New points, kept within plus or minus LIMIT.
+     * @param string|null $label New label (null, empty or a duplicate keeps the old one).
+     * @param int|null $score New points, kept within plus or minus LIMIT (null keeps the old points).
      */
-    public static function update(int $toolboxid, int $id, string $label, int $score): void {
+    public static function update(int $toolboxid, int $id, ?string $label, ?int $score): void {
         global $DB;
 
         $entry = self::get_entry($toolboxid, $id);
-        $label = self::clean_label($label);
-        if ($label !== '' && \core_text::strtolower($label) !== \core_text::strtolower($entry->label)) {
-            $taken = false;
-            foreach ($DB->get_records('classroomtoolbox_scores', ['toolboxid' => $toolboxid], '', 'id, label') as $other) {
-                if ($other->id != $entry->id && \core_text::strtolower($other->label) === \core_text::strtolower($label)) {
-                    $taken = true;
-                }
-            }
-            if (!$taken) {
-                $entry->label = $label;
-            }
-        } else if ($label !== '') {
-            $entry->label = $label; // Same name, different capitalisation.
+        $label = $label === null ? '' : self::clean_label($label);
+        // A new name is taken unless another entry already has it; the same name in other capitals is allowed.
+        if ($label !== '' && !self::label_is_taken($toolboxid, $entry->id, $label)) {
+            $entry->label = $label;
         }
-        $entry->score = max(-self::LIMIT, min(self::LIMIT, $score));
+        if ($score !== null) {
+            $entry->score = max(-self::LIMIT, min(self::LIMIT, $score));
+        }
         $entry->timemodified = time();
         $DB->update_record('classroomtoolbox_scores', $entry);
+    }
+
+    /**
+     * Whether another entry of this toolbox already has the label (ignoring case).
+     *
+     * @param int $toolboxid Toolbox instance id.
+     * @param int $entryid The entry being renamed.
+     * @param string $label The wanted label.
+     * @return bool
+     */
+    private static function label_is_taken(int $toolboxid, int $entryid, string $label): bool {
+        global $DB;
+
+        foreach ($DB->get_records('classroomtoolbox_scores', ['toolboxid' => $toolboxid], '', 'id, label') as $other) {
+            if ($other->id != $entryid && \core_text::strtolower($other->label) === \core_text::strtolower($label)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

@@ -40,55 +40,91 @@ class participants {
      * @return array [entries, groups]
      */
     public static function get(\cm_info $cm, \stdClass $record, \context_module $context): array {
+        [$entries, $groups] = self::enrolled($cm, $record, $context);
+        foreach (classroomtoolbox_parse_names($record->names) as $extra) {
+            $entries[] = ['name' => $extra, 'groups' => null]; // Typed names are always offered.
+        }
+        return [self::without_duplicates($entries), $groups];
+    }
+
+    /**
+     * The enrolled participants the viewer may see, with the groups they belong to.
+     *
+     * @param \cm_info $cm Course module.
+     * @param \stdClass $record Activity record.
+     * @param \context_module $context Module context.
+     * @return array [entries, groups]
+     */
+    private static function enrolled(\cm_info $cm, \stdClass $record, \context_module $context): array {
+        // Also require the right to see the participants list, so sites that hide classmates from students stay private.
+        if (empty($record->usenrolled) || isguestuser() || !has_capability('moodle/course:viewparticipants', $context)) {
+            return [[], []];
+        }
+        // Only the columns the display name needs: never load e-mail addresses or password hashes.
+        $namefields = \core_user\fields::for_name()->get_required_fields();
+        $select = 'u.id, ' . implode(', ', array_map(fn($field) => 'u.' . $field, $namefields));
+        $users = get_enrolled_users($context, 'mod/classroomtoolbox:appear', 0, $select, 'u.lastname, u.firstname', 0, 0, true);
+        $membership = [];
+        $groups = [];
+        if ($cm->groupmode) {
+            [$users, $membership, $groups] = self::with_groups($cm, $context, $users);
+        }
+        $entries = [];
+        foreach ($users as $user) {
+            $entries[] = ['name' => fullname($user), 'groups' => $membership[$user->id] ?? [0]];
+        }
+        return [$entries, $groups];
+    }
+
+    /**
+     * Work out the groups of the users, and in separate groups mode keep only the viewer's own groups.
+     *
+     * @param \cm_info $cm Course module.
+     * @param \context_module $context Module context.
+     * @param \stdClass[] $users The enrolled users.
+     * @return array [users, membership (user id => group ids), groups (id, name, count)]
+     */
+    private static function with_groups(\cm_info $cm, \context_module $context, array $users): array {
         global $USER;
 
-        $entries = [];
+        $restricted = $cm->groupmode == SEPARATEGROUPS && !has_capability('moodle/site:accessallgroups', $context);
+        // Same groups as groups_get_activity_allowed_groups(), but with members, so that core applies each group's
+        // visibility setting (hidden groups and members the viewer may not see are left out).
+        $userid = $restricted ? $USER->id : 0;
+        $membership = [];
         $groups = [];
-        // Also require the right to see the participants list, so sites that hide classmates from students stay private.
-        if (!empty($record->usenrolled) && !isguestuser() && has_capability('moodle/course:viewparticipants', $context)) {
-            // Only the columns the display name needs: never load e-mail addresses or password hashes.
-            $namefields = \core_user\fields::for_name()->get_required_fields();
-            $select = 'u.id, ' . implode(', ', array_map(fn($field) => 'u.' . $field, $namefields));
-            $users = get_enrolled_users($context, 'mod/classroomtoolbox:appear', 0, $select, 'u.lastname, u.firstname', 0, 0, true);
-            $membership = [];
-            $restricted = false;
-            if ($cm->groupmode) {
-                $restricted = $cm->groupmode == SEPARATEGROUPS && !has_capability('moodle/site:accessallgroups', $context);
-                // Same groups as groups_get_activity_allowed_groups(), but with members, so that core applies each group's
-                // visibility setting (hidden groups and members the viewer may not see are left out).
-                $userid = $restricted ? $USER->id : 0;
-                $allowedgroups = groups_get_all_groups($cm->course, $userid, $cm->groupingid, 'g.*', true, true);
-                foreach ($allowedgroups as $group) {
-                    $count = 0;
-                    foreach ($group->members as $memberid) {
-                        if (isset($users[$memberid])) {
-                            $membership[$memberid][] = (int) $group->id;
-                            $count++;
-                        }
-                    }
-                    $groups[] = ['id' => (int) $group->id,
-                        'name' => format_string($group->name, true, ['context' => $context]), 'count' => $count];
-                }
-                if ($restricted) {
-                    $users = array_intersect_key($users, $membership);
-                } else if (array_diff_key($users, $membership)) {
-                    // Users in no group can be included or left out as a pseudo-group with id 0.
-                    $groups[] = ['id' => 0, 'name' => get_string('ungrouped', 'mod_classroomtoolbox'),
-                        'count' => count(array_diff_key($users, $membership))];
+        foreach (groups_get_all_groups($cm->course, $userid, $cm->groupingid, 'g.*', true, true) as $group) {
+            $count = 0;
+            foreach ($group->members as $memberid) {
+                if (isset($users[$memberid])) {
+                    $membership[$memberid][] = (int) $group->id;
+                    $count++;
                 }
             }
-            foreach ($users as $user) {
-                $entries[] = ['name' => fullname($user), 'groups' => $membership[$user->id] ?? [0]];
-            }
+            $groups[] = ['id' => (int) $group->id,
+                'name' => format_string($group->name, true, ['context' => $context]), 'count' => $count];
         }
-        foreach (classroomtoolbox_parse_names($record->names) as $extra) {
-            $entries[] = ['name' => $extra, 'groups' => null]; // Typed names are always on the wheel.
+        $ungrouped = array_diff_key($users, $membership);
+        if ($restricted) {
+            $users = array_intersect_key($users, $membership);
+        } else if ($ungrouped) {
+            // Users in no group can be included or left out as a pseudo-group with id 0.
+            $groups[] = ['id' => 0, 'name' => get_string('ungrouped', 'mod_classroomtoolbox'), 'count' => count($ungrouped)];
         }
+        return [$users, $membership, $groups];
+    }
+
+    /**
+     * Drop repeated names (ignoring case), keeping the first.
+     *
+     * @param array[] $entries Entries with a 'name'.
+     * @return array[]
+     */
+    private static function without_duplicates(array $entries): array {
         $seen = [];
-        $entries = array_values(array_filter($entries, function ($entry) use (&$seen) {
+        return array_values(array_filter($entries, function ($entry) use (&$seen) {
             $key = \core_text::strtolower($entry['name']);
             return isset($seen[$key]) ? false : ($seen[$key] = true);
         }));
-        return [$entries, $groups];
     }
 }

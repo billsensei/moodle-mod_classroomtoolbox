@@ -48,3 +48,13 @@ Feature: Countdown timers
     And I should see "Remove timer"
     When I click on "(//button[@data-action='timer-remove'])[2]" "xpath_element"
     Then I should not see "Timer 2"
+
+  Scenario: A finished timer sounds an alarm
+    Given I am on the "Timers" "classroomtoolbox activity" page logged in as teacher1
+    And I install an audio spy
+    When I set the field "Minutes" to "0"
+    And I set the field "Seconds" to "2"
+    And I press "Start timer"
+    And I wait "3" seconds
+    Then ".mod_classroomtoolbox-timer-done" "css_element" should exist
+    And at least "3" sounds should have been played

@@ -41,10 +41,10 @@ $PAGE->set_title(format_string($classroomtoolbox->name, true, ['context' => $con
 $PAGE->set_heading(format_string($course->fullname, true, ['context' => context_course::instance($course->id)]));
 
 $tabs = [];
-foreach (\mod_classroomtoolbox\local\toolbox::enabled($classroomtoolbox) as $id => $tool) {
+foreach (\mod_classroomtoolbox\local\toolbox::enabled($classroomtoolbox) as $toolid => $tool) {
     $tabs[] = [
-        'id' => $id,
-        'label' => get_string('tool_' . $id, 'mod_classroomtoolbox'),
+        'id' => $toolid,
+        'label' => get_string('tool_' . $toolid, 'mod_classroomtoolbox'),
         'html' => $tool->render($cm, $course, $classroomtoolbox, $context),
         'active' => !$tabs,
     ];

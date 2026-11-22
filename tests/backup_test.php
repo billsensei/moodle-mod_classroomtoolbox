@@ -40,6 +40,8 @@ require_once($CFG->dirroot . '/course/lib.php');
  * @category   test
  * @copyright  2026 Bill <wrwjpn@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @coversNothing
  */
 final class backup_test extends \advanced_testcase {
     /**
@@ -49,8 +51,8 @@ final class backup_test extends \advanced_testcase {
         global $DB;
         $this->resetAfterTest();
         $this->setAdminUser();
-        $course = $this->getDataGenerator()->create_course();
-        $wheel = $this->getDataGenerator()->create_module('classroomtoolbox', [
+        $course = self::getDataGenerator()->create_course();
+        $wheel = self::getDataGenerator()->create_module('classroomtoolbox', [
             'course' => $course->id,
             'name' => 'Original',
             'names' => "Guest A\nGuest B",
@@ -89,8 +91,8 @@ final class backup_test extends \advanced_testcase {
         global $DB;
         $this->resetAfterTest();
         $this->setAdminUser();
-        $course = $this->getDataGenerator()->create_course();
-        $wheel = $this->getDataGenerator()->create_module('classroomtoolbox', ['course' => $course->id]);
+        $course = self::getDataGenerator()->create_course();
+        $wheel = self::getDataGenerator()->create_module('classroomtoolbox', ['course' => $course->id]);
         // Written straight to the table, as a hand-edited backup would be.
         $names = implode("\n", range(1, CLASSROOMTOOLBOX_MAX_NAMES + 300));
         $DB->set_field('classroomtoolbox', 'names', $names, ['id' => $wheel->id]);

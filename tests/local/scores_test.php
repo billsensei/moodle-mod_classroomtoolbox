@@ -45,8 +45,8 @@ final class scores_test extends \advanced_testcase {
      * @return int Toolbox id.
      */
     private function toolbox(): int {
-        $course = $this->getDataGenerator()->create_course();
-        return $this->getDataGenerator()->create_module('classroomtoolbox', [
+        $course = self::getDataGenerator()->create_course();
+        return self::getDataGenerator()->create_module('classroomtoolbox', [
             'course' => $course->id, 'tools' => 'scoreboard',
         ])->id;
     }
@@ -186,5 +186,27 @@ final class scores_test extends \advanced_testcase {
         $this->assertNotFalse($lock, 'The lock must be free after add()');
         $lock->release();
         $this->assertSame(1, scores::add($id, ['Blue']));
+    }
+
+    /**
+     * Renaming does not touch the points and setting points does not touch the name, so one teacher's rename cannot
+     * undo another teacher's points.
+     */
+    public function test_update_keeps_what_is_not_given(): void {
+        $this->resetAfterTest();
+        $id = $this->toolbox();
+        scores::add($id, ['Red']);
+        $red = scores::get_all($id)[0]['id'];
+        scores::change($id, $red, 5);
+
+        scores::update($id, $red, 'Crimson', null);
+        $entry = scores::get_entry($id, $red);
+        $this->assertSame('Crimson', $entry->label);
+        $this->assertEquals(5, $entry->score);
+
+        scores::update($id, $red, null, 9);
+        $entry = scores::get_entry($id, $red);
+        $this->assertSame('Crimson', $entry->label);
+        $this->assertEquals(9, $entry->score);
     }
 }

@@ -76,6 +76,7 @@ class restore_classroomtoolbox_activity_structure_step extends restore_activity_
         global $DB;
 
         $data = (object) $data;
+        unset($data->id);
         $data->toolboxid = $this->get_new_parentid('classroomtoolbox');
         $data->label = \mod_classroomtoolbox\local\scores::clean_label((string) $data->label);
         $limit = \mod_classroomtoolbox\local\scores::LIMIT;

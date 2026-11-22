@@ -59,6 +59,8 @@ export const init = (config) => {
     let entries = config.entries;
     let busy = false;
     let failedPolls = 0;
+    let delay = POLL_MS;
+    let timer = null;
 
     const step = () => Math.max(1, Math.min(100, parseInt(stepInput ? stepInput.value : '1', 10) || 1));
 
@@ -126,16 +128,18 @@ export const init = (config) => {
         points.dataset.id = String(entry.id);
         points.dataset.field = 'points';
 
-        const save = () => {
+        // Send only the field that changed, so renaming never overwrites points another teacher just gave.
+        label.addEventListener('change', () => {
+            call('mod_classroomtoolbox_update_score', {id: entry.id, label: label.value});
+        });
+        points.addEventListener('change', () => {
             const value = parseInt(points.value, 10);
-            call('mod_classroomtoolbox_update_score', {
-                id: entry.id,
-                label: label.value,
-                score: Number.isNaN(value) ? entry.score : value,
-            });
-        };
-        label.addEventListener('change', save);
-        points.addEventListener('change', save);
+            if (Number.isNaN(value)) {
+                points.value = String(entry.score);
+                return;
+            }
+            call('mod_classroomtoolbox_update_score', {id: entry.id, score: value});
+        });
 
         const down = button('btn btn-secondary', '\u2212', fill(strings.score_down, entry.label), 'score-down', entry.id);
         const up = button('btn btn-primary', '+', fill(strings.score_up, entry.label), 'score-up', entry.id);
@@ -159,9 +163,11 @@ export const init = (config) => {
         list.textContent = '';
         const placed = ranks(entries);
         entries.forEach((entry, i) => list.append(buildRow(entry, placed[i])));
-        emptyEl.textContent = entries.length === 0
-            ? (canManage ? strings.score_empty : strings.score_emptyviewer)
-            : '';
+        let emptyText = '';
+        if (entries.length === 0) {
+            emptyText = canManage ? strings.score_empty : strings.score_emptyviewer;
+        }
+        emptyEl.textContent = emptyText;
 
         if (!reduceMotion) {
             [...list.children].forEach((li) => {
@@ -255,8 +261,6 @@ export const init = (config) => {
     // Keep the board fresh for everyone, including a second teacher. It backs off while nothing changes, and is
     // skipped while the page or tab is hidden, a teacher is typing, or the viewer has paused updates.
     const pauseBox = root.querySelector('[data-action="score-pause"]');
-    let delay = POLL_MS;
-    let timer = null;
     let poll;
     const schedule = () => {
         window.clearTimeout(timer);

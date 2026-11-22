@@ -47,6 +47,8 @@ $capabilities = [
     ],
     // Change the scoreboard: add and remove entries, change points, reset.
     'mod/classroomtoolbox:managescores' => [
+        // Teachers write the names and points that every viewer then sees.
+        'riskbitmask' => RISK_SPAM,
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => [

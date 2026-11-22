@@ -38,8 +38,13 @@ class update_score extends scores_base {
         return new external_function_parameters([
             'toolboxid' => new external_value(PARAM_INT, 'Classroom Toolbox instance id'),
             'id' => new external_value(PARAM_INT, 'Entry id'),
-            'label' => new external_value(PARAM_RAW, 'New name (plain text; tags are removed)'),
-            'score' => new external_value(PARAM_INT, 'New points'),
+            'label' => new external_value(
+                PARAM_RAW,
+                'New name (plain text; tags are removed); leave out to keep it',
+                VALUE_DEFAULT,
+                null
+            ),
+            'score' => new external_value(PARAM_INT, 'New points; leave out to keep them', VALUE_DEFAULT, null),
         ]);
     }
 
@@ -48,11 +53,11 @@ class update_score extends scores_base {
      *
      * @param int $toolboxid Classroom Toolbox instance id.
      * @param int $id Entry id.
-     * @param string $label New name.
-     * @param int $score New points.
+     * @param string|null $label New name, or null to keep it.
+     * @param int|null $score New points, or null to keep them.
      * @return array The entries, highest points first.
      */
-    public static function execute(int $toolboxid, int $id, string $label, int $score): array {
+    public static function execute(int $toolboxid, int $id, ?string $label = null, ?int $score = null): array {
         $params = self::validate_parameters(
             self::execute_parameters(),
             ['toolboxid' => $toolboxid, 'id' => $id, 'label' => $label, 'score' => $score]

@@ -72,5 +72,12 @@ function xmldb_classroomtoolbox_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2026120800, 'classroomtoolbox');
     }
 
+    if ($oldversion < 2026122002) {
+        // No schema change: this version only refreshes the capability risk flags, the web service definitions
+        // (readonlysession, update_score parameters) and the privacy provider, which Moodle applies when the version
+        // number changes.
+        upgrade_mod_savepoint(true, 2026122002, 'classroomtoolbox');
+    }
+
     return true;
 }

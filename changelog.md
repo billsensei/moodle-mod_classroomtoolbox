@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.0 - 2026-12-20
+
+- Group generator cards are coloured per group (from the colour scheme).
+- Full privacy provider (declares the stored free text), RISK_SPAM on managescores, readonlysession on get_scores, upgrade.txt.
+- Name wheel ticks while spinning and chimes when a name is picked; shared, remembered Sound switch (the timer alarm uses it too).
+
 ## 0.7.1 - 2026-12-15
 
 - Accessibility: readable text on every wheel wedge (4.5:1), focus trap and Escape in the winner dialog, h2 tool headings, no sideways scroll at 320 px, clearer names for assistive technology, pause switch for the live scoreboard.

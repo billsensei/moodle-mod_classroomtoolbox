@@ -74,7 +74,6 @@ class mod_classroomtoolbox_mod_form extends moodleform_mod {
         $mform->addElement('select', 'colorscheme', get_string('colorscheme', 'mod_classroomtoolbox'), $options);
         $mform->addHelpButton('colorscheme', 'colorscheme', 'mod_classroomtoolbox');
         $mform->setDefault('colorscheme', 'classic');
-        $mform->hideIf('colorscheme', 'tool_wheel', 'notchecked');
 
         $mform->addElement('header', 'timerhdr', get_string('timersettings', 'mod_classroomtoolbox'));
         $mform->addElement('text', 'timerpresets', get_string('timerpresets', 'mod_classroomtoolbox'), ['size' => 30]);

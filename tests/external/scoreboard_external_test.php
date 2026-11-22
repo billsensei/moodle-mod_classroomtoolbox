@@ -71,7 +71,7 @@ final class scoreboard_external_test extends \advanced_testcase {
     protected function setUp(): void {
         parent::setUp();
         $this->resetAfterTest();
-        $gen = $this->getDataGenerator();
+        $gen = self::getDataGenerator();
         $this->course = $gen->create_course();
         $this->teacher = $gen->create_and_enrol($this->course, 'editingteacher');
         $this->student = $gen->create_and_enrol($this->course, 'student');
@@ -166,7 +166,7 @@ final class scoreboard_external_test extends \advanced_testcase {
      */
     public function test_outsider_and_guest_cannot_read(): void {
         $id = $this->toolbox->id;
-        $this->setUser($this->getDataGenerator()->create_user());
+        $this->setUser(self::getDataGenerator()->create_user());
         try {
             get_scores::execute($id);
             $this->fail('A user outside the course must not read the board');
@@ -183,7 +183,7 @@ final class scoreboard_external_test extends \advanced_testcase {
      */
     public function test_other_toolbox_entry_is_not_reachable(): void {
         $this->setUser($this->teacher);
-        $other = $this->getDataGenerator()->create_module('classroomtoolbox', [
+        $other = self::getDataGenerator()->create_module('classroomtoolbox', [
             'course' => $this->course->id, 'tools' => 'scoreboard',
         ]);
         $otherlist = $this->call(add_scores::class, [$other->id, ['Theirs']]);
@@ -203,7 +203,7 @@ final class scoreboard_external_test extends \advanced_testcase {
      * The services refuse to work when the scoreboard is not switched on for the toolbox.
      */
     public function test_scoreboard_must_be_on(): void {
-        $off = $this->getDataGenerator()->create_module('classroomtoolbox', [
+        $off = self::getDataGenerator()->create_module('classroomtoolbox', [
             'course' => $this->course->id, 'tools' => 'wheel',
         ]);
         $this->setUser($this->teacher);
@@ -246,5 +246,68 @@ final class scoreboard_external_test extends \advanced_testcase {
             $this->assertSame(CAP_ALLOW, get_default_capabilities($archetype)['mod/classroomtoolbox:managescores'], $archetype);
         }
         $this->assertArrayNotHasKey('mod/classroomtoolbox:managescores', get_default_capabilities('student'));
+    }
+
+    /**
+     * Renaming through the service leaves the points alone, even if they changed since the browser last looked.
+     */
+    public function test_rename_does_not_overwrite_points(): void {
+        $this->setUser($this->teacher);
+        $id = $this->toolbox->id;
+        $list = $this->call(add_scores::class, [$id, ['Red']]);
+        $entry = $list[0]['id'];
+        $this->call(change_score::class, [$id, $entry, 3]);
+
+        $list = $this->call(update_score::class, [$id, $entry, 'Crimson']);
+        $this->assertSame('Crimson', $list[0]['label']);
+        $this->assertSame(3, $list[0]['score']);
+
+        $list = $this->call(update_score::class, [$id, $entry, null, 8]);
+        $this->assertSame('Crimson', $list[0]['label']);
+        $this->assertSame(8, $list[0]['score']);
+    }
+
+    /**
+     * An add that adds nothing (only duplicates or blanks) leaves no event in the log.
+     */
+    public function test_add_that_changes_nothing_is_not_logged(): void {
+        $this->setUser($this->teacher);
+        $id = $this->toolbox->id;
+        $this->call(add_scores::class, [$id, ['Red']]);
+
+        $sink = $this->redirectEvents();
+        $this->call(add_scores::class, [$id, ['red', ' ']]);
+        $this->assertCount(0, $sink->get_events());
+        $this->call(add_scores::class, [$id, ['Blue']]);
+        $this->assertCount(1, $sink->get_events());
+        $sink->close();
+    }
+
+    /**
+     * The board is capped at 100 entries and labels at 100 characters, through the service as well.
+     */
+    public function test_limits_through_the_service(): void {
+        $this->setUser($this->teacher);
+        $id = $this->toolbox->id;
+        $labels = array_map(fn($i) => "Team $i", range(1, scores::MAX_ENTRIES + 25));
+        $list = $this->call(add_scores::class, [$id, $labels]);
+        $this->assertCount(scores::MAX_ENTRIES, $list);
+
+        $other = self::getDataGenerator()->create_module('classroomtoolbox', [
+            'course' => $this->course->id, 'tools' => 'scoreboard',
+        ]);
+        $list = $this->call(add_scores::class, [$other->id, [str_repeat('x', 300)]]);
+        $this->assertSame(scores::MAX_LABEL, \core_text::strlen($list[0]['label']));
+    }
+
+    /**
+     * A student cannot read the board of an activity that is hidden from them.
+     */
+    public function test_hidden_activity_is_not_readable_by_a_student(): void {
+        $cm = get_coursemodule_from_instance('classroomtoolbox', $this->toolbox->id);
+        set_coursemodule_visible($cm->id, 0);
+        $this->setUser($this->student);
+        $this->expectException(\moodle_exception::class);
+        get_scores::execute($this->toolbox->id);
     }
 }

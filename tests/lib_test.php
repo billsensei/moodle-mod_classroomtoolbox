@@ -162,9 +162,9 @@ final class lib_test extends \advanced_testcase {
     public function test_instance_crud(): void {
         global $DB;
         $this->resetAfterTest();
-        $course = $this->getDataGenerator()->create_course();
+        $course = self::getDataGenerator()->create_course();
 
-        $wheel = $this->getDataGenerator()->create_module('classroomtoolbox', [
+        $wheel = self::getDataGenerator()->create_module('classroomtoolbox', [
             'course' => $course->id,
             'names' => "A\nB",
             'colorscheme' => 'bogus',

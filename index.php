@@ -28,6 +28,12 @@ $id = required_param('id', PARAM_INT);
 $course = $DB->get_record('course', ['id' => $id], '*', MUST_EXIST);
 require_course_login($course);
 
+$event = \mod_classroomtoolbox\event\course_module_instance_list_viewed::create([
+    'context' => context_course::instance($course->id),
+]);
+$event->add_record_snapshot('course', $course);
+$event->trigger();
+
 $coursecontext = context_course::instance($course->id);
 $PAGE->set_url('/mod/classroomtoolbox/index.php', ['id' => $id]);
 $PAGE->set_context($coursecontext);

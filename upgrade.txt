@@ -1,0 +1,22 @@
+This files describes API changes in /mod/classroomtoolbox/*,
+information provided here is intended especially for developers.
+
+=== 0.8.0 ===
+* New AMD modules mod_classroomtoolbox/sound (Web Audio sounds and the shared sound preference) and
+  mod_classroomtoolbox/colour (readable text colour for a background colour).
+* The Colour scheme setting now also colours the group generator's cards. The 'text' key was removed from
+  classroomtoolbox_color_schemes(): the scripts pick white or dark text per colour.
+* The privacy provider is now a full provider (metadata plus request provider) instead of a null provider. It still
+  links nothing to a user account. Deleting all data in an activity context now clears that activity's scoreboard.
+* Capability mod/classroomtoolbox:managescores now carries RISK_SPAM.
+* The external function mod_classroomtoolbox_get_scores is marked readonlysession.
+
+=== 0.7.0 ===
+* New table classroomtoolbox_scores, capability mod/classroomtoolbox:managescores, event
+  \mod_classroomtoolbox\event\scoreboard_changed and six AJAX-only external functions
+  (mod_classroomtoolbox_get_scores, add_scores, change_score, update_score, delete_score, reset_scores).
+
+=== 0.5.0 ===
+* Renamed from mod_namewheel to mod_classroomtoolbox. Tools are classes implementing
+  \mod_classroomtoolbox\local\tool_interface, listed in \mod_classroomtoolbox\local\toolbox.
+* cli/migrate_from_namewheel.php moves existing Name wheel activities across.

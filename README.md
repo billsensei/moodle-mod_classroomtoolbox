@@ -22,9 +22,10 @@ Each tool is a tab. Teachers choose which tools are on in the activity settings 
 ### Name wheel
 
 - **Click the wheel** (or the centre button, or press Enter/Space on it) to spin. A random name is chosen with the browser's crypto random source.
+- **Sound**: soft ticks as the wheel passes each name and a chime when one is picked. The **Sound** switch turns it off; the choice is remembered in the browser and also mutes the timer alarm.
 - A pop-up announces the winner and offers **Remove from wheel** or **Keep on wheel**.
 - The wheel is filled from the course participants (students by default). In group mode, tick any combination of groups to combine them on one wheel. Extra names can be typed in the settings.
-- Pick one of five colour schemes (Classic, Ocean, Sunset, Pastel, High contrast).
+- Pick one of five colour schemes (Classic, Ocean, Sunset, Pastel, High contrast); it also colours the group generator's cards.
 - The names box beside the wheel can be edited live; **Shuffle**, **Sort A-Z** and **Reset wheel** are available.
 - Removing a name only changes the current page; reloading restores the full list.
 
@@ -33,7 +34,7 @@ Each tool is a tab. Teachers choose which tools are on in the activity settings 
 ![The group generator after making three groups](docs/groups.png)
 
 - Starts from the same people as the wheel (course participants you are allowed to see, plus typed names); edit the list freely.
-- Choose **Number of groups** or **People per group**, then **Generate groups**. Groups differ in size by at most one person, and the shuffle uses the browser's crypto random source.
+- Choose **Number of groups** or **People per group**, then **Generate groups**. Groups differ in size by at most one person, and the shuffle uses the browser's crypto random source. Each group gets its own colour from the activity's colour scheme.
 - In group mode, tick which Moodle groups to include.
 - **Copy groups** puts the result on the clipboard as plain text.
 
@@ -70,7 +71,7 @@ Every tool is keyboard operable and announces results to screen readers. The whe
 
 ### Privacy
 
-Spins, groups, laps, timers and counts live only in the open page. The scoreboard stores the labels and points a teacher types in; they are plain text, never tied to a user account, and are removed when the entry or the activity is deleted. The plugin keeps no data about users, so it is a null privacy provider. Teachers should not type more personal data than they need into names.
+Spins, groups, laps, timers and counts live only in the open page. The scoreboard stores the labels and points a teacher types in; they are plain text, never tied to a user account, and are removed when the entry or the activity is deleted. The plugin keeps no data linked to a user account, and its privacy provider declares the free text it stores so that it shows in Moodle's privacy registry. Note that "Add participants" copies enrolled users' names onto the scoreboard as plain text: after that they are not tied to the account, so deleting a user does not remove them. Remove the entry (or delete the activity) to erase them, and do not copy in more personal data than you need.
 
 ## Install
 

@@ -21,6 +21,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+import * as sound from 'mod_classroomtoolbox/sound';
+
 const MAX_TIMERS = 4;
 
 /**
@@ -53,47 +55,18 @@ export const init = (config) => {
     const list = root.querySelector('[data-region="timer-list"]');
     const addButton = root.querySelector('[data-action="timer-add"]');
     const soundSwitch = root.querySelector('[data-action="timer-sound"]');
+    // The sound preference is shared with the other tools and remembered in this browser.
+    soundSwitch.checked = sound.isEnabled();
+    soundSwitch.addEventListener('change', () => {
+        sound.setEnabled(soundSwitch.checked);
+        sound.prepare();
+    });
     const liveEl = root.querySelector('[data-region="timer-live"]');
     const fill = (text, value) => text.replace('{$a}', () => value);
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let created = 0;
     let running = 0;
-    let audio = null;
     let wakeLock = null;
-
-    // Browsers only allow sound after a click, so the audio context is made when a timer is started.
-    const prepareAudio = () => {
-        try {
-            if (!audio) {
-                const Context = window.AudioContext || window.webkitAudioContext;
-                audio = Context ? new Context() : null;
-            }
-            if (audio && audio.state === 'suspended') {
-                audio.resume();
-            }
-        } catch (e) {
-            audio = null;
-        }
-    };
-
-    const beep = () => {
-        if (!soundSwitch.checked || !audio) {
-            return;
-        }
-        for (let i = 0; i < 3; i++) {
-            const osc = audio.createOscillator();
-            const gain = audio.createGain();
-            const start = audio.currentTime + i * 0.4;
-            osc.frequency.value = 880;
-            gain.gain.setValueAtTime(0.0001, start);
-            gain.gain.exponentialRampToValueAtTime(0.4, start + 0.02);
-            gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.3);
-            osc.connect(gain);
-            gain.connect(audio.destination);
-            osc.start(start);
-            osc.stop(start + 0.32);
-        }
-    };
 
     // Ask the browser to keep the screen on while a timer runs (projector use). Best effort only.
     const updateWakeLock = async() => {
@@ -179,12 +152,11 @@ export const init = (config) => {
             lab.textContent = label;
             const input = document.createElement('input');
             input.type = 'number';
-            input.className = 'form-control text-center';
+            input.className = 'form-control text-center mod_classroomtoolbox-narrow-input';
             input.id = uid + '-' + suffix;
             input.setAttribute('aria-label', spoken);
             input.min = '0';
             input.max = String(max);
-            input.style.width = '6rem';
             wrap.append(lab, input);
             custom.append(wrap);
             return input;
@@ -240,7 +212,7 @@ export const init = (config) => {
             window.setTimeout(() => {
                 liveEl.textContent = fill(strings.timer_doneannounce, title);
             }, 50);
-            beep();
+            sound.alarm();
         };
         const tick = () => {
             remaining = Math.max(0, endAt - Date.now());
@@ -282,7 +254,7 @@ export const init = (config) => {
                 paint();
                 return;
             }
-            prepareAudio();
+            sound.prepare();
             if (remaining <= 0) {
                 remaining = total;
             }

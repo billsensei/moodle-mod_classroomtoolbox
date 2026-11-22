@@ -79,7 +79,7 @@ foreach ($cms as $cm) {
         'tools' => 'wheel',
         'usenrolled' => $old->usenrolled,
         'colorscheme' => classroomtoolbox_clean_color_scheme($old->colorscheme ?? null),
-        'names' => $old->names,
+        'names' => classroomtoolbox_clean_names($old->names),
         'timemodified' => time(),
     ];
     $newid = $DB->insert_record('classroomtoolbox', $new);

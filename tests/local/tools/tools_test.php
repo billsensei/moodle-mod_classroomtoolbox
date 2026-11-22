@@ -55,7 +55,7 @@ final class tools_test extends \advanced_testcase {
     public function test_every_tool_renders(): void {
         global $DB, $PAGE;
         $this->resetAfterTest();
-        $gen = $this->getDataGenerator();
+        $gen = self::getDataGenerator();
         $course = $gen->create_course();
         $student = $gen->create_user();
         $gen->enrol_user($student->id, $course->id, 'student');
@@ -95,7 +95,7 @@ final class tools_test extends \advanced_testcase {
     public function test_scoreboard_controls_are_for_teachers(): void {
         global $DB, $PAGE;
         $this->resetAfterTest();
-        $gen = $this->getDataGenerator();
+        $gen = self::getDataGenerator();
         $course = $gen->create_course();
         $student = $gen->create_and_enrol($course, 'student');
         $teacher = $gen->create_and_enrol($course, 'editingteacher');
@@ -115,5 +115,39 @@ final class tools_test extends \advanced_testcase {
         $html = (new scoreboard())->render($cm, $course, $row, $context);
         $this->assertStringContainsString('score-add-form', $html);
         $this->assertStringContainsString('score-reset', $html);
+    }
+
+    /**
+     * The groups offered for the scoreboard follow the same rule as the participants: in separate groups mode a teacher
+     * without access to all groups only gets their own groups, not the names of the other groups.
+     */
+    public function test_scoreboard_group_suggestions_follow_group_rules(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $gen = self::getDataGenerator();
+        $course = $gen->create_course();
+        $assistant = $gen->create_and_enrol($course, 'teacher');
+        $student = $gen->create_and_enrol($course, 'student', ['firstname' => 'Sam', 'lastname' => 'Student']);
+        $ga = $gen->create_group(['courseid' => $course->id, 'name' => 'Group A']);
+        $gb = $gen->create_group(['courseid' => $course->id, 'name' => 'Group B']);
+        $gen->create_group_member(['groupid' => $ga->id, 'userid' => $assistant->id]);
+        $gen->create_group_member(['groupid' => $gb->id, 'userid' => $student->id]);
+        $toolbox = $gen->create_module('classroomtoolbox', [
+            'course' => $course->id, 'tools' => 'scoreboard', 'groupmode' => SEPARATEGROUPS,
+        ]);
+        rebuild_course_cache($course->id, true);
+        $cm = get_fast_modinfo($course)->get_cm($toolbox->cmid);
+        $context = \context_module::instance($cm->id);
+        $row = $DB->get_record('classroomtoolbox', ['id' => $toolbox->id], '*', MUST_EXIST);
+
+        $this->setUser($assistant);
+        $suggestions = scoreboard::suggestions($cm, $row, $context);
+        $this->assertSame(['Group A'], $suggestions['groups'], 'Group B is not theirs to see');
+        $this->assertNotContains('Sam Student', $suggestions['participants'], 'Nor are the members of Group B');
+
+        $this->setAdminUser();
+        $suggestions = scoreboard::suggestions($cm, $row, $context);
+        $this->assertEqualsCanonicalizing(['Group A', 'Group B'], $suggestions['groups']);
+        $this->assertContains('Sam Student', $suggestions['participants']);
     }
 }

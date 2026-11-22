@@ -30,6 +30,8 @@ $functions = [
         'description' => 'List the scoreboard entries of a Classroom Toolbox.',
         'type' => 'read',
         'ajax' => true,
+        // The board is polled every few seconds; do not hold the PHP session lock while answering.
+        'readonlysession' => true,
         'capabilities' => 'mod/classroomtoolbox:view',
     ],
     'mod_classroomtoolbox_add_scores' => [

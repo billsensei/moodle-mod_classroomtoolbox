@@ -89,3 +89,24 @@ Feature: Spin the name wheel
     And the focus should be on "[data-region='wheel-canvas']"
     And "[data-region='wheel-canvas']" should not be inert
 
+  Scenario: The wheel ticks while it spins and chimes when a name is picked
+    Given I am on the "Pick one" "classroomtoolbox activity" page logged in as student1
+    And I install an audio spy
+    When I click on "[data-region='wheel-canvas']" "css_element"
+    And I wait until the page is ready
+    Then I should see "The winner is" in the "[data-region='wheel-result']" "css_element"
+    And at least "15" sounds should have been played
+
+  Scenario: Sound can be switched off, the choice is remembered, and it can be switched back on
+    Given I am on the "Pick one" "classroomtoolbox activity" page logged in as student1
+    And I install an audio spy
+    When I click on "Sound" "checkbox"
+    And I press "Spin"
+    And I wait until the page is ready
+    Then I should see "The winner is" in the "[data-region='wheel-result']" "css_element"
+    And no sounds should have been played
+    When I press "Keep on wheel"
+    And I reload the page
+    Then the field "Sound" matches value ""
+    When I click on "Sound" "checkbox"
+    Then the field "Sound" matches value "1"

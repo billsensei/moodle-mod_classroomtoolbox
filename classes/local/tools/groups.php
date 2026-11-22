@@ -42,9 +42,11 @@ class groups implements tool_interface {
             'uniqid' => uniqid(),
             'hasgroups' => !empty($groups),
         ]);
+        $scheme = classroomtoolbox_color_schemes()[classroomtoolbox_clean_color_scheme($record->colorscheme ?? null)];
         $PAGE->requires->js_call_amd('mod_classroomtoolbox/groups', 'init', [[
             'names' => $entries,
             'groups' => $groups,
+            'scheme' => $scheme,
             'strings' => [
                 'groupgen_peoplecount' => get_string('groupgen_peoplecount', 'mod_classroomtoolbox'),
                 'groupgen_group' => get_string('groupgen_group', 'mod_classroomtoolbox'),

@@ -50,8 +50,8 @@ final class course_module_viewed_test extends \advanced_testcase {
     public function test_view_event(): void {
         global $DB;
         $this->resetAfterTest();
-        $course = $this->getDataGenerator()->create_course();
-        $wheel = $this->getDataGenerator()->create_module('classroomtoolbox', ['course' => $course->id]);
+        $course = self::getDataGenerator()->create_course();
+        $wheel = self::getDataGenerator()->create_module('classroomtoolbox', ['course' => $course->id]);
         $cm = get_coursemodule_from_instance('classroomtoolbox', $wheel->id);
         $context = \context_module::instance($cm->id);
         $record = $DB->get_record('classroomtoolbox', ['id' => $wheel->id], '*', MUST_EXIST);

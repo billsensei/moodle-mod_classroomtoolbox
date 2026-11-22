@@ -60,7 +60,8 @@
 }
 
 .mod_classroomtoolbox-wheel-result-box {
-    width: min(90vw, 520px);
+    width: 90vw;
+    max-width: 520px;
     animation: mod_classroomtoolbox-wheel-pop 0.35s ease-out;
 }
 
@@ -96,14 +97,34 @@
 
 /* Big numbers shared by the stopwatch, timer and counter. */
 .mod_classroomtoolbox-display {
-    font-size: clamp(3rem, 9vw, 7rem);
+    font-size: 3rem;
     font-weight: 700;
     line-height: 1.1;
     font-variant-numeric: tabular-nums;
 }
 
 .mod_classroomtoolbox-timer-card .mod_classroomtoolbox-display {
-    font-size: clamp(2.5rem, 7vw, 5rem);
+    font-size: 2.5rem;
+}
+
+@media (min-width: 576px) {
+    .mod_classroomtoolbox-display {
+        font-size: 5rem;
+    }
+
+    .mod_classroomtoolbox-timer-card .mod_classroomtoolbox-display {
+        font-size: 3.5rem;
+    }
+}
+
+@media (min-width: 992px) {
+    .mod_classroomtoolbox-display {
+        font-size: 7rem;
+    }
+
+    .mod_classroomtoolbox-timer-card .mod_classroomtoolbox-display {
+        font-size: 5rem;
+    }
 }
 
 .mod_classroomtoolbox-laps {
@@ -217,4 +238,25 @@
 
 .mod_classroomtoolbox:fullscreen .mod_classroomtoolbox-score-points {
     font-size: 3rem;
+}
+
+/* Group cards take their colour from the colour scheme; the text colour is set by the script to stay readable. */
+.mod_classroomtoolbox-groupgen-card {
+    border-color: transparent;
+}
+
+.mod_classroomtoolbox-groupgen-card .card-header {
+    border-bottom-color: rgba(128, 128, 128, 0.6);
+    color: inherit;
+}
+
+.mod_classroomtoolbox-groupgen-card .list-group-item {
+    border-color: rgba(128, 128, 128, 0.6);
+    background: transparent;
+    color: inherit;
+}
+
+/* Short number inputs (minutes, seconds, points per click). */
+.mod_classroomtoolbox-narrow-input {
+    width: 6rem;
 }

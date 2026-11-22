@@ -21,6 +21,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+import {readableText} from 'mod_classroomtoolbox/colour';
+
 /**
  * Random float in [0, 1) from the browser's crypto source.
  *
@@ -80,6 +82,7 @@ export const init = (config) => {
     }
     const strings = config.strings;
     const pool = config.names;
+    const colours = config.scheme.colors;
     const groups = config.groups || [];
     const selected = new Set(groups.map((g) => g.id));
     const textarea = root.querySelector('[data-region="groupgen-names"]');
@@ -116,9 +119,13 @@ export const init = (config) => {
         lastGroups.forEach((members, i) => {
             const card = document.createElement('div');
             card.className = 'card mod_classroomtoolbox-groupgen-card';
+            // Each group gets its own colour from the activity's colour scheme, with text that stays readable on it.
+            const background = colours[i % colours.length];
+            card.style.backgroundColor = background;
+            card.style.color = readableText(background);
             card.style.animationDelay = (i * 0.12) + 's';
             const head = document.createElement('div');
-            head.className = 'card-header fw-bold';
+            head.className = 'card-header bg-transparent fw-bold';
             head.textContent = fill(strings.groupgen_group, i + 1) + ' (' + members.length + ')';
             const list = document.createElement('ul');
             list.className = 'list-group list-group-flush';

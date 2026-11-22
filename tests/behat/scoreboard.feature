@@ -106,4 +106,3 @@ Feature: Scoreboard
     When I click on "Pause live updates" "checkbox"
     And I wait "2" seconds
     Then the scoreboard order should be "Team Blue, Team Red"
-

@@ -47,7 +47,7 @@ final class participants_test extends \advanced_testcase {
      */
     private function setup_course(array $record = []): array {
         global $DB;
-        $gen = $this->getDataGenerator();
+        $gen = self::getDataGenerator();
         $course = $gen->create_course();
         $students = [];
         foreach (['Alice' => 'Anderson', 'Bob' => 'Brown', 'Carla' => 'Chen'] as $first => $last) {
@@ -133,7 +133,7 @@ final class participants_test extends \advanced_testcase {
     public function test_separate_groups(): void {
         $this->resetAfterTest();
         [$course, $cm, $row, $context, $students, $teacher] = $this->setup_course(['groupmode' => SEPARATEGROUPS]);
-        $gen = $this->getDataGenerator();
+        $gen = self::getDataGenerator();
         $ga = $gen->create_group(['courseid' => $course->id, 'name' => 'Group A']);
         $gb = $gen->create_group(['courseid' => $course->id, 'name' => 'Group B']);
         $gen->create_group_member(['groupid' => $ga->id, 'userid' => $students[0]->id]);

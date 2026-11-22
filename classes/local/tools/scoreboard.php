@@ -38,16 +38,7 @@ class scoreboard implements tool_interface {
         global $OUTPUT, $PAGE;
 
         $canmanage = has_capability('mod/classroomtoolbox:managescores', $context);
-        $suggestions = ['participants' => [], 'groups' => []];
-        if ($canmanage) {
-            // Only people who may change the scoreboard get the lists they can copy onto it.
-            [$entries] = participants::get($cm, $record, $context);
-            $suggestions['participants'] = array_column($entries, 'name');
-            $groups = groups_get_all_groups($cm->course, 0, $cm->groupingid, 'g.id, g.name', false, true);
-            foreach ($groups as $group) {
-                $suggestions['groups'][] = format_string($group->name, true, ['context' => $context]);
-            }
-        }
+        $suggestions = $canmanage ? self::suggestions($cm, $record, $context) : ['participants' => [], 'groups' => []];
 
         $html = $OUTPUT->render_from_template('mod_classroomtoolbox/scoreboard', [
             'uniqid' => uniqid(),
@@ -80,5 +71,29 @@ class scoreboard implements tool_interface {
             ],
         ]]);
         return $html;
+    }
+
+    /**
+     * Names a teacher can copy onto the scoreboard in one click: the participants and the groups they may see.
+     *
+     * Groups follow the same rule as the participants list: in separate groups mode, someone without
+     * moodle/site:accessallgroups only gets the groups they belong to, and each group's visibility setting applies.
+     *
+     * @param \cm_info $cm Course module.
+     * @param \stdClass $record Activity record.
+     * @param \context_module $context Module context.
+     * @return array With 'participants' and 'groups', each a list of names.
+     */
+    public static function suggestions(\cm_info $cm, \stdClass $record, \context_module $context): array {
+        global $USER;
+
+        [$entries] = participants::get($cm, $record, $context);
+        $restricted = $cm->groupmode == SEPARATEGROUPS && !has_capability('moodle/site:accessallgroups', $context);
+        $userid = $restricted ? $USER->id : 0;
+        $groups = [];
+        foreach (groups_get_all_groups($cm->course, $userid, $cm->groupingid, 'g.id, g.name', false, true) as $group) {
+            $groups[] = format_string($group->name, true, ['context' => $context]);
+        }
+        return ['participants' => array_column($entries, 'name'), 'groups' => $groups];
     }
 }

@@ -70,3 +70,9 @@ Feature: Split people into random groups
     Then I should see "Add at least one name to make groups." in the "[data-region='groupgen-result']" "css_element"
     When I press "Reset names"
     Then I should see "5 people" in the "[data-region='groupgen-count']" "css_element"
+
+  Scenario: Each generated group has its own background colour
+    Given I am on the "Groupie" "classroomtoolbox activity" page logged in as teacher1
+    When I set the field "Amount" to "3"
+    And I press "Generate groups"
+    Then the generated groups should have different background colours

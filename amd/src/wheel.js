@@ -23,38 +23,14 @@
 
 import Pending from 'core/pending';
 
+import {LIGHT_TEXT, readableText} from 'mod_classroomtoolbox/colour';
+import * as sound from 'mod_classroomtoolbox/sound';
+
 const TWO_PI = Math.PI * 2;
-const LIGHT_TEXT = '#ffffff';
-const DARK_TEXT = '#212529';
 // The pointer sits at the top of the wheel (canvas angle 3 * PI / 2).
 const POINTER = Math.PI * 1.5;
-
-/**
- * Relative luminance of a #rrggbb colour (WCAG).
- *
- * @param {string} hex Colour.
- * @returns {number}
- */
-const luminance = (hex) => {
-    const [r, g, b] = [1, 3, 5].map((i) => {
-        const c = parseInt(hex.slice(i, i + 2), 16) / 255;
-        return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
-    });
-    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-};
-
-/**
- * White or dark text, whichever has the better contrast on a wedge colour.
- *
- * @param {string} hex Wedge colour.
- * @returns {string} Text colour.
- */
-export const readableText = (hex) => {
-    const bg = luminance(hex) + 0.05;
-    const withLight = 1.05 / bg;
-    const withDark = bg / (luminance(DARK_TEXT) + 0.05);
-    return withLight >= withDark ? LIGHT_TEXT : DARK_TEXT;
-};
+// Soft clicks as wedges pass the pointer, but never faster than this (milliseconds apart).
+const MIN_TICK_GAP = 28;
 
 /**
  * Make a dialog modal: everything outside it becomes inert (not focusable, hidden from assistive technology), except
@@ -112,6 +88,7 @@ export const init = (config) => {
     const resultEl = root.querySelector('[data-region="wheel-result"]');
     const winnerEl = root.querySelector('[data-region="wheel-winner"]');
     const hub = root.querySelector('[data-action="spin"]');
+    const soundSwitch = root.querySelector('[data-action="wheel-sound"]');
     const strings = config.strings;
     const COLORS = config.scheme.colors;
     const pool = config.names;
@@ -245,6 +222,7 @@ export const init = (config) => {
         resultEl.hidden = false;
         releaseModal = makeModal(resultEl);
         document.addEventListener('keydown', onDialogKey);
+        sound.chime();
         announce(strings.winner + ' ' + names[index]);
         resultEl.querySelector('[data-action="keep"]').focus();
     };
@@ -265,6 +243,7 @@ export const init = (config) => {
             return;
         }
         spinning = true;
+        sound.prepare(); // A click or key press has just started the spin, so the browser allows sound now.
         // Tell Behat (and other automation) that async work is running until the wheel stops.
         const pending = new Pending('mod_classroomtoolbox/wheel:spin');
         hub.disabled = true;
@@ -282,10 +261,23 @@ export const init = (config) => {
         const duration = reduceMotion ? 800 : 5000 + random() * 1500;
         const startTime = performance.now();
 
+        // One soft tick each time a wedge boundary passes the pointer, slowing down with the wheel.
+        const slotAt = (angle) => Math.floor(((((POINTER - angle) % TWO_PI) + TWO_PI) % TWO_PI) / seg);
+        let lastSlot = slotAt(current);
+        let lastTick = 0;
+
         const frame = (now) => {
             const t = Math.min(1, (now - startTime) / duration);
             const eased = 1 - Math.pow(1 - t, 4);
             rotation = current + delta * eased;
+            const slot = slotAt(rotation);
+            if (slot !== lastSlot) {
+                lastSlot = slot;
+                if (now - lastTick >= MIN_TICK_GAP) {
+                    sound.tick();
+                    lastTick = now;
+                }
+            }
             draw();
             if (t < 1) {
                 window.requestAnimationFrame(frame);
@@ -310,6 +302,15 @@ export const init = (config) => {
         }
         syncText();
     };
+
+    // Sound on or off, remembered in this browser and shared with the timer.
+    if (soundSwitch) {
+        soundSwitch.checked = sound.isEnabled();
+        soundSwitch.addEventListener('change', () => {
+            sound.setEnabled(soundSwitch.checked);
+            sound.prepare();
+        });
+    }
 
     // Events.
     canvas.addEventListener('click', spin);
