@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.8 - 2026-11-23
+
+- Timer klaxon is a little louder (about +1.6 dB, near the limit before clipping).
+
 ## 0.8.7 - 2026-11-23
 
 - Timer klaxon is louder (square-wave horn, about +2 dB) and a little buzzier.

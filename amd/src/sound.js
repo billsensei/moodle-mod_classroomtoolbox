@@ -134,8 +134,8 @@ const blast = (delay, length) => {
     const start = context.currentTime + delay;
     const gain = context.createGain();
     gain.gain.setValueAtTime(0.0001, start);
-    gain.gain.exponentialRampToValueAtTime(0.4, start + 0.08);
-    gain.gain.setValueAtTime(0.4, start + length - 0.15);
+    gain.gain.exponentialRampToValueAtTime(0.48, start + 0.08);
+    gain.gain.setValueAtTime(0.48, start + length - 0.15);
     gain.gain.exponentialRampToValueAtTime(0.0001, start + length);
     gain.connect(context.destination);
     [0, 6].forEach((detune) => {
