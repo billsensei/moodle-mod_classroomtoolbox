@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.5 - 2026-11-23
+
+- Timer klaxon is longer (about 4 seconds).
+
 ## 0.8.4 - 2026-11-23
 
 - Timer klaxon is louder.

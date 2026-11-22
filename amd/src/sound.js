@@ -152,10 +152,10 @@ const blast = (delay, length) => {
 };
 
 /**
- * A submarine dive klaxon for a finished timer: three "aoo-gah" blasts, about 3 seconds in all.
+ * A submarine dive klaxon for a finished timer: three "aoo-gah" blasts, about 4 seconds in all.
  */
 export const alarm = () => guarded(() => {
     for (let i = 0; i < 3; i++) {
-        blast(i, 0.92);
+        blast(i * 1.3, 1.2);
     }
 });

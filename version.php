@@ -25,8 +25,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_classroomtoolbox';
-$plugin->version = 2026122006;
+$plugin->version = 2026122007;
 $plugin->requires = 2025041400; // Moodle 5.0.
 $plugin->supported = [500, 503];
 $plugin->maturity = MATURITY_BETA;
-$plugin->release = '0.8.4';
+$plugin->release = '0.8.5';
