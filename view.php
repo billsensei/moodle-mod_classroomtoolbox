@@ -96,6 +96,7 @@ echo $OUTPUT->render_from_template('mod_namewheel/wheel', [
 $PAGE->requires->js_call_amd('mod_namewheel/wheel', 'init', [[
     'names' => $entries,
     'groups' => $groups,
+    'scheme' => namewheel_color_schemes()[namewheel_clean_color_scheme($namewheel->colorscheme ?? null)],
     'strings' => [
         'winner' => get_string('winner', 'mod_namewheel'),
         'empty' => get_string('emptywheel', 'mod_namewheel'),

@@ -25,6 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/course/moodleform_mod.php');
+require_once(__DIR__ . '/lib.php');
 
 /**
  * Settings form.
@@ -52,6 +53,14 @@ class mod_namewheel_mod_form extends moodleform_mod {
         $mform->addElement('advcheckbox', 'usenrolled', get_string('usenrolled', 'mod_namewheel'));
         $mform->addHelpButton('usenrolled', 'usenrolled', 'mod_namewheel');
         $mform->setDefault('usenrolled', 1);
+
+        $options = [];
+        foreach (array_keys(namewheel_color_schemes()) as $id) {
+            $options[$id] = get_string('scheme_' . $id, 'mod_namewheel');
+        }
+        $mform->addElement('select', 'colorscheme', get_string('colorscheme', 'mod_namewheel'), $options);
+        $mform->addHelpButton('colorscheme', 'colorscheme', 'mod_namewheel');
+        $mform->setDefault('colorscheme', 'classic');
 
         $mform->addElement('textarea', 'names', get_string('names', 'mod_namewheel'), ['rows' => 10, 'cols' => 40]);
         $mform->setType('names', PARAM_TEXT);

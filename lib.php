@@ -48,6 +48,42 @@ function namewheel_supports($feature) {
 }
 
 /**
+ * The colour schemes a teacher can pick: wedge colours plus the text colour that stays readable on them.
+ *
+ * @return array[] Keyed by scheme id.
+ */
+function namewheel_color_schemes(): array {
+    return [
+        'classic' => [
+            'colors' => ['#3369e8', '#d50f25', '#eeb211', '#009925', '#8e44ad', '#e67e22', '#16a0a0', '#c2185b'],
+            'text' => '#ffffff',
+        ],
+        'ocean' => [
+            'colors' => ['#0b3c5d', '#1d70a2', '#328cc1', '#4fb3bf', '#1b9aaa', '#16697a', '#489fb5', '#145da0'],
+            'text' => '#ffffff',
+        ],
+        'sunset' => [
+            'colors' => ['#b5179e', '#d62828', '#e85d04', '#c77d00', '#9d0208', '#7209b7', '#c9184a', '#a4161a'],
+            'text' => '#ffffff',
+        ],
+        'pastel' => [
+            'colors' => ['#ffadad', '#ffd6a5', '#fdffb6', '#caffbf', '#9bf6ff', '#a0c4ff', '#bdb2ff', '#ffc6ff'],
+            'text' => '#212529',
+        ],
+    ];
+}
+
+/**
+ * Return a known scheme id, falling back to the classic one.
+ *
+ * @param string|null $id Stored value.
+ * @return string
+ */
+function namewheel_clean_color_scheme(?string $id): string {
+    return array_key_exists((string) $id, namewheel_color_schemes()) ? $id : 'classic';
+}
+
+/**
  * Add a new instance.
  *
  * @param stdClass $data Form data.
@@ -59,6 +95,7 @@ function namewheel_add_instance($data, $mform = null) {
 
     $data->timemodified = time();
     $data->usenrolled = empty($data->usenrolled) ? 0 : 1;
+    $data->colorscheme = namewheel_clean_color_scheme($data->colorscheme ?? null);
     $data->names = $data->names ?? '';
     $data->id = $DB->insert_record('namewheel', $data);
     return $data->id;
@@ -77,6 +114,7 @@ function namewheel_update_instance($data, $mform = null) {
     $data->timemodified = time();
     $data->id = $data->instance;
     $data->usenrolled = empty($data->usenrolled) ? 0 : 1;
+    $data->colorscheme = namewheel_clean_color_scheme($data->colorscheme ?? null);
     $data->names = $data->names ?? '';
     return $DB->update_record('namewheel', $data);
 }

@@ -39,7 +39,7 @@ class backup_namewheel_activity_structure_step extends backup_activity_structure
      */
     protected function define_structure() {
         $namewheel = new backup_nested_element('namewheel', ['id'], [
-            'name', 'intro', 'introformat', 'usenrolled', 'names', 'timemodified']);
+            'name', 'intro', 'introformat', 'usenrolled', 'colorscheme', 'names', 'timemodified']);
         $namewheel->set_source_table('namewheel', ['id' => backup::VAR_ACTIVITYID]);
         $namewheel->annotate_files('mod_namewheel', 'intro', null);
         return $this->prepare_activity_structure($namewheel);

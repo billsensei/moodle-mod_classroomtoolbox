@@ -26,6 +26,8 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['clickhere'] = 'Click the wheel to spin';
 $string['close'] = 'Close';
+$string['colorscheme'] = 'Colour scheme';
+$string['colorscheme_help'] = 'The colours of the wheel segments. Pastel uses dark text; the others use white text.';
 $string['emptywheel'] = 'Add some names to spin the wheel';
 $string['entries'] = 'Names on the wheel';
 $string['entriescount'] = '{$a} names';
@@ -46,6 +48,10 @@ $string['privacy:metadata'] = 'The Name wheel plugin does not store any personal
 $string['removedannounce'] = '{$a} was removed from the wheel';
 $string['removename'] = 'Remove from wheel';
 $string['resetwheel'] = 'Reset wheel';
+$string['scheme_classic'] = 'Classic (bold primary colours)';
+$string['scheme_ocean'] = 'Ocean (blues and teals)';
+$string['scheme_pastel'] = 'Pastel (soft colours, dark text)';
+$string['scheme_sunset'] = 'Sunset (reds, oranges and purples)';
 $string['selectall'] = 'Select all';
 $string['selectnone'] = 'Select none';
 $string['shuffle'] = 'Shuffle';

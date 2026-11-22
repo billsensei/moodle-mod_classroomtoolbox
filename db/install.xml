@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/namewheel/db" VERSION="2026112200" COMMENT="XMLDB file for Moodle mod_namewheel"
+<XMLDB PATH="mod/namewheel/db" VERSION="2026112400" COMMENT="XMLDB file for Moodle mod_namewheel"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd">
   <TABLES>
@@ -11,6 +11,7 @@
         <FIELD NAME="intro" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="usenrolled" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="1 = put the course participants on the wheel"/>
+        <FIELD NAME="colorscheme" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="classic" SEQUENCE="false" COMMENT="Colour scheme id"/>
         <FIELD NAME="names" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Extra names, one per line"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>

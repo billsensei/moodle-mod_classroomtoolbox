@@ -21,7 +21,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-const COLORS = ['#3369e8', '#d50f25', '#eeb211', '#009925', '#8e44ad', '#e67e22', '#16a0a0', '#c2185b'];
 const TWO_PI = Math.PI * 2;
 // The pointer sits at the top of the wheel (canvas angle 3 * PI / 2).
 const POINTER = Math.PI * 1.5;
@@ -57,6 +56,8 @@ export const init = (config) => {
     const winnerEl = root.querySelector('[data-region="namewheel-winner"]');
     const hub = root.querySelector('[data-action="spin"]');
     const strings = config.strings;
+    const COLORS = config.scheme.colors;
+    const TEXT = config.scheme.text;
     const pool = config.names;
     const groups = config.groups || [];
     const selected = new Set(groups.map((g) => g.id));
@@ -113,7 +114,7 @@ export const init = (config) => {
             // Avoid two equal neighbours (first and last) when the count is not a multiple of the palette.
             let colour = COLORS[i % COLORS.length];
             if (i === names.length - 1 && i % COLORS.length === 0 && names.length > 1) {
-                colour = COLORS[2];
+                colour = COLORS[2 % COLORS.length];
             }
             ctx.fillStyle = colour;
             ctx.fill();
@@ -125,8 +126,8 @@ export const init = (config) => {
             ctx.translate(cx, cx);
             ctx.rotate(start + seg / 2);
             ctx.textAlign = 'right';
-            ctx.fillStyle = '#fff';
-            ctx.shadowColor = 'rgba(0,0,0,0.5)';
+            ctx.fillStyle = TEXT;
+            ctx.shadowColor = TEXT === '#ffffff' ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.5)';
             ctx.shadowBlur = 2;
             ctx.fillText(name, r - 14, 0, r * 0.62);
             ctx.restore();

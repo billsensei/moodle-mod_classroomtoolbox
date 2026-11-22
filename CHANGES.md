@@ -1,3 +1,10 @@
+# Changes in 0.3.0 (2026-11-24)
+
+- New **Colour scheme** setting with four palettes: Classic, Ocean, Sunset and Pastel (dark text for readability).
+- New database field `colorscheme` (upgrade step included; existing wheels keep the Classic colours). Included in backup and restore.
+
+---
+
 # Changes in 0.2.1 (2026-11-23)
 
 - Security: group lists and memberships now honour each group's visibility setting (members only / own membership only / hidden), using core's `groups_get_all_groups()` with members.

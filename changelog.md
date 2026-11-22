@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.0 - 2026-11-24
+
+- Added selectable colour schemes (Classic, Ocean, Sunset, Pastel).
+
 ## 0.2.1 - 2026-11-23
 
 - Security: respect group visibility when listing groups and members.
