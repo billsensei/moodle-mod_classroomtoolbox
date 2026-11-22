@@ -1,3 +1,9 @@
+# Changes in 0.4.3 (2026-11-28)
+
+- The spin animation is wrapped in `core/pending`, so Behat and other automation wait for the wheel to stop before continuing. No visible change.
+
+---
+
 # Changes in 0.4.2 (2026-11-27)
 
 - Hardening from the security review (no functional change for normal use):

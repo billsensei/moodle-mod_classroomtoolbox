@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.3 - 2026-11-28
+
+- Wrap the spin in core/pending so automated tests wait for it.
+
 ## 0.4.2 - 2026-11-27
 
 - Security hardening: explicit format_string contexts, capability-filtered course index, names-list size limit, sanitised colour scheme on restore.

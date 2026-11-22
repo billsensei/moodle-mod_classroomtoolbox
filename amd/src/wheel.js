@@ -21,6 +21,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+import Pending from 'core/pending';
+
 const TWO_PI = Math.PI * 2;
 // The pointer sits at the top of the wheel (canvas angle 3 * PI / 2).
 const POINTER = Math.PI * 1.5;
@@ -173,6 +175,8 @@ export const init = (config) => {
             return;
         }
         spinning = true;
+        // Tell Behat (and other automation) that async work is running until the wheel stops.
+        const pending = new Pending('mod_namewheel/wheel:spin');
         hub.disabled = true;
         hintEl.textContent = strings.spinning;
 
@@ -204,6 +208,7 @@ export const init = (config) => {
             hintEl.textContent = strings.clickhere;
             draw();
             showResult(index);
+            pending.resolve();
         };
         window.requestAnimationFrame(frame);
     };
