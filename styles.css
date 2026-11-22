@@ -1,0 +1,88 @@
+.mod_namewheel-stage {
+    width: 100%;
+    max-width: 600px;
+    aspect-ratio: 1 / 1;
+}
+
+.mod_namewheel-canvas {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    border-radius: 50%;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.mod_namewheel-canvas:focus-visible {
+    outline: 3px solid #0f6cbf;
+    outline-offset: 4px;
+}
+
+.mod_namewheel-pointer {
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    z-index: 2;
+    width: 0;
+    height: 0;
+    transform: translateX(-50%);
+    border-left: 16px solid transparent;
+    border-right: 16px solid transparent;
+    border-top: 34px solid #212529;
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.4));
+}
+
+.btn.mod_namewheel-hub {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 2;
+    width: 18%;
+    aspect-ratio: 1 / 1;
+    padding: 0;
+    transform: translate(-50%, -50%);
+    border: 4px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.mod_namewheel-result {
+    position: fixed;
+    inset: 0;
+    z-index: 1050;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.55);
+}
+
+.mod_namewheel-result[hidden] {
+    display: none;
+}
+
+.mod_namewheel-result-box {
+    width: min(90vw, 520px);
+    animation: mod_namewheel-pop 0.35s ease-out;
+}
+
+.mod_namewheel-winner {
+    overflow-wrap: anywhere;
+    font-weight: 700;
+}
+
+@keyframes mod_namewheel-pop {
+    from {
+        opacity: 0;
+        transform: scale(0.7);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mod_namewheel-result-box {
+        animation: none;
+    }
+}

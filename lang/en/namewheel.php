@@ -1,0 +1,54 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * English strings for mod_namewheel.
+ *
+ * @package    mod_namewheel
+ * @copyright  2026 Bill <wrwjpn@gmail.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die();
+
+$string['clickhere'] = 'Click the wheel to spin';
+$string['close'] = 'Close';
+$string['emptywheel'] = 'Add some names to spin the wheel';
+$string['entries'] = 'Names on the wheel';
+$string['entriescount'] = '{$a} names';
+$string['keepname'] = 'Keep on wheel';
+$string['modulename'] = 'Name wheel';
+$string['modulename_help'] = 'A spinning wheel of names. Click the wheel to pick a random name, then choose whether to remove that name from the wheel.';
+$string['modulenameplural'] = 'Name wheels';
+$string['names'] = 'Extra names';
+$string['names_help'] = 'Optional. One name per line. These are added to the course participants (if enabled above).';
+$string['namewheel:addinstance'] = 'Add a new name wheel';
+$string['namewheel:appear'] = 'Appear as a name on the wheel';
+$string['namewheel:view'] = 'View the name wheel';
+$string['pluginadministration'] = 'Name wheel administration';
+$string['pluginname'] = 'Name wheel';
+$string['privacy:metadata'] = 'The Name wheel plugin does not store any personal data.';
+$string['removedannounce'] = '{$a} was removed from the wheel';
+$string['removename'] = 'Remove from wheel';
+$string['resetwheel'] = 'Reset wheel';
+$string['shuffle'] = 'Shuffle';
+$string['sort'] = 'Sort A-Z';
+$string['spin'] = 'Spin';
+$string['spinning'] = 'Spinning…';
+$string['usenrolled'] = 'Use course participants';
+$string['usenrolled_help'] = 'Put every participant who can appear on the wheel (students by default) onto the wheel. In group mode only the selected group is used.';
+$string['wheelsettings'] = 'Wheel settings';
+$string['winner'] = 'The winner is';
