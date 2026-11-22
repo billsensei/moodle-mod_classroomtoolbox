@@ -1,4 +1,7 @@
-# Changes since 0.4.0
+# Changes in 0.4.1 (2026-11-26)
+
+- Security hardening: participant names are only put on the wheel for viewers who hold `moodle/course:viewparticipants`.
+- Fix: a name containing `$&` or similar no longer garbles the screen-reader announcement when it is removed (string replace now uses a function).
 
 - Privacy: clearer privacy statement (extra names are teacher-typed text, not linked to user accounts). No code or database changes.
 

@@ -1,7 +1,9 @@
 # Changelog
 
-## Unreleased
+## 0.4.1 - 2026-11-26
 
+- Security: require `moodle/course:viewparticipants` to list participant names.
+- Fix: names with `$` replacement patterns in the removal announcement.
 - Privacy: clarified the privacy provider statement.
 
 ## 0.4.0 - 2026-11-25

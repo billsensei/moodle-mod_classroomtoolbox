@@ -44,7 +44,8 @@ $PAGE->set_context($context);
 // only members of groups the viewer is allowed to see are sent to the browser.
 $entries = [];
 $groups = [];
-if (!empty($namewheel->usenrolled) && !isguestuser()) {
+// Also require the right to see the participants list, so sites that hide classmates from students stay private.
+if (!empty($namewheel->usenrolled) && !isguestuser() && has_capability('moodle/course:viewparticipants', $context)) {
     $users = get_enrolled_users($context, 'mod/namewheel:appear', 0, 'u.*', 'u.lastname, u.firstname', 0, 0, true);
     $membership = [];
     $restricted = false;

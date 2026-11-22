@@ -142,7 +142,7 @@ export const init = (config) => {
 
     const syncText = () => {
         textarea.value = names.join('\n');
-        countEl.textContent = strings.entriescount.replace('{$a}', names.length);
+        countEl.textContent = strings.entriescount.replace('{$a}', () => names.length);
         draw();
     };
 
@@ -236,7 +236,7 @@ export const init = (config) => {
         names.splice(winnerIndex, 1);
         syncText();
         hideResult();
-        announce(strings.removed.replace('{$a}', gone));
+        announce(strings.removed.replace('{$a}', () => gone));
     });
     resultEl.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
@@ -269,7 +269,7 @@ export const init = (config) => {
             return;
         }
         names = textarea.value.split(/\r?\n/).map((n) => n.trim()).filter((n) => n !== '');
-        countEl.textContent = strings.entriescount.replace('{$a}', names.length);
+        countEl.textContent = strings.entriescount.replace('{$a}', () => names.length);
         draw();
     });
 
@@ -281,7 +281,7 @@ export const init = (config) => {
         }
         names = derive();
         syncText();
-        announce(strings.groupchanged.replace('{$a}', names.length));
+        announce(strings.groupchanged.replace('{$a}', () => names.length));
     };
     if (groupBox) {
         groups.forEach((g) => {
