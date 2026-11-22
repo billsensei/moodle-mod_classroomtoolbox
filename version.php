@@ -15,18 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version metadata for mod_namewheel.
+ * Version metadata for mod_classroomtoolbox.
  *
- * @package    mod_namewheel
+ * @package    mod_classroomtoolbox
  * @copyright  2026 Bill <wrwjpn@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'mod_namewheel';
-$plugin->version = 2026112900;
+$plugin->component = 'mod_classroomtoolbox';
+$plugin->version = 2026113000;
 $plugin->requires = 2025041400; // Moodle 5.0.
 $plugin->supported = [500, 503];
 $plugin->maturity = MATURITY_BETA;
-$plugin->release = '0.4.4';
+$plugin->release = '0.5.0';

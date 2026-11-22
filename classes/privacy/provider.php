@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace mod_namewheel\privacy;
+namespace mod_classroomtoolbox\privacy;
 
 /**
  * Privacy provider: the plugin stores no personal data.
  *
- * @package    mod_namewheel
+ * @package    mod_classroomtoolbox
  * @copyright  2026 Bill <wrwjpn@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

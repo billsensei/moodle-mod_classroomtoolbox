@@ -15,15 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tests for the mod_namewheel privacy provider.
+ * Tests for the mod_classroomtoolbox privacy provider.
  *
- * @package    mod_namewheel
+ * @package    mod_classroomtoolbox
  * @category   test
  * @copyright  2026 Bill <wrwjpn@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_namewheel\privacy;
+namespace mod_classroomtoolbox\privacy;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 
@@ -31,12 +31,12 @@ use PHPUnit\Framework\Attributes\CoversClass;
 /**
  * Tests for the privacy provider.
  *
- * @package    mod_namewheel
+ * @package    mod_classroomtoolbox
  * @category   test
  * @copyright  2026 Bill <wrwjpn@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @covers \mod_namewheel\privacy\provider
+ * @covers \mod_classroomtoolbox\privacy\provider
  */
 final class provider_test extends \advanced_testcase {
     /**
@@ -46,7 +46,7 @@ final class provider_test extends \advanced_testcase {
         $this->assertInstanceOf(\core_privacy\local\metadata\null_provider::class, new provider());
         $reason = provider::get_reason();
         $this->assertSame('privacy:metadata', $reason);
-        $this->assertTrue(get_string_manager()->string_exists($reason, 'mod_namewheel'));
+        $this->assertTrue(get_string_manager()->string_exists($reason, 'mod_classroomtoolbox'));
     }
 
     /**
@@ -54,7 +54,7 @@ final class provider_test extends \advanced_testcase {
      */
     public function test_table_has_no_user_columns(): void {
         global $DB;
-        $columns = array_keys($DB->get_columns('namewheel'));
+        $columns = array_keys($DB->get_columns('classroomtoolbox'));
         $this->assertNotContains('userid', $columns);
         $this->assertNotContains('user', $columns);
     }

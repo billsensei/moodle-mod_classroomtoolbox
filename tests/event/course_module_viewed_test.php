@@ -15,33 +15,33 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tests for the mod_namewheel view event and completion on view.
+ * Tests for the mod_classroomtoolbox view event and completion on view.
  *
- * @package    mod_namewheel
+ * @package    mod_classroomtoolbox
  * @category   test
  * @copyright  2026 Bill <wrwjpn@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_namewheel\event;
+namespace mod_classroomtoolbox\event;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/mod/namewheel/lib.php');
+require_once($CFG->dirroot . '/mod/classroomtoolbox/lib.php');
 
 #[CoversClass(course_module_viewed::class)]
 /**
  * Tests for the view event.
  *
- * @package    mod_namewheel
+ * @package    mod_classroomtoolbox
  * @category   test
  * @copyright  2026 Bill <wrwjpn@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @covers \mod_namewheel\event\course_module_viewed
+ * @covers \mod_classroomtoolbox\event\course_module_viewed
  */
 final class course_module_viewed_test extends \advanced_testcase {
     /**
@@ -51,13 +51,13 @@ final class course_module_viewed_test extends \advanced_testcase {
         global $DB;
         $this->resetAfterTest();
         $course = $this->getDataGenerator()->create_course();
-        $wheel = $this->getDataGenerator()->create_module('namewheel', ['course' => $course->id]);
-        $cm = get_coursemodule_from_instance('namewheel', $wheel->id);
+        $wheel = $this->getDataGenerator()->create_module('classroomtoolbox', ['course' => $course->id]);
+        $cm = get_coursemodule_from_instance('classroomtoolbox', $wheel->id);
         $context = \context_module::instance($cm->id);
-        $record = $DB->get_record('namewheel', ['id' => $wheel->id], '*', MUST_EXIST);
+        $record = $DB->get_record('classroomtoolbox', ['id' => $wheel->id], '*', MUST_EXIST);
 
         $sink = $this->redirectEvents();
-        namewheel_view($record, $course, $cm, $context);
+        classroomtoolbox_view($record, $course, $cm, $context);
         $events = $sink->get_events();
         $sink->close();
 
@@ -66,6 +66,6 @@ final class course_module_viewed_test extends \advanced_testcase {
         $this->assertInstanceOf(course_module_viewed::class, $event);
         $this->assertEquals($context, $event->get_context());
         $this->assertEquals($wheel->id, $event->objectid);
-        $this->assertSame('namewheel', $event->objecttable);
+        $this->assertSame('classroomtoolbox', $event->objecttable);
     }
 }

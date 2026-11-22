@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Restore task for mod_namewheel.
+ * Restore task for mod_classroomtoolbox.
  *
- * @package    mod_namewheel
+ * @package    mod_classroomtoolbox
  * @category   backup
  * @copyright  2026 Bill <wrwjpn@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -25,17 +25,17 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/mod/namewheel/backup/moodle2/restore_namewheel_stepslib.php');
+require_once($CFG->dirroot . '/mod/classroomtoolbox/backup/moodle2/restore_classroomtoolbox_stepslib.php');
 
 /**
  * Restore task.
  *
- * @package    mod_namewheel
+ * @package    mod_classroomtoolbox
  * @category   backup
  * @copyright  2026 Bill <wrwjpn@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class restore_namewheel_activity_task extends restore_activity_task {
+class restore_classroomtoolbox_activity_task extends restore_activity_task {
     /**
      * No settings.
      */
@@ -46,7 +46,7 @@ class restore_namewheel_activity_task extends restore_activity_task {
      * Add the structure step.
      */
     protected function define_my_steps() {
-        $this->add_step(new restore_namewheel_activity_structure_step('namewheel_structure', 'namewheel.xml'));
+        $this->add_step(new restore_classroomtoolbox_activity_structure_step('classroomtoolbox_structure', 'classroomtoolbox.xml'));
     }
 
     /**
@@ -55,7 +55,7 @@ class restore_namewheel_activity_task extends restore_activity_task {
      * @return array
      */
     public static function define_decode_contents() {
-        return [new restore_decode_content('namewheel', ['intro'], 'namewheel')];
+        return [new restore_decode_content('classroomtoolbox', ['intro'], 'classroomtoolbox')];
     }
 
     /**
@@ -65,8 +65,8 @@ class restore_namewheel_activity_task extends restore_activity_task {
      */
     public static function define_decode_rules() {
         return [
-            new restore_decode_rule('NAMEWHEELVIEWBYID', '/mod/namewheel/view.php?id=$1', 'course_module'),
-            new restore_decode_rule('NAMEWHEELINDEX', '/mod/namewheel/index.php?id=$1', 'course'),
+            new restore_decode_rule('CLASSROOMTOOLBOXVIEWBYID', '/mod/classroomtoolbox/view.php?id=$1', 'course_module'),
+            new restore_decode_rule('CLASSROOMTOOLBOXINDEX', '/mod/classroomtoolbox/index.php?id=$1', 'course'),
         ];
     }
 

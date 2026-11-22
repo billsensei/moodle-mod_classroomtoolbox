@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/namewheel/db" VERSION="2026112400" COMMENT="XMLDB file for Moodle mod_namewheel"
+<XMLDB PATH="mod/classroomtoolbox/db" VERSION="2026113000" COMMENT="XMLDB file for Moodle mod_classroomtoolbox"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd">
   <TABLES>
-    <TABLE NAME="namewheel" COMMENT="One spinning name wheel per activity">
+    <TABLE NAME="classroomtoolbox" COMMENT="One spinning name wheel per activity">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="intro" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="tools" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="wheel" SEQUENCE="false" COMMENT="Comma-separated ids of the tools switched on"/>
         <FIELD NAME="usenrolled" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="1 = put the course participants on the wheel"/>
         <FIELD NAME="colorscheme" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="classic" SEQUENCE="false" COMMENT="Colour scheme id"/>
         <FIELD NAME="names" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Extra names, one per line"/>

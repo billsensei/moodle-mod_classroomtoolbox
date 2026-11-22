@@ -1,0 +1,58 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_classroomtoolbox/toolbox
+
+    The tab shell. Each enabled tool is one panel; the tab bar is only shown when there is more than one tool.
+    The tool HTML is already rendered by that tool's own Moodle template, which is why it is output unescaped.
+
+    Context variables required for this template:
+    * uniqid - unique string used for element ids
+    * hastabs - whether to show the tab bar (more than one tool)
+    * tabs - list of tools: id, label, html (rendered tool), active
+
+    Example context (json):
+    {
+        "uniqid": "abc123",
+        "hastabs": true,
+        "tabs": [
+            {"id": "wheel", "label": "Name wheel", "html": "<p>Wheel</p>", "active": true},
+            {"id": "counter", "label": "Counter", "html": "<p>Counter</p>", "active": false}
+        ]
+    }
+}}
+<div class="mod_classroomtoolbox" data-region="toolbox">
+    {{#hastabs}}
+    <ul class="nav nav-tabs mb-3" role="tablist" aria-label="{{#str}} toolslabel, mod_classroomtoolbox {{/str}}">
+        {{#tabs}}
+        <li class="nav-item" role="presentation">
+            <button type="button" class="nav-link{{#active}} active{{/active}}" role="tab"
+                id="toolbox-tab-{{id}}-{{uniqid}}" aria-controls="toolbox-panel-{{id}}-{{uniqid}}"
+                aria-selected="{{#active}}true{{/active}}{{^active}}false{{/active}}"
+                tabindex="{{#active}}0{{/active}}{{^active}}-1{{/active}}"
+                data-action="select-tool" data-tool="{{id}}">{{label}}</button>
+        </li>
+        {{/tabs}}
+    </ul>
+    {{/hastabs}}
+    {{#tabs}}
+    <div id="toolbox-panel-{{id}}-{{uniqid}}" data-region="tool-panel" data-tool="{{id}}"
+        {{#hastabs}}role="tabpanel" aria-labelledby="toolbox-tab-{{id}}-{{uniqid}}"{{/hastabs}}{{^active}} hidden{{/active}}>
+        {{{html}}}
+    </div>
+    {{/tabs}}
+</div>

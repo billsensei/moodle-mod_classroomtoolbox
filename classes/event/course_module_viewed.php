@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace mod_namewheel\event;
+namespace mod_classroomtoolbox\event;
 
 /**
  * Event: the wheel was viewed.
  *
- * @package    mod_namewheel
+ * @package    mod_classroomtoolbox
  * @copyright  2026 Bill <wrwjpn@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,7 +28,7 @@ class course_module_viewed extends \core\event\course_module_viewed {
      * Initialise the event.
      */
     protected function init() {
-        $this->data['objecttable'] = 'namewheel';
+        $this->data['objecttable'] = 'classroomtoolbox';
         parent::init();
     }
 
@@ -38,6 +38,6 @@ class course_module_viewed extends \core\event\course_module_viewed {
      * @return array
      */
     public static function get_objectid_mapping() {
-        return ['db' => 'namewheel', 'restore' => 'namewheel'];
+        return ['db' => 'classroomtoolbox', 'restore' => 'classroomtoolbox'];
     }
 }

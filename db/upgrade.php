@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Upgrade steps for mod_namewheel.
+ * Upgrade steps for mod_classroomtoolbox.
  *
- * @package    mod_namewheel
+ * @package    mod_classroomtoolbox
  * @copyright  2026 Bill <wrwjpn@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,19 +28,19 @@
  * @param int $oldversion Version being upgraded from.
  * @return bool
  */
-function xmldb_namewheel_upgrade($oldversion) {
+function xmldb_classroomtoolbox_upgrade($oldversion) {
     global $DB;
 
     $dbman = $DB->get_manager();
 
     if ($oldversion < 2026112400) {
         // Colour scheme chosen per wheel.
-        $table = new xmldb_table('namewheel');
+        $table = new xmldb_table('classroomtoolbox');
         $field = new xmldb_field('colorscheme', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL, null, 'classic', 'usenrolled');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        upgrade_mod_savepoint(true, 2026112400, 'namewheel');
+        upgrade_mod_savepoint(true, 2026112400, 'classroomtoolbox');
     }
 
     return true;

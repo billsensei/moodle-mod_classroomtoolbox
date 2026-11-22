@@ -17,7 +17,7 @@
 /**
  * List the name wheels in a course.
  *
- * @package    mod_namewheel
+ * @package    mod_classroomtoolbox
  * @copyright  2026 Bill <wrwjpn@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -29,22 +29,22 @@ $course = $DB->get_record('course', ['id' => $id], '*', MUST_EXIST);
 require_course_login($course);
 
 $coursecontext = context_course::instance($course->id);
-$PAGE->set_url('/mod/namewheel/index.php', ['id' => $id]);
+$PAGE->set_url('/mod/classroomtoolbox/index.php', ['id' => $id]);
 $PAGE->set_context($coursecontext);
-$PAGE->set_title(get_string('modulenameplural', 'mod_namewheel'));
+$PAGE->set_title(get_string('modulenameplural', 'mod_classroomtoolbox'));
 $PAGE->set_heading(format_string($course->fullname, true, ['context' => $coursecontext]));
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('modulenameplural', 'mod_namewheel'));
+echo $OUTPUT->heading(get_string('modulenameplural', 'mod_classroomtoolbox'));
 
 // Only list wheels the user may open (same capability as view.php).
 $instances = array_filter(
-    get_all_instances_in_course('namewheel', $course),
-    fn($instance) => has_capability('mod/namewheel:view', context_module::instance($instance->coursemodule))
+    get_all_instances_in_course('classroomtoolbox', $course),
+    fn($instance) => has_capability('mod/classroomtoolbox:view', context_module::instance($instance->coursemodule))
 );
 if (!$instances) {
     notice(
-        get_string('thereareno', 'moodle', get_string('modulenameplural', 'mod_namewheel')),
+        get_string('thereareno', 'moodle', get_string('modulenameplural', 'mod_classroomtoolbox')),
         new moodle_url('/course/view.php', ['id' => $course->id])
     );
 }
@@ -53,7 +53,7 @@ $table = new html_table();
 $table->head = [get_string('name')];
 foreach ($instances as $instance) {
     $link = html_writer::link(
-        new moodle_url('/mod/namewheel/view.php', ['id' => $instance->coursemodule]),
+        new moodle_url('/mod/classroomtoolbox/view.php', ['id' => $instance->coursemodule]),
         format_string($instance->name, true, ['context' => context_module::instance($instance->coursemodule)])
     );
     $table->data[] = [$link];

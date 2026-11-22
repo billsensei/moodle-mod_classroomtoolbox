@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Restore structure step for mod_namewheel.
+ * Restore structure step for mod_classroomtoolbox.
  *
- * @package    mod_namewheel
+ * @package    mod_classroomtoolbox
  * @category   backup
  * @copyright  2026 Bill <wrwjpn@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -25,24 +25,24 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/mod/namewheel/lib.php');
+require_once($CFG->dirroot . '/mod/classroomtoolbox/lib.php');
 
 /**
  * Defines the restore structure.
  *
- * @package    mod_namewheel
+ * @package    mod_classroomtoolbox
  * @category   backup
  * @copyright  2026 Bill <wrwjpn@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class restore_namewheel_activity_structure_step extends restore_activity_structure_step {
+class restore_classroomtoolbox_activity_structure_step extends restore_activity_structure_step {
     /**
      * Define the paths.
      *
      * @return array
      */
     protected function define_structure() {
-        return $this->prepare_activity_structure([new restore_path_element('namewheel', '/activity/namewheel')]);
+        return $this->prepare_activity_structure([new restore_path_element('classroomtoolbox', '/activity/classroomtoolbox')]);
     }
 
     /**
@@ -50,14 +50,15 @@ class restore_namewheel_activity_structure_step extends restore_activity_structu
      *
      * @param array $data Row data.
      */
-    protected function process_namewheel($data) {
+    protected function process_classroomtoolbox($data) {
         global $DB;
 
         $data = (object) $data;
         $data->course = $this->get_courseid();
-        $data->colorscheme = namewheel_clean_color_scheme($data->colorscheme ?? null);
+        $data->colorscheme = classroomtoolbox_clean_color_scheme($data->colorscheme ?? null);
+        $data->tools = \mod_classroomtoolbox\local\toolbox::serialise(explode(',', $data->tools ?? ''));
         $data->timemodified = $this->apply_date_offset($data->timemodified);
-        $newitemid = $DB->insert_record('namewheel', $data);
+        $newitemid = $DB->insert_record('classroomtoolbox', $data);
         $this->apply_activity_instance($newitemid);
     }
 
@@ -65,6 +66,6 @@ class restore_namewheel_activity_structure_step extends restore_activity_structu
      * Restore the intro files.
      */
     protected function after_execute() {
-        $this->add_related_files('mod_namewheel', 'intro', null);
+        $this->add_related_files('mod_classroomtoolbox', 'intro', null);
     }
 }

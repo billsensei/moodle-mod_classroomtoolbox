@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Library of interface functions for mod_namewheel.
+ * Library of interface functions for mod_classroomtoolbox.
  *
- * @package    mod_namewheel
+ * @package    mod_classroomtoolbox
  * @copyright  2026 Bill <wrwjpn@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,7 +28,7 @@
  * @param string $feature FEATURE_* constant.
  * @return mixed True/false/null.
  */
-function namewheel_supports($feature) {
+function classroomtoolbox_supports($feature) {
     switch ($feature) {
         case FEATURE_MOD_INTRO:
         case FEATURE_SHOW_DESCRIPTION:
@@ -52,7 +52,7 @@ function namewheel_supports($feature) {
  *
  * @return array[] Keyed by scheme id.
  */
-function namewheel_color_schemes(): array {
+function classroomtoolbox_color_schemes(): array {
     return [
         'classic' => [
             'colors' => ['#3369e8', '#d50f25', '#eeb211', '#009925', '#8e44ad', '#e67e22', '#16a0a0', '#c2185b'],
@@ -84,25 +84,43 @@ function namewheel_color_schemes(): array {
  * @param string|null $id Stored value.
  * @return string
  */
-function namewheel_clean_color_scheme(?string $id): string {
-    return array_key_exists((string) $id, namewheel_color_schemes()) ? $id : 'classic';
+function classroomtoolbox_clean_color_scheme(?string $id): string {
+    return array_key_exists((string) $id, classroomtoolbox_color_schemes()) ? $id : 'classic';
+}
+
+/**
+ * Build the stored tools list from the tool_<id> checkboxes of the settings form.
+ *
+ * @param stdClass $data Form data.
+ * @return string Comma-separated tool ids.
+ */
+function classroomtoolbox_tools_from_data(stdClass $data): string {
+    $ids = [];
+    foreach (\mod_classroomtoolbox\local\toolbox::all_ids() as $id) {
+        $field = 'tool_' . $id;
+        if (!empty($data->$field)) {
+            $ids[] = $id;
+        }
+    }
+    return \mod_classroomtoolbox\local\toolbox::serialise($ids);
 }
 
 /**
  * Add a new instance.
  *
  * @param stdClass $data Form data.
- * @param mod_namewheel_mod_form|null $mform The form.
+ * @param mod_classroomtoolbox_mod_form|null $mform The form.
  * @return int New instance id.
  */
-function namewheel_add_instance($data, $mform = null) {
+function classroomtoolbox_add_instance($data, $mform = null) {
     global $DB;
 
     $data->timemodified = time();
     $data->usenrolled = empty($data->usenrolled) ? 0 : 1;
-    $data->colorscheme = namewheel_clean_color_scheme($data->colorscheme ?? null);
+    $data->colorscheme = classroomtoolbox_clean_color_scheme($data->colorscheme ?? null);
+    $data->tools = classroomtoolbox_tools_from_data($data);
     $data->names = $data->names ?? '';
-    $data->id = $DB->insert_record('namewheel', $data);
+    $data->id = $DB->insert_record('classroomtoolbox', $data);
     return $data->id;
 }
 
@@ -110,18 +128,19 @@ function namewheel_add_instance($data, $mform = null) {
  * Update an instance.
  *
  * @param stdClass $data Form data.
- * @param mod_namewheel_mod_form|null $mform The form.
+ * @param mod_classroomtoolbox_mod_form|null $mform The form.
  * @return bool
  */
-function namewheel_update_instance($data, $mform = null) {
+function classroomtoolbox_update_instance($data, $mform = null) {
     global $DB;
 
     $data->timemodified = time();
     $data->id = $data->instance;
     $data->usenrolled = empty($data->usenrolled) ? 0 : 1;
-    $data->colorscheme = namewheel_clean_color_scheme($data->colorscheme ?? null);
+    $data->colorscheme = classroomtoolbox_clean_color_scheme($data->colorscheme ?? null);
+    $data->tools = classroomtoolbox_tools_from_data($data);
     $data->names = $data->names ?? '';
-    return $DB->update_record('namewheel', $data);
+    return $DB->update_record('classroomtoolbox', $data);
 }
 
 /**
@@ -130,13 +149,13 @@ function namewheel_update_instance($data, $mform = null) {
  * @param int $id Instance id.
  * @return bool
  */
-function namewheel_delete_instance($id) {
+function classroomtoolbox_delete_instance($id) {
     global $DB;
 
-    if (!$DB->record_exists('namewheel', ['id' => $id])) {
+    if (!$DB->record_exists('classroomtoolbox', ['id' => $id])) {
         return false;
     }
-    $DB->delete_records('namewheel', ['id' => $id]);
+    $DB->delete_records('classroomtoolbox', ['id' => $id]);
     return true;
 }
 
@@ -146,7 +165,7 @@ function namewheel_delete_instance($id) {
  * @param string $text One name per line.
  * @return string[]
  */
-function namewheel_parse_names(string $text): array {
+function classroomtoolbox_parse_names(string $text): array {
     $names = [];
     foreach (preg_split('/\R/u', $text) as $line) {
         $line = trim($line);
@@ -160,19 +179,19 @@ function namewheel_parse_names(string $text): array {
 /**
  * Mark the activity as viewed for completion and log the view.
  *
- * @param stdClass $namewheel Instance record.
+ * @param stdClass $classroomtoolbox Instance record.
  * @param stdClass $course Course record.
  * @param stdClass $cm Course module record.
  * @param context_module $context Module context.
  */
-function namewheel_view($namewheel, $course, $cm, $context) {
-    $event = \mod_namewheel\event\course_module_viewed::create([
-        'objectid' => $namewheel->id,
+function classroomtoolbox_view($classroomtoolbox, $course, $cm, $context) {
+    $event = \mod_classroomtoolbox\event\course_module_viewed::create([
+        'objectid' => $classroomtoolbox->id,
         'context' => $context,
     ]);
     $event->add_record_snapshot('course_modules', $cm);
     $event->add_record_snapshot('course', $course);
-    $event->add_record_snapshot('namewheel', $namewheel);
+    $event->add_record_snapshot('classroomtoolbox', $classroomtoolbox);
     $event->trigger();
 
     $completion = new completion_info($course);

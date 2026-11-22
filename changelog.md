@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.5.0 - 2026-11-30
+
+- **Renamed to Classroom Toolbox** (`mod_classroomtoolbox`), a clean new plugin: the Moodle component cannot be renamed in place. The old `mod_namewheel` is left untouched; see `cli/migrate_from_namewheel.php` to move existing wheels across.
+- New tab shell with a tool registry: each tool is a tab, switched on per activity in the settings (**Tools** section). The tab bar only appears when more than one tool is on.
+- The name wheel is now the first tool (`wheel`); its behaviour is unchanged.
+- New `tools` database field; backup and restore include it.
+- Tests: new registry, tab-shell and wheel-tool tests; existing tests and Behat features renamed.
+
+Everything below is the history of the plugin as `mod_namewheel`.
+
 ## 0.4.4 - 2026-11-29
 
 - Tests: PHPUnit suite and generator (11 tests) and Behat features (8 scenarios).

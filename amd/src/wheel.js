@@ -16,7 +16,7 @@
 /**
  * Spinning wheel of names.
  *
- * @module     mod_namewheel/wheel
+ * @module     mod_classroomtoolbox/wheel
  * @copyright  2026 Bill <wrwjpn@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -44,18 +44,18 @@ const random = () => {
  * @param {Object} config Names and language strings from PHP.
  */
 export const init = (config) => {
-    const root = document.querySelector('[data-region="namewheel"]');
+    const root = document.querySelector('[data-region="wheel"]');
     if (!root) {
         return;
     }
-    const canvas = root.querySelector('[data-region="namewheel-canvas"]');
+    const canvas = root.querySelector('[data-region="wheel-canvas"]');
     const ctx = canvas.getContext('2d');
-    const textarea = root.querySelector('[data-region="namewheel-entries"]');
-    const countEl = root.querySelector('[data-region="namewheel-count"]');
-    const liveEl = root.querySelector('[data-region="namewheel-live"]');
-    const hintEl = root.querySelector('[data-region="namewheel-hint"]');
-    const resultEl = root.querySelector('[data-region="namewheel-result"]');
-    const winnerEl = root.querySelector('[data-region="namewheel-winner"]');
+    const textarea = root.querySelector('[data-region="wheel-entries"]');
+    const countEl = root.querySelector('[data-region="wheel-count"]');
+    const liveEl = root.querySelector('[data-region="wheel-live"]');
+    const hintEl = root.querySelector('[data-region="wheel-hint"]');
+    const resultEl = root.querySelector('[data-region="wheel-result"]');
+    const winnerEl = root.querySelector('[data-region="wheel-winner"]');
     const hub = root.querySelector('[data-action="spin"]');
     const strings = config.strings;
     const COLORS = config.scheme.colors;
@@ -176,7 +176,7 @@ export const init = (config) => {
         }
         spinning = true;
         // Tell Behat (and other automation) that async work is running until the wheel stops.
-        const pending = new Pending('mod_namewheel/wheel:spin');
+        const pending = new Pending('mod_classroomtoolbox/wheel:spin');
         hub.disabled = true;
         hintEl.textContent = strings.spinning;
 
@@ -279,7 +279,7 @@ export const init = (config) => {
     });
 
     // Group chooser: tick several groups to combine them on one wheel.
-    const groupBox = root.querySelector('[data-region="namewheel-groups"]');
+    const groupBox = root.querySelector('[data-region="wheel-groups"]');
     const applyGroups = () => {
         if (spinning) {
             return;
@@ -295,7 +295,7 @@ export const init = (config) => {
             const box = document.createElement('input');
             box.type = 'checkbox';
             box.className = 'form-check-input';
-            box.id = 'namewheel-group-' + g.id;
+            box.id = 'wheel-group-' + g.id;
             box.value = g.id;
             box.checked = true;
             box.addEventListener('change', () => {

@@ -15,23 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Data generator for mod_namewheel.
+ * Data generator for mod_classroomtoolbox.
  *
- * @package    mod_namewheel
+ * @package    mod_classroomtoolbox
  * @category   test
  * @copyright  2026 Bill <wrwjpn@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
- * Data generator for mod_namewheel.
+ * Data generator for mod_classroomtoolbox.
  *
- * @package    mod_namewheel
+ * @package    mod_classroomtoolbox
  * @category   test
  * @copyright  2026 Bill <wrwjpn@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class mod_namewheel_generator extends testing_module_generator {
+class mod_classroomtoolbox_generator extends testing_module_generator {
     /**
      * Create an instance with sensible defaults.
      *
@@ -41,7 +41,7 @@ class mod_namewheel_generator extends testing_module_generator {
      */
     public function create_instance($record = null, ?array $options = null) {
         $record = (object) (array) $record;
-        $defaults = ['usenrolled' => 1, 'colorscheme' => 'classic', 'names' => ''];
+        $defaults = ['usenrolled' => 1, 'colorscheme' => 'classic', 'names' => '', 'tools' => 'wheel'];
         foreach ($defaults as $name => $value) {
             if (!isset($record->$name)) {
                 $record->$name = $value;

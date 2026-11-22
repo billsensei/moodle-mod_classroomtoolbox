@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Backup structure step for mod_namewheel.
+ * Backup structure step for mod_classroomtoolbox.
  *
- * @package    mod_namewheel
+ * @package    mod_classroomtoolbox
  * @category   backup
  * @copyright  2026 Bill <wrwjpn@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -26,22 +26,22 @@
 /**
  * Defines the backup structure.
  *
- * @package    mod_namewheel
+ * @package    mod_classroomtoolbox
  * @category   backup
  * @copyright  2026 Bill <wrwjpn@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class backup_namewheel_activity_structure_step extends backup_activity_structure_step {
+class backup_classroomtoolbox_activity_structure_step extends backup_activity_structure_step {
     /**
      * Define the structure.
      *
      * @return backup_nested_element
      */
     protected function define_structure() {
-        $namewheel = new backup_nested_element('namewheel', ['id'], [
-            'name', 'intro', 'introformat', 'usenrolled', 'colorscheme', 'names', 'timemodified']);
-        $namewheel->set_source_table('namewheel', ['id' => backup::VAR_ACTIVITYID]);
-        $namewheel->annotate_files('mod_namewheel', 'intro', null);
-        return $this->prepare_activity_structure($namewheel);
+        $classroomtoolbox = new backup_nested_element('classroomtoolbox', ['id'], [
+            'name', 'intro', 'introformat', 'tools', 'usenrolled', 'colorscheme', 'names', 'timemodified']);
+        $classroomtoolbox->set_source_table('classroomtoolbox', ['id' => backup::VAR_ACTIVITYID]);
+        $classroomtoolbox->annotate_files('mod_classroomtoolbox', 'intro', null);
+        return $this->prepare_activity_structure($classroomtoolbox);
     }
 }

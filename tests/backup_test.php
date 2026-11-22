@@ -15,15 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tests for backing up and restoring a mod_namewheel activity (via duplication).
+ * Tests for backing up and restoring a mod_classroomtoolbox activity (via duplication).
  *
- * @package    mod_namewheel
+ * @package    mod_classroomtoolbox
  * @category   test
  * @copyright  2026 Bill <wrwjpn@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_namewheel;
+namespace mod_classroomtoolbox;
 
 use PHPUnit\Framework\Attributes\CoversNothing;
 
@@ -36,7 +36,7 @@ require_once($CFG->dirroot . '/course/lib.php');
 /**
  * Backup and restore tests.
  *
- * @package    mod_namewheel
+ * @package    mod_classroomtoolbox
  * @category   test
  * @copyright  2026 Bill <wrwjpn@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -50,19 +50,19 @@ final class backup_test extends \advanced_testcase {
         $this->resetAfterTest();
         $this->setAdminUser();
         $course = $this->getDataGenerator()->create_course();
-        $wheel = $this->getDataGenerator()->create_module('namewheel', [
+        $wheel = $this->getDataGenerator()->create_module('classroomtoolbox', [
             'course' => $course->id,
             'name' => 'Original',
             'names' => "Guest A\nGuest B",
             'colorscheme' => 'highcontrast',
             'usenrolled' => 0,
         ]);
-        $cm = get_coursemodule_from_instance('namewheel', $wheel->id, $course->id);
+        $cm = get_coursemodule_from_instance('classroomtoolbox', $wheel->id, $course->id);
 
         $newcm = duplicate_module($course, get_fast_modinfo($course)->get_cm($cm->id));
         $this->assertNotEmpty($newcm);
 
-        $records = $DB->get_records('namewheel', ['course' => $course->id], 'id');
+        $records = $DB->get_records('classroomtoolbox', ['course' => $course->id], 'id');
         $this->assertCount(2, $records);
         $copy = end($records);
         $this->assertNotEquals($wheel->id, $copy->id);

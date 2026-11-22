@@ -1,10 +1,10 @@
-.mod_namewheel-stage {
+.mod_classroomtoolbox-wheel-stage {
     width: 100%;
     max-width: 600px;
     aspect-ratio: 1 / 1;
 }
 
-.mod_namewheel-canvas {
+.mod_classroomtoolbox-wheel-canvas {
     width: 100%;
     height: 100%;
     cursor: pointer;
@@ -12,12 +12,12 @@
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
 }
 
-.mod_namewheel-canvas:focus-visible {
+.mod_classroomtoolbox-wheel-canvas:focus-visible {
     outline: 3px solid #0f6cbf;
     outline-offset: 4px;
 }
 
-.mod_namewheel-pointer {
+.mod_classroomtoolbox-wheel-pointer {
     position: absolute;
     top: -6px;
     left: 50%;
@@ -31,7 +31,7 @@
     filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.4));
 }
 
-.btn.mod_namewheel-hub {
+.btn.mod_classroomtoolbox-wheel-hub {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -45,7 +45,7 @@
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
 }
 
-.mod_namewheel-result {
+.mod_classroomtoolbox-wheel-result {
     position: fixed;
     inset: 0;
     z-index: 1050;
@@ -55,21 +55,21 @@
     background: rgba(0, 0, 0, 0.55);
 }
 
-.mod_namewheel-result[hidden] {
+.mod_classroomtoolbox-wheel-result[hidden] {
     display: none;
 }
 
-.mod_namewheel-result-box {
+.mod_classroomtoolbox-wheel-result-box {
     width: min(90vw, 520px);
-    animation: mod_namewheel-pop 0.35s ease-out;
+    animation: mod_classroomtoolbox-wheel-pop 0.35s ease-out;
 }
 
-.mod_namewheel-winner {
+.mod_classroomtoolbox-wheel-winner {
     overflow-wrap: anywhere;
     font-weight: 700;
 }
 
-@keyframes mod_namewheel-pop {
+@keyframes mod_classroomtoolbox-wheel-pop {
     from {
         opacity: 0;
         transform: scale(0.7);
@@ -82,7 +82,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .mod_namewheel-result-box {
+    .mod_classroomtoolbox-wheel-result-box {
         animation: none;
     }
 }

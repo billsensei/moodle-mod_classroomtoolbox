@@ -1,4 +1,4 @@
-@mod @mod_namewheel @javascript
+@mod @mod_classroomtoolbox @javascript
 Feature: Combine groups on one wheel
   In order to run an activity with only some of the class
   As a teacher
@@ -33,20 +33,20 @@ Feature: Combine groups on one wheel
       | student3 | GB    |
     And the following "activities" exist:
       | activity  | name     | course | idnumber | groupmode |
-      | namewheel | Pick one | C1     | wheel1   | 2         |
+      | classroomtoolbox | Pick one | C1     | wheel1   | 2         |
 
   Scenario: Ticking groups combines them and removed names stay removed
-    Given I am on the "Pick one" "namewheel activity" page logged in as teacher1
+    Given I am on the "Pick one" "classroomtoolbox activity" page logged in as teacher1
     Then I should see "Group A (2)"
     And I should see "Group B (1)"
     And I should see "Not in any group (1)"
-    And I should see "4 names" in the "[data-region='namewheel-count']" "css_element"
+    And I should see "4 names" in the "[data-region='wheel-count']" "css_element"
     When I press "Select none"
-    Then I should see "0 names" in the "[data-region='namewheel-count']" "css_element"
+    Then I should see "0 names" in the "[data-region='wheel-count']" "css_element"
     When I set the field "Group A (2)" to "1"
-    Then I should see "2 names" in the "[data-region='namewheel-count']" "css_element"
+    Then I should see "2 names" in the "[data-region='wheel-count']" "css_element"
     When I set the field "Group B (1)" to "1"
-    Then I should see "3 names" in the "[data-region='namewheel-count']" "css_element"
+    Then I should see "3 names" in the "[data-region='wheel-count']" "css_element"
     And the field "Names on the wheel" matches multiline:
       """
       Alice Anderson
@@ -54,19 +54,19 @@ Feature: Combine groups on one wheel
       Carla Chen
       """
     When I press "Select all"
-    Then I should see "4 names" in the "[data-region='namewheel-count']" "css_element"
+    Then I should see "4 names" in the "[data-region='wheel-count']" "css_element"
 
   Scenario: A student in separate groups only sees their own group
-    Given I am on the "Pick one" "namewheel activity" page logged in as teacher1
+    Given I am on the "Pick one" "classroomtoolbox activity" page logged in as teacher1
     And I log out
     And the following "activities" exist:
       | activity  | name      | course | idnumber | groupmode |
-      | namewheel | Separate  | C1     | wheel2   | 1         |
-    When I am on the "Separate" "namewheel activity" page logged in as student1
+      | classroomtoolbox | Separate  | C1     | wheel2   | 1         |
+    When I am on the "Separate" "classroomtoolbox activity" page logged in as student1
     Then I should see "Group A (2)"
     And I should not see "Group B"
     And I should not see "Not in any group"
-    And I should see "2 names" in the "[data-region='namewheel-count']" "css_element"
+    And I should see "2 names" in the "[data-region='wheel-count']" "css_element"
     And the field "Names on the wheel" matches multiline:
       """
       Alice Anderson
