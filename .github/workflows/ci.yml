@@ -138,6 +138,14 @@ jobs:
         if: ${{ !cancelled() }}
         run: moodle-plugin-ci phpunit --fail-on-warning
 
+      # moodle-plugin-ci's phpunit command has no option to print PHPUnit notices, so this runs PHPUnit directly once more.
+      # It only shows what the notices that Moodle 5.2 and 5.3 report are; it never fails the build.
+      - name: PHPUnit notice details
+        continue-on-error: true
+        if: ${{ !cancelled() }}
+        working-directory: moodle
+        run: vendor/bin/phpunit --testsuite mod_classroomtoolbox_testsuite --display-notices
+
       - name: Behat features
         id: behat
         if: ${{ !cancelled() }}
