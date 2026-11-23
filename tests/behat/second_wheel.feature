@@ -81,6 +81,21 @@ Feature: A second wheel to split the names
     And I should see "Picked:" in the "(//div[@data-region='wheel-unit'])[1]" "xpath_element"
     And I should see "was removed from the wheel" in the "(//div[@data-region='wheel-live'])[1]" "xpath_element"
 
+  Scenario: Both wheels can spin at the same time and their winners are shown one after the other
+    Given I am on the "Wheels" "classroomtoolbox activity" page logged in as teacher1
+    And I press "Add second wheel"
+    When I start both wheels spinning at once
+    And I wait until the page is ready
+    Then I should see "The winner is" in the "[data-region='wheel-result']" "css_element"
+    When I press "Keep on wheel"
+    Then I should see "The winner is" in the "[data-region='wheel-result']" "css_element"
+    When I press "Keep on wheel"
+    Then "[data-region='wheel-result']" "css_element" should not be visible
+    And I should see "Picked:" in the "(//div[@data-region='wheel-unit'])[1]" "xpath_element"
+    And I should see "Picked:" in the "(//div[@data-region='wheel-unit'])[2]" "xpath_element"
+    And I should see "2 names" in the "(//p[@data-region='wheel-count'])[1]" "xpath_element"
+    And I should see "2 names" in the "(//p[@data-region='wheel-count'])[2]" "xpath_element"
+
   Scenario: Split names again mixes everyone who is still on a wheel and clears the picked names
     Given I am on the "Wheels" "classroomtoolbox activity" page logged in as teacher1
     And I press "Add second wheel"

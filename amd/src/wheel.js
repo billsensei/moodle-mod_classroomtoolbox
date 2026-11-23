@@ -131,6 +131,8 @@ export const init = (config) => {
     const resplitButton = root.querySelector('[data-action="wheel-resplit"]');
     const removeSecondButton = root.querySelector('[data-action="wheel-removesecond"]');
     const units = [];
+    // Results waiting for the winner dialog, when both wheels stop close together: they are shown one after the other.
+    const waiting = [];
     let activeUnit = null;
     let releaseModal = null;
     let hideResult;
@@ -175,7 +177,7 @@ export const init = (config) => {
         }
     };
 
-    const showResult = (unit, index) => {
+    const present = (unit, index) => {
         activeUnit = unit;
         unit.setWinner(index);
         const label = units.length > 1 ? strings.winner + ' (' + unit.title() + ')' : strings.winner;
@@ -189,6 +191,15 @@ export const init = (config) => {
         keepButton.focus();
     };
 
+    // Show a wheel's winner, or put it in line if the dialog is already showing the other wheel's winner.
+    const showResult = (unit, index) => {
+        if (resultEl.hidden) {
+            present(unit, index);
+        } else {
+            waiting.push([unit, index]);
+        }
+    };
+
     hideResult = () => {
         document.removeEventListener('keydown', onDialogKey);
         if (releaseModal) {
@@ -199,6 +210,9 @@ export const init = (config) => {
         if (activeUnit) {
             activeUnit.setWinner(-1);
             activeUnit.focus();
+        }
+        if (waiting.length > 0) {
+            present(...waiting.shift());
         }
     };
 
@@ -304,7 +318,7 @@ export const init = (config) => {
         };
 
         const spin = () => {
-            if (spinning || anySpinning() || names.length === 0 || !resultEl.hidden) {
+            if (spinning || names.length === 0 || !resultEl.hidden) {
                 return;
             }
             spinning = true;

@@ -263,4 +263,17 @@ class behat_mod_classroomtoolbox extends behat_base {
             throw new ExpectationException('A wheel is empty: the names were not split between both', $this->getSession());
         }
     }
+
+    /**
+     * Press both wheels' Spin buttons straight after each other, without waiting for the first wheel to stop, as a
+     * teacher pressing them one after the other would (the ordinary steps wait for a spin to end first).
+     *
+     * @When /^I start both wheels spinning at once$/
+     */
+    public function i_start_both_wheels_spinning_at_once(): void {
+        $this->evaluate_script(
+            '(function () { var hubs = document.querySelectorAll(\'[data-action="spin"]\');' .
+            ' hubs[0].click(); hubs[1].click(); })()'
+        );
+    }
 }

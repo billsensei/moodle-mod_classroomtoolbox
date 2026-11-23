@@ -31,9 +31,10 @@ Each tool is a tab. Teachers choose which tools are on in the activity settings 
 
 ### Second wheel (on the Name wheel tab)
 
-- **Add second wheel** puts a second wheel beside the first and splits the names between the two at random (with an odd number, one wheel gets the extra name). Spin either wheel first, and the other whenever you are ready; the winner dialog says which wheel it came from.
+- **Add second wheel** puts a second wheel beside the first and splits the names between the two at random (with an odd number, one wheel gets the extra name). Spin either wheel first, and the other whenever you are ready, or press both Spin buttons one after the other so that both wheels spin at the same time. The winner dialog says which wheel it came from; if both wheels stop close together, the second winner appears as soon as the first dialog is closed.
 - Nothing is removed automatically: after each spin the teacher chooses **Remove from wheel** or **Keep on wheel**. Under each wheel a "Picked: ..." line shows its last pick, so the pair is easy to see.
 - **Split names again** mixes everyone still on a wheel at random; **Remove second wheel** puts all the names back on one wheel. Each wheel has its own names box; **Reset wheel** and the group tick boxes work across both wheels.
+- While a wheel is spinning, the buttons that change the names (add or remove the second wheel, split again, reset, shuffle, sort and the group tick boxes) wait until all the wheels have stopped.
 - The second wheel is off each time the page opens, and nothing about it is saved.
 
 ### Settings that are remembered
