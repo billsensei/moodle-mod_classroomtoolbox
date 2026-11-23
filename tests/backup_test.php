@@ -45,6 +45,21 @@ require_once($CFG->dirroot . '/course/lib.php');
  */
 final class backup_test extends \advanced_testcase {
     /**
+     * Duplicate an activity the way the course page does. Moodle 5.2 replaced duplicate_module() (now deprecated) with
+     * a method of cmactions; older versions only have the function.
+     *
+     * @param \stdClass $course The course.
+     * @param int $cmid Course module id.
+     * @return \cm_info|null The new course module.
+     */
+    private function duplicate_activity(\stdClass $course, int $cmid) {
+        if (method_exists(\core_courseformat\local\cmactions::class, 'duplicate')) {
+            return (new \core_courseformat\local\cmactions($course))->duplicate($cmid);
+        }
+        return duplicate_module($course, get_fast_modinfo($course)->get_cm($cmid));
+    }
+
+    /**
      * Duplicating an activity keeps its settings, including the colour scheme and typed names.
      */
     public function test_duplicate_keeps_settings(): void {
@@ -66,7 +81,7 @@ final class backup_test extends \advanced_testcase {
         \mod_classroomtoolbox\local\scores::update($wheel->id, $first['id'], $first['label'], 7);
         $cm = get_coursemodule_from_instance('classroomtoolbox', $wheel->id, $course->id);
 
-        $newcm = duplicate_module($course, get_fast_modinfo($course)->get_cm($cm->id));
+        $newcm = $this->duplicate_activity($course, $cm->id);
         $this->assertNotEmpty($newcm);
 
         $records = $DB->get_records('classroomtoolbox', ['course' => $course->id], 'id');
@@ -98,7 +113,7 @@ final class backup_test extends \advanced_testcase {
         $DB->set_field('classroomtoolbox', 'names', $names, ['id' => $wheel->id]);
         $cm = get_coursemodule_from_instance('classroomtoolbox', $wheel->id, $course->id);
 
-        duplicate_module($course, get_fast_modinfo($course)->get_cm($cm->id));
+        $this->duplicate_activity($course, $cm->id);
         $records = $DB->get_records('classroomtoolbox', ['course' => $course->id], 'id');
         $copy = end($records);
         $this->assertNotEquals($wheel->id, $copy->id);
