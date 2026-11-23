@@ -21,21 +21,17 @@
 
     Context variables required for this template:
     * uniqid - unique string used for element ids
-    * region - data-region name of this wheel: wheel, or partners for the partner wheel
-    * partners - whether this is the partner wheel (shows the pairs made so far)
     * hasnames - whether the wheel starts with any names
     * hasgroups - whether the group chooser is shown
 
     Example context (json):
     {
         "uniqid": "abc123",
-        "region": "wheel",
-        "partners": false,
         "hasnames": true,
         "hasgroups": true
     }
 }}
-<div class="mod_classroomtoolbox row mx-0" data-region="{{region}}">
+<div class="mod_classroomtoolbox row mx-0" data-region="wheel">
     <div class="col-lg-8 mb-3">
         <div class="mod_classroomtoolbox-wheel-stage position-relative mx-auto">
             <div class="mod_classroomtoolbox-wheel-pointer" aria-hidden="true"></div>
@@ -48,6 +44,10 @@
         <div class="form-check form-switch d-flex justify-content-center gap-2 mt-2 mb-0 ps-0">
             <input class="form-check-input ms-0" type="checkbox" role="switch" id="wheel-sound-{{uniqid}}" data-action="wheel-sound" checked>
             <label class="form-check-label" for="wheel-sound-{{uniqid}}">{{#str}} sound, mod_classroomtoolbox {{/str}}</label>
+        </div>
+        <div class="form-check form-switch d-flex justify-content-center gap-2 mt-2 mb-0 ps-0">
+            <input class="form-check-input ms-0" type="checkbox" role="switch" id="wheel-partners-{{uniqid}}" data-action="partner-mode">
+            <label class="form-check-label" for="wheel-partners-{{uniqid}}">{{#str}} partner_mode, mod_classroomtoolbox {{/str}}</label>
         </div>
         <p class="text-center text-muted mt-2 mb-0" data-region="wheel-hint">{{#str}} clickhere, mod_classroomtoolbox {{/str}}</p>
         <div class="visually-hidden" role="status" aria-live="polite" data-region="wheel-live"></div>
@@ -81,15 +81,13 @@
                 </div>
             </div>
         </div>
-        {{#partners}}
-        <div class="card mt-3">
+        <div class="card mt-3" data-region="partners-card" hidden>
             <div class="card-body">
                 <h2 class="h5 card-title">{{#str}} partner_pairs, mod_classroomtoolbox {{/str}}</h2>
                 <p class="small text-muted mb-2" data-region="partners-empty">{{#str}} partner_nopairs, mod_classroomtoolbox {{/str}}</p>
                 <ol class="mb-0" data-region="partners-pairs"></ol>
             </div>
         </div>
-        {{/partners}}
     </div>
 
     <div class="mod_classroomtoolbox-wheel-result" data-region="wheel-result" hidden>

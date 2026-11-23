@@ -10,11 +10,10 @@ Each tool is a tab. Teachers choose which tools are on in the activity settings 
 
 | Tool | What it does |
 |---|---|
-| **Name wheel** | Spin a wheel of student names; remove the winner or keep them. |
-| **Partner wheel** | Spin twice to pick a pair of partners; both leave the wheel and the pairs are listed. An odd one out joins the last pair. |
+| **Name wheel** | Spin a wheel of student names; remove the winner or keep them. A **Pick partners** switch makes it spin twice to pick pairs. |
 | **Group generator** | Split the class into random groups, by number of groups or people per group. |
 | **Stopwatch** | Start, stop, lap and reset, with a lap list. |
-| **Timer** | Countdown timers with preset buttons, a hazard siren (five rising whoops, about 4 seconds) and a flash at the end, up to four timers at once, and a **Start all timers** button. |
+| **Timer** | Countdown timers with preset buttons, a choice of alarm sound for each timer and a flash at the end, up to four timers at once, and a **Start all timers** button. |
 | **Counter** | Up to eight named counters with plus, minus and reset. |
 | **Scoreboard** | Teams or names with points, ranked live; the teacher shows it to the class. |
 
@@ -30,15 +29,15 @@ Each tool is a tab. Teachers choose which tools are on in the activity settings 
 - The names box beside the wheel can be edited live; **Shuffle**, **Sort A-Z** and **Reset wheel** are available.
 - Removing a name only changes the current page; reloading restores the full list.
 
-### Partner wheel
+### Pick partners (on the Name wheel tab)
 
-- Spin once for the first person, then **Spin for a partner**; the second spin picks their partner from everyone left. **Next pair** takes both off the wheel and adds them to **Pairs so far**; **Pick someone else** puts the partner back and spins again.
+- Switch on **Pick partners (two spins per pair)** under the wheel. It is off each time the page opens. Spin once for the first person, then **Spin for a partner**; the second spin picks their partner from everyone left. **Next pair** takes both off the wheel and adds them to **Pairs so far**; **Pick someone else** puts the partner back and spins again.
 - If exactly one person is left after a pair, they join that pair, so a class of an odd size ends with one group of three.
-- Same names, group tick boxes, colours and Sound switch as the Name wheel. **Reset wheel** brings everyone back and clears the pairs. Pairs are never saved.
+- Switching it on or off starts a fresh wheel. **Reset wheel** brings everyone back and clears the pairs. Pairs are never saved.
 
 ### Settings that are remembered
 
-Each tool remembers its settings in the browser, per activity, so they are still there after a reload: the open tab, the groups ticked on the wheels and the group generator, the group generator's amount and mode, the timers and their lengths, the counters and their names, and the scoreboard's points per click. Results, running timers, counter values and student names are not saved.
+Each tool remembers its settings in the browser, per activity, so they are still there after a reload: the open tab, the groups ticked on the wheels and the group generator, the group generator's amount and mode, the timers, their lengths and their alarm sounds, the counters and their names, and the scoreboard's points per click. Results, running timers, counter values and student names are not saved.
 
 ### Group generator
 
@@ -58,7 +57,7 @@ Start, stop, **Lap** and reset. Time comes from timestamps, so it stays accurate
 ![Two timers side by side](docs/timer.png)
 
 - Preset buttons (set per activity, default 1, 3, 5, 10 minutes), or type minutes and seconds.
-- A hazard siren (switch it off with **Sound**) and a flashing card when time is up; the end is also announced to screen readers.
+- Each timer has an **Alarm sound** dropdown (Hazard siren, Standard beeps, Alarm clock, Klaxon, Futuristic beeps, Duck quack) and a **Try sound** button that plays it even when Sound is off. The choice is remembered per timer. When time is up the chosen sound plays (switch all sounds off with **Sound**) and the card flashes; the end is also announced to screen readers.
 - Up to four timers at once. **Start all timers** starts every timer that is not already running. The browser is asked to keep the screen on while a timer runs.
 
 ### Counter

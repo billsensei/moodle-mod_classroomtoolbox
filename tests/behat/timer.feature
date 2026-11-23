@@ -79,3 +79,47 @@ Feature: Countdown timers
     And I should see "00:30" in the "(//div[@data-region='timer-card'])[1]//*[@role='timer']" "xpath_element"
     And I should see "02:00" in the "(//div[@data-region='timer-card'])[2]//*[@role='timer']" "xpath_element"
     And I should not see "Pause timer"
+
+  Scenario Outline: Every alarm sound can be tried, even with Sound switched off
+    Given I am on the "Timers" "classroomtoolbox activity" page logged in as teacher1
+    And I install an audio spy
+    And I click on "Sound" "checkbox" in the "[data-region='timer']" "css_element"
+    When I set the field "Alarm sound" to "<sound>"
+    And I press "Try sound"
+    Then at least "<notes>" sounds should have been played
+
+    Examples:
+      | sound            | notes |
+      | Hazard siren     | 10    |
+      | Standard beeps   | 8     |
+      | Alarm clock      | 24    |
+      | Klaxon           | 6     |
+      | Futuristic beeps | 24    |
+      | Duck quack       | 10    |
+
+  Scenario: Each timer has its own sound choice
+    Given I am on the "Timers" "classroomtoolbox activity" page logged in as teacher1
+    And I press "Add timer"
+    And I install an audio spy
+    When I set the field "Alarm sound (Timer 2)" to "Duck quack"
+    And I click on "2 min" "button" in the "(//div[@data-region='timer-card'])[2]" "xpath_element"
+    Then the field "Alarm sound (Timer 1)" matches value "Hazard siren"
+    And the field "Alarm sound (Timer 2)" matches value "Duck quack"
+
+  Scenario: The chosen sounds are remembered after a reload
+    Given I am on the "Timers" "classroomtoolbox activity" page logged in as teacher1
+    And I press "Add timer"
+    When I set the field "Alarm sound (Timer 2)" to "Klaxon"
+    And I reload the page
+    Then the field "Alarm sound (Timer 1)" matches value "Hazard siren"
+    And the field "Alarm sound (Timer 2)" matches value "Klaxon"
+
+  Scenario: A timer that ends plays its chosen sound
+    Given I am on the "Timers" "classroomtoolbox activity" page logged in as teacher1
+    And I install an audio spy
+    And I set the field "Alarm sound" to "Standard beeps"
+    When I set the field "Minutes" to "0"
+    And I set the field "Seconds" to "2"
+    And I press "Start timer"
+    And I wait "3" seconds
+    Then at least "8" sounds should have been played

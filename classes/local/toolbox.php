@@ -35,7 +35,6 @@ class toolbox {
     protected static function classes(): array {
         return [
             tools\wheel::class,
-            tools\partners::class,
             tools\groups::class,
             tools\stopwatch::class,
             tools\timer::class,

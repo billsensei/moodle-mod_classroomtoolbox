@@ -71,8 +71,12 @@ export const init = (config) => {
     // Every timer on the page, so that "Start all timers" can reach them and their lengths can be remembered.
     const controls = new Set();
     const startAllButton = root.querySelector('[data-action="timer-startall"]');
+    const soundSource = root.querySelector('[data-region="timer-sound-source"]');
     const saveSettings = () => {
-        store.save('timer', {totals: [...controls].map((control) => control.total())});
+        store.save('timer', {
+            totals: [...controls].map((control) => control.total()),
+            sounds: [...controls].map((control) => control.kind()),
+        });
     };
 
     // Ask the browser to keep the screen on while a timer runs (projector use). Best effort only.
@@ -104,7 +108,7 @@ export const init = (config) => {
         addButton.disabled = cards.length >= MAX_TIMERS;
     };
 
-    const addTimer = (savedTotal = 0) => {
+    const addTimer = (savedTotal = 0, savedKind = '') => {
         created++;
         const number = created;
         const uid = 'timer-' + number + '-' + Math.random().toString(36).slice(2, 8);
@@ -115,6 +119,7 @@ export const init = (config) => {
             el.setAttribute('aria-label', text + ' (' + title + ')');
         };
         let total = savedTotal || Math.round(presets[0] * 60000);
+        let kind = sound.KINDS.includes(savedKind) ? savedKind : sound.KINDS[0];
         let remaining = total;
         let endAt = 0;
         let interval = null;
@@ -171,6 +176,36 @@ export const init = (config) => {
         const minInput = makeInput('min', strings.timer_minutes, fill(strings.timer_minutesfor, title), 999);
         const secInput = makeInput('sec', strings.timer_seconds, fill(strings.timer_secondsfor, title), 59);
 
+        // Which sound plays when this timer ends: a copy of the chooser from the template, with a button to try it.
+        const chooser = document.createElement('div');
+        chooser.className = 'd-flex justify-content-center align-items-end gap-2 mb-3';
+        const parts = soundSource.content.cloneNode(true);
+        const chooserLabel = parts.querySelector('[data-role="label"]');
+        const chooserSelect = parts.querySelector('[data-role="select"]');
+        const chooserTry = parts.querySelector('[data-role="try"]');
+        chooserSelect.id = uid + '-sound';
+        chooserSelect.value = kind;
+        chooserLabel.htmlFor = chooserSelect.id;
+        // The timer's name is part of the label (hidden from sight), so several timers do not all say just "Alarm sound".
+        const labelSuffix = document.createElement('span');
+        labelSuffix.className = 'visually-hidden';
+        labelSuffix.textContent = ' (' + title + ')';
+        chooserLabel.append(labelSuffix);
+        chooserTry.setAttribute('aria-label', chooserTry.textContent + ' (' + title + ')');
+        const chooserWrap = document.createElement('div');
+        chooserWrap.className = 'text-start';
+        chooserWrap.append(chooserLabel, chooserSelect);
+        chooser.append(chooserWrap, chooserTry);
+        chooserSelect.addEventListener('change', () => {
+            kind = chooserSelect.value;
+            saveSettings();
+        });
+        // Trying a sound plays it even when Sound is switched off, because the teacher asked to hear it.
+        chooserTry.addEventListener('click', () => {
+            sound.prepare();
+            sound.play(kind, true);
+        });
+
         const buttons = document.createElement('div');
         buttons.className = 'd-flex justify-content-center flex-wrap gap-2';
         const toggle = document.createElement('button');
@@ -219,7 +254,7 @@ export const init = (config) => {
             window.setTimeout(() => {
                 liveEl.textContent = fill(strings.timer_doneannounce, title);
             }, 50);
-            sound.alarm();
+            sound.play(kind);
         };
         const tick = () => {
             remaining = Math.max(0, endAt - Date.now());
@@ -277,7 +312,7 @@ export const init = (config) => {
             }
             start();
         });
-        const control = {start, isRunning, total: () => total};
+        const control = {start, isRunning, total: () => total, kind: () => kind};
         controls.add(control);
         reset.addEventListener('click', () => setTotal(total));
         remove.addEventListener('click', () => {
@@ -289,7 +324,7 @@ export const init = (config) => {
             addButton.focus();
         });
 
-        body.append(heading, display, progress, presetRow, custom, buttons);
+        body.append(heading, display, progress, presetRow, custom, chooser, buttons);
         card.append(body);
         col.append(card);
         list.append(col);
@@ -310,12 +345,12 @@ export const init = (config) => {
         });
     });
     // Bring back the timers and lengths from last time (only sensible values).
-    const savedTotals = store.load('timer').totals;
-    const totals = Array.isArray(savedTotals)
-        ? savedTotals.filter((t) => Number.isInteger(t) && t >= 1000 && t <= 59999000).slice(0, MAX_TIMERS)
+    const saved = store.load('timer');
+    const totals = Array.isArray(saved.totals)
+        ? saved.totals.filter((t) => Number.isInteger(t) && t >= 1000 && t <= 59999000).slice(0, MAX_TIMERS)
         : [];
     if (totals.length > 0) {
-        totals.forEach((total) => addTimer(total));
+        totals.forEach((total, i) => addTimer(total, Array.isArray(saved.sounds) ? saved.sounds[i] : ''));
     } else {
         addTimer();
     }

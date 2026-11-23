@@ -54,6 +54,22 @@ function classroomtoolbox_supports($feature) {
 }
 
 /**
+ * The separate partner wheel tool became an option on the name wheel, so give activities that had it the name wheel.
+ *
+ * Used by the upgrade step; it can be run again without harm.
+ */
+function classroomtoolbox_replace_partner_tool(): void {
+    global $DB;
+
+    $rows = $DB->get_records_select('classroomtoolbox', $DB->sql_like('tools', ':pattern'), ['pattern' => '%partners%']);
+    foreach ($rows as $row) {
+        $ids = array_diff(explode(',', $row->tools), ['partners']);
+        $ids[] = 'wheel';
+        $DB->set_field('classroomtoolbox', 'tools', \mod_classroomtoolbox\local\toolbox::serialise($ids), ['id' => $row->id]);
+    }
+}
+
+/**
  * Hide the toolbox from anyone who may not use it, so students do not see it on the course page at all.
  *
  * @param cm_info $cm Course module information.

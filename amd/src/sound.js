@@ -96,9 +96,10 @@ const note = (frequency, delay, length, volume, type) => {
  * Run a sound if sound is on and the browser allows it; never let a sound problem break the tool.
  *
  * @param {Function} play Function that plays notes.
+ * @param {boolean} force Play even when sound is switched off (for a "try this sound" button the teacher pressed).
  */
-const guarded = (play) => {
-    if (!isEnabled() || !context) {
+const guarded = (play, force = false) => {
+    if ((!force && !isEnabled()) || !context) {
         return;
     }
     try {
@@ -123,26 +124,55 @@ export const chime = () => guarded(() => {
 });
 
 /**
- * One "whoop" of a warning siren: a harsh tone whose pitch sweeps up quickly, then stops.
- *
- * Two slightly detuned square waves are layered, which gives the siren its rough, beating edge.
+ * Play one swept tone: a single oscillator whose pitch glides, with a quick rise and fall in volume.
  *
  * @param {number} delay Seconds from now.
- * @param {number} length Seconds the whoop lasts.
+ * @param {number} from Starting pitch in Hz.
+ * @param {number} to Ending pitch in Hz.
+ * @param {number} length Seconds the tone lasts.
+ * @param {number} volume Peak volume from 0 to 1.
+ * @param {string} type Oscillator type.
  */
-const whoop = (delay, length) => {
+const glide = (delay, from, to, length, volume, type) => {
+    const start = context.currentTime + delay;
+    const osc = context.createOscillator();
+    const gain = context.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(from, start);
+    osc.frequency.linearRampToValueAtTime(to, start + length);
+    gain.gain.setValueAtTime(0.0001, start);
+    gain.gain.exponentialRampToValueAtTime(volume, start + 0.01);
+    gain.gain.setValueAtTime(volume, start + length * 0.7);
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + length);
+    osc.connect(gain);
+    gain.connect(context.destination);
+    osc.start(start);
+    osc.stop(start + length + 0.02);
+};
+
+/**
+ * One blast of a horn or siren: two slightly detuned square waves (which give the rough, beating edge) whose pitch
+ * follows the given points, under one volume envelope.
+ *
+ * @param {number} delay Seconds from now.
+ * @param {number} length Seconds the blast lasts.
+ * @param {number[][]} path Pitch points as [fraction of the length, Hz].
+ * @param {number} attack Seconds to fade in.
+ * @param {number} release Seconds to fade out.
+ */
+const horn = (delay, length, path, attack, release) => {
     const start = context.currentTime + delay;
     const gain = context.createGain();
     gain.gain.setValueAtTime(0.0001, start);
-    gain.gain.exponentialRampToValueAtTime(0.48, start + 0.03);
-    gain.gain.setValueAtTime(0.48, start + length - 0.06);
+    gain.gain.exponentialRampToValueAtTime(0.48, start + attack);
+    gain.gain.setValueAtTime(0.48, start + length - release);
     gain.gain.exponentialRampToValueAtTime(0.0001, start + length);
     gain.connect(context.destination);
     [0, 8].forEach((detune) => {
         const osc = context.createOscillator();
         osc.type = 'square';
-        osc.frequency.setValueAtTime(450 + detune, start);
-        osc.frequency.linearRampToValueAtTime(1100 + detune, start + length);
+        osc.frequency.setValueAtTime(path[0][1] + detune, start);
+        path.slice(1).forEach(([at, hz]) => osc.frequency.linearRampToValueAtTime(hz + detune, start + length * at));
         osc.connect(gain);
         osc.start(start);
         osc.stop(start + length + 0.02);
@@ -150,11 +180,87 @@ const whoop = (delay, length) => {
 };
 
 /**
- * A hazard siren for a finished timer, like the alarm in a movie factory when something dangerous has spilled:
- * five rising "whoops" in a row, about 4 seconds in all.
+ * One "quack": a rough, nasal tone whose pitch rises a little and then falls, shaped by a band-pass filter.
+ *
+ * @param {number} delay Seconds from now.
+ * @param {number} pitch Starting pitch in Hz.
  */
-export const alarm = () => guarded(() => {
-    for (let i = 0; i < 5; i++) {
-        whoop(i * 0.8, 0.66);
-    }
-});
+const quack = (delay, pitch) => {
+    const start = context.currentTime + delay;
+    const length = 0.26;
+    const filter = context.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 1100;
+    filter.Q.value = 0.9;
+    const gain = context.createGain();
+    gain.gain.setValueAtTime(0.0001, start);
+    gain.gain.exponentialRampToValueAtTime(0.47, start + 0.015);
+    gain.gain.setValueAtTime(0.47, start + length * 0.55);
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + length);
+    filter.connect(gain);
+    gain.connect(context.destination);
+    // Two saw waves a few tens of Hz apart beat against each other, which gives the growl of a real quack.
+    [0, 55].forEach((detune) => {
+        const osc = context.createOscillator();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(pitch + detune, start);
+        osc.frequency.linearRampToValueAtTime(pitch * 1.35 + detune, start + 0.045);
+        osc.frequency.linearRampToValueAtTime(pitch * 0.62 + detune, start + length);
+        osc.connect(filter);
+        osc.start(start);
+        osc.stop(start + length + 0.02);
+    });
+};
+
+/** @type {Object<string, Function>} Each alarm sound, about three seconds long. */
+const SOUNDS = {
+    // A hazard siren, like the alarm in a movie factory when something dangerous has spilled: five rising whoops.
+    siren: () => {
+        for (let i = 0; i < 5; i++) {
+            horn(i * 0.8, 0.66, [[0, 450], [1, 1100]], 0.03, 0.06);
+        }
+    },
+    // Plain, steady beeping, like a digital watch or a microwave.
+    beeps: () => {
+        for (let i = 0; i < 8; i++) {
+            glide(i * 0.36, 1000, 1000, 0.17, 0.85, 'square');
+        }
+    },
+    // An electric alarm clock: bursts of four quick beeps, six times.
+    clock: () => {
+        for (let burst = 0; burst < 6; burst++) {
+            for (let beep = 0; beep < 4; beep++) {
+                glide(burst * 0.5 + beep * 0.11, 1800, 1800, 0.075, 0.8, 'square');
+            }
+        }
+    },
+    // A submarine dive klaxon: three long "ah-OOO-gah" blasts.
+    klaxon: () => {
+        for (let i = 0; i < 3; i++) {
+            horn(i * 1.3, 1.2, [[0, 300], [0.4, 520], [0.6, 520], [1, 300]], 0.08, 0.15);
+        }
+    },
+    // Science-fiction computer beeps: quick gliding "bee-boo" pairs, with a high blip on top.
+    futuristic: () => {
+        for (let i = 0; i < 8; i++) {
+            glide(i * 0.4, 600, 1800, 0.14, 0.85, 'sine');
+            glide(i * 0.4 + 0.16, 1800, 900, 0.14, 0.85, 'sine');
+            glide(i * 0.4 + 0.32, 2600, 2600, 0.06, 0.4, 'triangle');
+        }
+    },
+    // A duck: five quacks, a little different each time.
+    duck: () => {
+        [[0, 360], [0.5, 330], [1.25, 380], [1.75, 340], [2.25, 300]].forEach(([at, pitch]) => quack(at, pitch));
+    },
+};
+
+/** @type {string[]} The ids of the alarm sounds a timer can use; the first one is the default. */
+export const KINDS = Object.keys(SOUNDS);
+
+/**
+ * Play an alarm sound (for example when a timer ends).
+ *
+ * @param {string} kind One of KINDS; anything else plays the default.
+ * @param {boolean} force Play even when sound is switched off (for a "try this sound" button).
+ */
+export const play = (kind, force = false) => guarded(SOUNDS[kind] || SOUNDS[KINDS[0]], force);

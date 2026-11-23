@@ -25,8 +25,8 @@ Feature: Accessibility checks (axe-core)
       | user     | group |
       | student1 | GA    |
     And the following "activities" exist:
-      | activity         | name    | course | idnumber | tools                                                    | groupmode |
-      | classroomtoolbox | Toolbox | C1     | tb1      | wheel,partners,groups,stopwatch,timer,counter,scoreboard | 2         |
+      | activity         | name    | course | idnumber | tools                                           | groupmode |
+      | classroomtoolbox | Toolbox | C1     | tb1      | wheel,groups,stopwatch,timer,counter,scoreboard | 2         |
     And the scoreboard of "Toolbox" has these entries:
       | label     | score |
       | Team Red  | 12    |
@@ -43,18 +43,18 @@ Feature: Accessibility checks (axe-core)
     And I wait "2" seconds
     Then the "[data-region='wheel-result']" "css_element" should meet accessibility standards with "best-practice" extra tests
 
-  Scenario: Partner wheel tab
+  Scenario: Wheel tab with partner mode on
     Given I am on the "Toolbox" "classroomtoolbox activity" page logged in as teacher1
-    When I click on "Partner wheel" "button" in the "[data-region='toolbox'] [role='tablist']" "css_element"
+    When I click on "Pick partners (two spins per pair)" "checkbox"
     Then the "[data-region='toolbox']" "css_element" should meet accessibility standards with "best-practice" extra tests
 
-  Scenario: Partner wheel result dialog
+  Scenario: Partner mode result dialog
     Given I am on the "Toolbox" "classroomtoolbox activity" page logged in as teacher1
-    When I click on "Partner wheel" "button" in the "[data-region='toolbox'] [role='tablist']" "css_element"
-    And I click on "[data-region='partners'] [data-region='wheel-canvas']" "css_element"
+    When I click on "Pick partners (two spins per pair)" "checkbox"
+    And I press "Spin"
     And I wait until the page is ready
     And I wait "2" seconds
-    Then the "[data-region='partners'] [data-region='wheel-result']" "css_element" should meet accessibility standards with "best-practice" extra tests
+    Then the "[data-region='wheel-result']" "css_element" should meet accessibility standards with "best-practice" extra tests
 
   Scenario: Group generator tab
     Given I am on the "Toolbox" "classroomtoolbox activity" page logged in as teacher1

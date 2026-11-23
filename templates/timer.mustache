@@ -36,6 +36,18 @@
             <label class="form-check-label" for="timer-sound-{{uniqid}}">{{#str}} sound, mod_classroomtoolbox {{/str}}</label>
         </div>
     </div>
+    <template data-region="timer-sound-source">
+        <label class="form-label small mb-0" data-role="label">{{#str}} timer_alarmsound, mod_classroomtoolbox {{/str}}</label>
+        <select class="form-select form-select-sm" data-role="select">
+            <option value="siren">{{#str}} sound_siren, mod_classroomtoolbox {{/str}}</option>
+            <option value="beeps">{{#str}} sound_beeps, mod_classroomtoolbox {{/str}}</option>
+            <option value="clock">{{#str}} sound_clock, mod_classroomtoolbox {{/str}}</option>
+            <option value="klaxon">{{#str}} sound_klaxon, mod_classroomtoolbox {{/str}}</option>
+            <option value="futuristic">{{#str}} sound_futuristic, mod_classroomtoolbox {{/str}}</option>
+            <option value="duck">{{#str}} sound_duck, mod_classroomtoolbox {{/str}}</option>
+        </select>
+        <button type="button" class="btn btn-outline-secondary btn-sm" data-role="try">{{#str}} timer_trysound, mod_classroomtoolbox {{/str}}</button>
+    </template>
     <div class="row g-3" data-region="timer-list"></div>
     <div class="visually-hidden" role="status" aria-live="polite" data-region="timer-live"></div>
 </div>

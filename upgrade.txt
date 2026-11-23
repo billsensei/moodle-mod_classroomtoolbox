@@ -1,6 +1,14 @@
 This files describes API changes in /mod/classroomtoolbox/*,
 information provided here is intended especially for developers.
 
+=== 0.11.0 ===
+* The separate 'partners' tool added in 0.10.0 was removed again: the partner wheel is now a "Pick partners" switch on the
+  name wheel tab (mod_classroomtoolbox/wheel, templates/wheel.mustache). classroomtoolbox_replace_partner_tool() turns
+  a stored 'partners' tool into 'wheel' on upgrade.
+* mod_classroomtoolbox/sound: alarm() was replaced by play(kind, force) and the list KINDS (siren, beeps, clock, klaxon,
+  futuristic, duck). Each timer chooses its sound; the choice is stored with the other timer settings in the browser.
+* The timer template carries the sound chooser in a <template> element that the timer script copies into each card.
+
 === 0.10.0 ===
 * New tool 'partners' (class \mod_classroomtoolbox\local\tools\partners, extends tools\wheel) is registered in
   toolbox::classes() after the wheel. The wheel template and the mod_classroomtoolbox/wheel module take a region name

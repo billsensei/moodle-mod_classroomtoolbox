@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.11.0 - 2026-11-23
+
+- Each timer can use one of six alarm sounds (siren, beeps, alarm clock, klaxon, futuristic beeps, duck quack) with a Try sound button.
+- The Partner wheel is now a "Pick partners" switch on the Name wheel tab instead of a separate tool.
+
 ## 0.10.0 - 2026-11-23
 
 - New Partner wheel tool (two spins pick a pair; an odd one out joins the last pair).

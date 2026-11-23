@@ -1,8 +1,8 @@
-# Changes in 0.10.0 (2026-11-23)
+# Changes in 0.11.0 (2026-11-23)
 
-- **Partner wheel** (new tool): spin twice to pick a pair of partners. The first spin picks the first person, **Spin for a partner** spins for the second, and **Next pair** takes both off the wheel and adds them to the **Pairs so far** list. **Pick someone else** puts the partner back. When one person is left over, they join the last pair, so a class of an odd size ends with one group of three. It uses the same class list, group tick boxes, colours and Sound switch as the Name wheel, and can be on the same page. Existing activities keep their tools: switch it on under Tools in the activity settings.
-- **Settings are remembered** in the browser, per activity, so they survive a reload: the open tab, the ticked groups (wheel, partner wheel and group generator), the group generator's amount and mode, the timers and their lengths, the counters and their names, and the scoreboard's points per click. Results, counter values, running timers and student names are never saved.
-- **Start all timers** button in the timer tab: starts every timer that is not already running, at the same moment.
-- **Timer alarm** is now a hazard siren, like the alarm in a movie factory: five rising whoops, about 4 seconds, as loud as the horn could get without distorting. The Sound switch still silences it.
-- No database changes (version number bump only).
-- Tests: new Partner wheel Behat feature and accessibility checks, remembered-settings and Start all timers scenarios, a check that the two wheels do not mix; 51 PHPUnit tests.
+- **Timer alarm sounds**: each timer now has an **Alarm sound** dropdown with six choices: Hazard siren (the default, as before), Standard beeps, Alarm clock, Klaxon, Futuristic beeps and Duck quack. A **Try sound** button plays the chosen sound, even when the Sound switch is off. The choice is remembered per timer in the browser. The Sound switch still silences timers that finish. The sounds are made in the browser and were levelled so none is much louder than another (the duck is a few dB quieter on purpose).
+- **Partner wheel moved onto the Name wheel tab**: it is no longer a separate tool. The Name wheel has a **Pick partners (two spins per pair)** switch (off each time the page opens). Switching it on or off starts a fresh wheel. Everything else about picking pairs is as in 0.10.0, including the group of three when the class is an odd size.
+- On upgrade, an activity that had the separate Partner wheel tool switched on is given the Name wheel instead, so it keeps the feature.
+- No database schema changes.
+- Fixed while testing: the wheel's start-up data stayed under Moodle's size limit by loading the partner-mode wording only when the switch is first turned on.
+- Tests: the timer sound choices (all six, per timer, remembered, plays when a timer ends), partner mode on the Name wheel, the upgrade migration; 52 PHPUnit tests.

@@ -22,6 +22,7 @@
  */
 
 import Pending from 'core/pending';
+import {get_strings as getStrings} from 'core/str';
 
 import {LIGHT_TEXT, readableText} from 'mod_classroomtoolbox/colour';
 import * as sound from 'mod_classroomtoolbox/sound';
@@ -76,10 +77,7 @@ const random = () => {
  * @param {Object} config Names and language strings from PHP.
  */
 export const init = (config) => {
-    // This module runs both the name wheel and the partner wheel, which picks two people in a row.
-    const tool = config.tool || 'wheel';
-    const partnerMode = Boolean(config.partners);
-    const root = document.querySelector('[data-region="' + tool + '"]');
+    const root = document.querySelector('[data-region="wheel"]');
     if (!root) {
         return;
     }
@@ -100,12 +98,12 @@ export const init = (config) => {
     const selected = new Set(groups.map((g) => g.id));
     const removed = new Set();
     // The groups ticked last time (only groups that still exist), so the same split is there after a reload.
-    const savedGroups = store.load(tool).groups;
+    const savedGroups = store.load('wheel').groups;
     if (Array.isArray(savedGroups) && groups.length > 0) {
         selected.clear();
         groups.filter((g) => savedGroups.includes(g.id)).forEach((g) => selected.add(g.id));
     }
-    const saveSettings = () => store.save(tool, {groups: [...selected]});
+    const saveSettings = () => store.save('wheel', {groups: [...selected]});
 
     // Names currently allowed on the wheel: typed names always, others when one of their groups is ticked.
     const derive = () => pool
@@ -115,14 +113,35 @@ export const init = (config) => {
 
     let names = derive();
 
-    // Partner wheel: the first person of the pair being made waits off the wheel until their partner is picked.
+    // "Pick partners" option: the wheel spins twice to pick a pair. The first person of the pair being made waits off
+    // the wheel until their partner is picked. Off by default, so the wheel behaves as usual each visit.
+    let partnerMode = false;
     let first = null;
+    // The words for partner mode are only fetched when it is first switched on, to keep the wheel's start-up data small.
+    const PARTNER_KEYS = ['first', 'pair', 'spinpartner', 'another', 'next', 'hint', 'notenough', 'made', 'on', 'off'];
+    let partnerStrings = null;
+    const loadPartnerStrings = async() => {
+        if (partnerStrings) {
+            return;
+        }
+        const list = await getStrings(PARTNER_KEYS.map((key) => ({key: 'partner_' + key, component: 'mod_classroomtoolbox'})));
+        partnerStrings = {};
+        PARTNER_KEYS.forEach((key, i) => {
+            partnerStrings[key] = list[i];
+        });
+    };
     const pairs = [];
     const pairsEl = root.querySelector('[data-region="partners-pairs"]');
     const noPairsEl = root.querySelector('[data-region="partners-empty"]');
     const labelEl = root.querySelector('[data-region="wheel-winnerlabel"]');
+    const pairsCard = root.querySelector('[data-region="partners-card"]');
+    const modeSwitch = root.querySelector('[data-action="partner-mode"]');
     const keepButton = root.querySelector('[data-action="keep"]');
     const removeButton = root.querySelector('[data-action="remove"]');
+    // The normal wording of the winner dialog, to put back when partner mode is switched off.
+    const normalLabel = labelEl.textContent;
+    const normalKeep = keepButton.textContent;
+    const normalRemove = removeButton.textContent;
     const joinNames = (list) => {
         try {
             return new Intl.ListFormat(document.documentElement.lang || undefined, {style: 'long', type: 'conjunction'})
@@ -131,11 +150,8 @@ export const init = (config) => {
             return list.join(', ');
         }
     };
-    const idleHint = () => (first === null ? strings.clickhere : strings.partner_hint.replace('{$a}', () => first));
+    const idleHint = () => (first === null ? strings.clickhere : partnerStrings.hint.replace('{$a}', () => first));
     const renderPairs = () => {
-        if (!pairsEl) {
-            return;
-        }
         pairsEl.textContent = '';
         pairs.forEach((members) => {
             const item = document.createElement('li');
@@ -260,18 +276,22 @@ export const init = (config) => {
     const showResult = (index) => {
         winnerIndex = index;
         if (!partnerMode) {
+            labelEl.textContent = normalLabel;
             winnerEl.textContent = names[index];
+            keepButton.textContent = normalKeep;
+            removeButton.textContent = normalRemove;
+            removeButton.hidden = false;
         } else if (first === null) {
             // The first person: the only way on is to go and find their partner.
-            labelEl.textContent = strings.partner_first;
+            labelEl.textContent = partnerStrings.first;
             winnerEl.textContent = names[index];
-            keepButton.textContent = strings.partner_spinpartner;
+            keepButton.textContent = partnerStrings.spinpartner;
             removeButton.hidden = true;
         } else {
-            labelEl.textContent = strings.partner_pair;
+            labelEl.textContent = partnerStrings.pair;
             winnerEl.textContent = joinNames([first, names[index]]);
-            keepButton.textContent = strings.partner_another;
-            removeButton.textContent = strings.partner_next;
+            keepButton.textContent = partnerStrings.another;
+            removeButton.textContent = partnerStrings.next;
             removeButton.hidden = false;
         }
         resultEl.hidden = false;
@@ -298,8 +318,8 @@ export const init = (config) => {
             return;
         }
         if (partnerMode && first === null && names.length < 2) {
-            hintEl.textContent = strings.partner_notenough;
-            announce(strings.partner_notenough);
+            hintEl.textContent = partnerStrings.notenough;
+            announce(partnerStrings.notenough);
             return;
         }
         spinning = true;
@@ -408,7 +428,7 @@ export const init = (config) => {
         renderPairs();
         hideResult();
         hintEl.textContent = idleHint();
-        announce(strings.partner_made.replace('{$a}', () => joinNames(members)));
+        announce(partnerStrings.made.replace('{$a}', () => joinNames(members)));
     };
 
     keepButton.addEventListener('click', () => {
@@ -444,6 +464,35 @@ export const init = (config) => {
             names.sort((a, b) => a.localeCompare(b));
             syncText();
         }
+    });
+    // Switching "Pick partners" on or off starts a fresh wheel, so nobody is stuck half-paired.
+    modeSwitch.addEventListener('change', async() => {
+        if (spinning || !resultEl.hidden) {
+            modeSwitch.checked = partnerMode;
+            return;
+        }
+        const wanted = modeSwitch.checked;
+        if (wanted) {
+            const pending = new Pending('mod_classroomtoolbox/wheel:partnerstrings');
+            try {
+                await loadPartnerStrings();
+            } finally {
+                pending.resolve();
+            }
+            if (modeSwitch.checked !== wanted) {
+                return;
+            }
+        }
+        partnerMode = wanted;
+        pairsCard.hidden = !partnerMode;
+        removed.clear();
+        first = null;
+        pairs.length = 0;
+        renderPairs();
+        hintEl.textContent = strings.clickhere;
+        names = derive();
+        syncText();
+        announce(partnerMode ? partnerStrings.on : partnerStrings.off);
     });
     root.querySelector('[data-action="reset"]').addEventListener('click', () => {
         if (!spinning) {

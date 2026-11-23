@@ -15,13 +15,12 @@ Feature: Switch between the classroom tools
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
     And the following "activities" exist:
-      | activity         | name    | course | idnumber | tools                                                    |
-      | classroomtoolbox | Toolbox | C1     | tb1      | wheel,partners,groups,stopwatch,timer,counter,scoreboard |
+      | activity         | name    | course | idnumber | tools                                           |
+      | classroomtoolbox | Toolbox | C1     | tb1      | wheel,groups,stopwatch,timer,counter,scoreboard |
 
   Scenario: Every tool has a tab and only one shows at a time
     Given I am on the "Toolbox" "classroomtoolbox activity" page logged in as teacher1
     Then I should see "Name wheel" in the "[data-region='toolbox'] [role='tablist']" "css_element"
-    And I should see "Partner wheel" in the "[data-region='toolbox'] [role='tablist']" "css_element"
     And I should see "Group generator" in the "[data-region='toolbox'] [role='tablist']" "css_element"
     And I should see "Stopwatch" in the "[data-region='toolbox'] [role='tablist']" "css_element"
     And I should see "Timer" in the "[data-region='toolbox'] [role='tablist']" "css_element"
@@ -37,17 +36,6 @@ Feature: Switch between the classroom tools
     And "[data-region='sw-display']" "css_element" should not be visible
     When I click on "Name wheel" "button" in the "[data-region='toolbox'] [role='tablist']" "css_element"
     Then "[data-region='wheel-canvas']" "css_element" should be visible
-
-  Scenario: The name wheel and the partner wheel sit side by side without mixing
-    Given I am on the "Toolbox" "classroomtoolbox activity" page logged in as teacher1
-    Then "[data-region='wheel'] [data-region='wheel-canvas']" "css_element" should be visible
-    And "[data-region='partners'] [data-region='wheel-canvas']" "css_element" should not be visible
-    When I click on "Partner wheel" "button" in the "[data-region='toolbox'] [role='tablist']" "css_element"
-    Then "[data-region='partners'] [data-region='wheel-canvas']" "css_element" should be visible
-    And "[data-region='wheel'] [data-region='wheel-canvas']" "css_element" should not be visible
-    And I should see "Pairs so far"
-    When I click on "Name wheel" "button" in the "[data-region='toolbox'] [role='tablist']" "css_element"
-    Then I should not see "Pairs so far"
 
   Scenario: A toolbox with one tool has no tab bar
     Given the following "activities" exist:

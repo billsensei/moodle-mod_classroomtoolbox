@@ -139,5 +139,17 @@ function xmldb_classroomtoolbox_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2026122013, 'classroomtoolbox');
     }
 
+    if ($oldversion < 2026122014) {
+        // The partner wheel is now an option on the name wheel tab, not a separate tool. Activities that had it
+        // switched on get the name wheel instead, so they keep the feature.
+        classroomtoolbox_replace_partner_tool();
+        upgrade_mod_savepoint(true, 2026122014, 'classroomtoolbox');
+    }
+
+    if ($oldversion < 2026122015) {
+        // No schema change: the timer's choice of alarm sounds is code only.
+        upgrade_mod_savepoint(true, 2026122015, 'classroomtoolbox');
+    }
+
     return true;
 }
