@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11.1 - 2026-11-23
+
+- The duck quack alarm sound was rebuilt to sound more like a duck.
+
 ## 0.11.0 - 2026-11-23
 
 - Each timer can use one of six alarm sounds (siren, beeps, alarm clock, klaxon, futuristic beeps, duck quack) with a Try sound button.

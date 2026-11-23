@@ -151,5 +151,10 @@ function xmldb_classroomtoolbox_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2026122015, 'classroomtoolbox');
     }
 
+    if ($oldversion < 2026122016) {
+        // No schema change: the duck quack sound is code only.
+        upgrade_mod_savepoint(true, 2026122016, 'classroomtoolbox');
+    }
+
     return true;
 }
