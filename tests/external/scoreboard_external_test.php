@@ -164,6 +164,22 @@ final class scoreboard_external_test extends \advanced_testcase {
     }
 
     /**
+     * Holding the change capability is not enough: a user who may not open the toolbox is still refused.
+     */
+    public function test_managescores_without_view_is_refused(): void {
+        global $DB;
+        $roleid = $DB->get_field('role', 'id', ['shortname' => 'student'], MUST_EXIST);
+        $cm = get_coursemodule_from_instance('classroomtoolbox', $this->toolbox->id);
+        $context = \context_module::instance($cm->id);
+        assign_capability('mod/classroomtoolbox:managescores', CAP_ALLOW, $roleid, $context->id, true);
+        $this->setUser($this->student);
+        $this->assertFalse(has_capability('mod/classroomtoolbox:view', $context));
+        $this->assertTrue(has_capability('mod/classroomtoolbox:managescores', $context));
+        $this->expectException(\moodle_exception::class);
+        add_scores::execute($this->toolbox->id, ['Sneaky']);
+    }
+
+    /**
      * The activity does not show up for students on the course page, but does for the teacher.
      */
     public function test_toolbox_is_hidden_from_students(): void {

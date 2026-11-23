@@ -1,10 +1,7 @@
-# Changes in 0.9.0 (2026-11-23)
+# Changes in 0.9.1 (2026-11-23)
 
-**The toolbox is now a teacher-only tool.** It is meant to be used by the teacher on the classroom screen, not as something students open.
+Fixes from a security and a privacy audit. No database changes (version number bump only).
 
-- Students no longer have the `mod/classroomtoolbox:view` capability: they cannot open the toolbox, and the activity is hidden from them on the course page and in the course index. Teachers, non-editing teachers and managers keep it.
-- On upgrade, the capability is removed from the student role on existing sites (Site administration > Users > Permissions > Define roles shows this). Anyone can grant it back to a role if they want to.
-- "Completion on view" is no longer offered for this activity, because students never open it.
-- Fix: on a teacher's scoreboard, clicking the "Pause live updates" switch left it focused, which was treated as typing, so the board never refreshed again after unpausing. Only text and number boxes now count as typing.
-- Still kept: the course class list on the wheel and groups, and the saved scoreboard.
-- Tests: Behat now runs as a teacher (or a non-editing teacher for the separate-groups check) and has a scenario showing a student cannot open it or see it; PHPUnit checks the capability defaults, the hidden activity and that a student is refused by every scoreboard service.
+- **Security**: every scoreboard web service now explicitly requires the `mod/classroomtoolbox:view` capability, on top of `managescores` for the services that change data. A student was already refused, because the activity is hidden from them, but this no longer depends on that. A new test covers a user who holds `managescores` without `view`.
+- **Privacy**: deleting all data in an activity context now also empties the activity's list of extra names (which can hold real people's names), not just its scoreboard.
+- Tests: 51 PHPUnit tests; the privacy test now checks the names are cleared for that activity only.

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.1 - 2026-11-23
+
+- Scoreboard services also require the view capability; erasing an activity's data now clears its extra names too.
+
 ## 0.9.0 - 2026-11-23
 
 - Fix: the scoreboard refreshes again after a teacher unpauses it.

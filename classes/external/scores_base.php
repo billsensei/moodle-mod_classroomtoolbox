@@ -62,7 +62,11 @@ abstract class scores_base extends external_api {
         $cm = get_coursemodule_from_instance('classroomtoolbox', $record->id, $record->course, false, MUST_EXIST);
         $context = \context_module::instance($cm->id);
         self::validate_context($context);
-        require_capability($capability, $context);
+        // Everyone must be able to open the toolbox at all; the specific capability is on top of that.
+        require_capability('mod/classroomtoolbox:view', $context);
+        if ($capability !== 'mod/classroomtoolbox:view') {
+            require_capability($capability, $context);
+        }
         if (!in_array('scoreboard', toolbox::parse($record->tools), true)) {
             throw new \moodle_exception('toolnotenabled', 'mod_classroomtoolbox');
         }

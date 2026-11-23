@@ -34,7 +34,7 @@ use mod_classroomtoolbox\local\scores;
  * the labels on the scoreboard (the "Add participants" button copies enrolled users' names there as plain text).
  * These are declared here so they show in the privacy registry. Because nothing ties them to an account, a request
  * or an erasure for one user cannot find them; deleting a scoreboard entry or the whole activity removes them, and
- * deleting all data in an activity context clears that activity's scoreboard.
+ * deleting all data in an activity context clears that activity's scoreboard and its list of extra names.
  *
  * @package    mod_classroomtoolbox
  * @copyright  2026 Bill <wrwjpn@gmail.com>
@@ -71,12 +71,16 @@ class provider implements core_userlist_provider, metadata_provider, request_pro
 
     #[\Override]
     public static function delete_data_for_all_users_in_context(\context $context) {
+        global $DB;
+
         if ($context->contextlevel !== CONTEXT_MODULE) {
             return;
         }
         $cm = get_coursemodule_from_id('classroomtoolbox', $context->instanceid);
         if ($cm) {
             scores::delete_all($cm->instance);
+            // The extra names can be real people's names too, so they go with the scoreboard.
+            $DB->set_field('classroomtoolbox', 'names', '', ['id' => $cm->instance]);
         }
     }
 

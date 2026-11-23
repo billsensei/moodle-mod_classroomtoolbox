@@ -95,14 +95,15 @@ final class provider_test extends provider_testcase {
     }
 
     /**
-     * Deleting all data in an activity context clears that activity's scoreboard and nothing else.
+     * Deleting all data in an activity context clears that activity's scoreboard and extra names, and nothing else.
      */
     public function test_delete_all_in_context_clears_only_that_scoreboard(): void {
+        global $DB;
         $this->resetAfterTest();
         $gen = self::getDataGenerator();
         $course = $gen->create_course();
-        $a = $gen->create_module('classroomtoolbox', ['course' => $course->id, 'tools' => 'scoreboard']);
-        $b = $gen->create_module('classroomtoolbox', ['course' => $course->id, 'tools' => 'scoreboard']);
+        $a = $gen->create_module('classroomtoolbox', ['course' => $course->id, 'tools' => 'scoreboard', 'names' => 'Visitor']);
+        $b = $gen->create_module('classroomtoolbox', ['course' => $course->id, 'tools' => 'scoreboard', 'names' => 'Guest']);
         scores::add($a->id, ['Red', 'Blue']);
         scores::add($b->id, ['Green']);
 
@@ -112,5 +113,7 @@ final class provider_test extends provider_testcase {
         provider::delete_data_for_all_users_in_context(\context_module::instance($a->cmid));
         $this->assertCount(0, scores::get_all($a->id));
         $this->assertCount(1, scores::get_all($b->id));
+        $this->assertSame('', $DB->get_field('classroomtoolbox', 'names', ['id' => $a->id]));
+        $this->assertSame('Guest', $DB->get_field('classroomtoolbox', 'names', ['id' => $b->id]));
     }
 }

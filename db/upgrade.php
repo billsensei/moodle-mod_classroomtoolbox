@@ -128,5 +128,10 @@ function xmldb_classroomtoolbox_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2026122011, 'classroomtoolbox');
     }
 
+    if ($oldversion < 2026122012) {
+        // No schema change: privacy provider and web service checks only.
+        upgrade_mod_savepoint(true, 2026122012, 'classroomtoolbox');
+    }
+
     return true;
 }
