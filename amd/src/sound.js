@@ -179,98 +179,70 @@ const horn = (delay, length, path, attack, release) => {
     });
 };
 
-/**
- * A short burst of noise, used as the "k" at the start of a quack.
- *
- * @returns {AudioBuffer}
- */
-const noiseBurst = () => {
-    const rate = context.sampleRate || 44100;
-    const buffer = context.createBuffer(1, Math.round(rate * 0.03), rate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < data.length; i++) {
-        data[i] = Math.random() * 2 - 1;
-    }
-    return buffer;
-};
+/** @type {number} How hard the quack is pushed into soft saturation (higher is louder and harsher). */
+const QUACK_DRIVE = 6;
 
 /**
- * One "quack". A real quack is a short, harsh, nasal sound: a click of noise at the start ("k"), a vowel whose
- * pitch drops quickly, strong frequency peaks near 800 Hz and 2000 Hz (the nasal sound), and a fast flutter in the
- * volume (the growl of the duck's voice box).
+ * One "quack", modelled on measurements of a real recorded quack (the macOS "Quack" alert, used only as a measuring
+ * example): it lasts about 0.18 s; the voice is low and buzzy, about 145 Hz at the start, rising to about 180 Hz a
+ * hundred milliseconds in and falling to about 140 Hz at the end; most of the sound sits between 1.4 and 2.0 kHz,
+ * with weaker bands near 400 Hz and 2.4 kHz and almost nothing above 4 kHz; the volume rises in about 15 ms, holds,
+ * then fades away.
  *
  * @param {number} delay Seconds from now.
- * @param {number} pitch Starting pitch in Hz.
+ * @param {number} pitch The highest pitch of the voice in Hz (about 180).
  */
 const quack = (delay, pitch) => {
     const start = context.currentTime + delay;
-    const length = 0.21;
+    const length = 0.185;
 
-    // The whole quack's volume: a quick rise, a hold, a fast fall.
+    // The volume: a quick rise, a hold, then a fade that ends in a cut.
     const out = context.createGain();
     out.gain.setValueAtTime(0.0001, start);
-    out.gain.exponentialRampToValueAtTime(0.9, start + 0.012);
-    out.gain.setValueAtTime(0.9, start + length * 0.6);
+    out.gain.exponentialRampToValueAtTime(0.66, start + 0.018);
+    out.gain.setValueAtTime(0.66, start + 0.06);
+    out.gain.exponentialRampToValueAtTime(0.23, start + 0.15);
     out.gain.exponentialRampToValueAtTime(0.0001, start + length);
-    out.connect(context.destination);
-
-    // The growl: the volume flutters about 85 times a second.
-    const flutter = context.createGain();
-    flutter.gain.value = 0.55;
-    // Gentle saturation rounds off the spiky peaks, which makes the quack louder and gives it a harsher edge.
+    // Soft saturation rounds off the spiky peaks of the buzzy voice, so the quack can be as loud as the other alarm
+    // sounds; a low-pass filter then takes away the extra high notes this makes, as the real quack has almost none.
     const saturate = context.createWaveShaper();
-    const curve = new Float32Array(257);
+    const curve = new Float32Array(513);
     curve.forEach((value, i, all) => {
-        all[i] = Math.tanh(1.6 * ((i / 128) - 1));
+        all[i] = Math.tanh(QUACK_DRIVE * ((i / 256) - 1));
     });
     saturate.curve = curve;
-    flutter.connect(saturate);
-    saturate.connect(out);
-    const lfo = context.createOscillator();
-    lfo.frequency.value = 85;
-    const depth = context.createGain();
-    depth.gain.value = 0.45;
-    lfo.connect(depth);
-    depth.connect(flutter.gain);
-    lfo.start(start);
-    lfo.stop(start + length + 0.02);
+    const soften = context.createBiquadFilter();
+    soften.type = 'lowpass';
+    soften.frequency.value = 3800;
+    soften.Q.value = 0.7;
+    out.connect(saturate);
+    saturate.connect(soften);
+    const level = context.createGain();
+    level.gain.value = 0.75;
+    soften.connect(level);
+    level.connect(context.destination);
 
-    // The voice: a buzzy saw wave whose pitch jumps up a little and then falls fast.
+    // The voice: a buzzy saw wave (a train of pulses, which is the growl) that rises and then falls in pitch.
     const voice = context.createOscillator();
     voice.type = 'sawtooth';
-    voice.frequency.setValueAtTime(pitch, start);
-    voice.frequency.linearRampToValueAtTime(pitch * 1.12, start + 0.025);
-    voice.frequency.linearRampToValueAtTime(pitch * 0.55, start + length);
+    voice.frequency.setValueAtTime(pitch * 0.77, start);
+    voice.frequency.linearRampToValueAtTime(pitch, start + 0.115);
+    voice.frequency.linearRampToValueAtTime(pitch * 0.75, start + 0.17);
     voice.start(start);
     voice.stop(start + length + 0.02);
 
-    // The nasal vowel: two narrow frequency peaks, the lower one gliding up as the mouth opens ("kw" to "ack").
-    [[650, 900, 5, 1], [2000, 2200, 6, 0.6]].forEach(([from, to, q, level]) => {
+    // The mouth: three bands of frequencies are let through, the middle one (about 1.6 kHz) the strongest.
+    [[420, 3, 0.5], [850, 3, 1], [1600, 6, 3.4], [2400, 6, 2.2]].forEach(([hz, q, level]) => {
         const filter = context.createBiquadFilter();
         filter.type = 'bandpass';
-        filter.frequency.setValueAtTime(from, start);
-        filter.frequency.linearRampToValueAtTime(to, start + 0.07);
+        filter.frequency.value = hz;
         filter.Q.value = q;
         const mix = context.createGain();
-        mix.gain.value = level * 3;
+        mix.gain.value = level;
         voice.connect(filter);
         filter.connect(mix);
-        mix.connect(flutter);
+        mix.connect(out);
     });
-
-    // The "k": a tiny click of noise.
-    const click = context.createBufferSource();
-    click.buffer = noiseBurst();
-    const clickFilter = context.createBiquadFilter();
-    clickFilter.type = 'bandpass';
-    clickFilter.frequency.value = 1800;
-    clickFilter.Q.value = 1;
-    const clickGain = context.createGain();
-    clickGain.gain.value = 0.5;
-    click.connect(clickFilter);
-    clickFilter.connect(clickGain);
-    clickGain.connect(context.destination);
-    click.start(start);
 };
 
 /** @type {Object<string, Function>} Each alarm sound, about three seconds long. */
@@ -311,8 +283,7 @@ const SOUNDS = {
     },
     // A duck: "quack, quack, quack-quack-quack", each a little lower than the last.
     duck: () => {
-        [[0, 480], [0.42, 450], [0.9, 430], [1.2, 410], [1.5, 390], [1.8, 370], [2.1, 350]]
-            .forEach(([at, pitch]) => quack(at, pitch));
+        [[0, 185], [0.5, 178], [1, 172], [1.35, 166], [1.7, 160], [2.05, 154]].forEach(([at, pitch]) => quack(at, pitch));
     },
 };
 

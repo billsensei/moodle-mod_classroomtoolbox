@@ -95,7 +95,7 @@ Feature: Countdown timers
       | Alarm clock      | 24    |
       | Klaxon           | 6     |
       | Futuristic beeps | 24    |
-      | Duck quack       | 10    |
+      | Duck quack       | 6     |
 
   Scenario: Each timer has its own sound choice
     Given I am on the "Timers" "classroomtoolbox activity" page logged in as teacher1

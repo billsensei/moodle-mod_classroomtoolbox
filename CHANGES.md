@@ -1,6 +1,6 @@
-# Changes in 0.11.1 (2026-11-23)
+# Changes in 0.11.2 (2026-11-23)
 
-- **Duck quack** (one of the timer's alarm sounds) was rebuilt to sound more like a real duck. Each quack now has a short "k" click, a buzzy voice whose pitch jumps up and then falls fast, two nasal frequency peaks (about 800 Hz and 2000 Hz), a fast growl in the volume and a little saturation for harshness. It plays seven quacks, "quack, quack, quack-quack-quack", each a little lower than the last, about 2.3 seconds in all. Measured with the browser's audio engine: average level -11 dB, peak 0.96 (no clipping), and the energy has the two-peak shape of a nasal quack. It was built from how quacks are described acoustically, not from a recording.
+- **Duck quack** (one of the timer's alarm sounds) was rebuilt again, this time tuned against measurements of a real recorded quack (the macOS "Quack" sound, used only as a measuring example: no recording is included). The real quack turned out to be low and buzzy (about 145 Hz rising to 182 Hz and falling to 138 Hz over 0.17 s), with most of its energy between 1.4 and 2.0 kHz and almost none above 4 kHz, and no separate noise click. The new quack follows that: the same pitch contour and growl, three formant bands that match the measured spectrum within about 2 dB per band (except above 4 kHz), a similar volume shape, and soft saturation with a low-pass filter so it is as loud as the real clip (average -10.7 dB, peak 0.94). The alarm plays six quacks, each a little lower than the last, about 2.2 seconds in all.
 - The other five sounds are unchanged.
 - No database changes (version number bump only).
-- Tests: the audio spy used by the Behat tests understands the extra audio parts the quack needs.
+- Tests: the Behat check for the duck now expects six notes (one voice per quack).

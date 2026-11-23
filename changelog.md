@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11.2 - 2026-11-23
+
+- The duck quack alarm sound was rebuilt, tuned against measurements of a real quack.
+
 ## 0.11.1 - 2026-11-23
 
 - The duck quack alarm sound was rebuilt to sound more like a duck.
