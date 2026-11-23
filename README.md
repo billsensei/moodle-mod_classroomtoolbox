@@ -19,7 +19,7 @@ Each tool is a tab. Teachers choose which tools are on in the activity settings 
 | **Counter** | Up to eight named counters with plus, minus and reset. |
 | **Scoreboard** | Teams or names with points, ranked live; the teacher shows it to the class. |
 
-![The Name wheel tool with the tab bar](docs/screenshot.png)
+![Two wheels side by side, with the names split between them](docs/two-wheels.png)
 
 ### Name wheel
 
@@ -41,6 +41,8 @@ Each tool is a tab. Teachers choose which tools are on in the activity settings 
 - While the wheels are spinning, the buttons that change the names (add or remove the second wheel, split again, reset, shuffle, sort and the group tick boxes) wait until they have stopped.
 - The second wheel is off each time the page opens, and nothing about it is saved.
 
+![Both winners together in one dialog](docs/two-wheels-winners.png)
+
 ### Settings that are remembered
 
 Each tool remembers its settings in the browser, per activity, so they are still there after a reload: the open tab, the groups ticked on the wheels and the group generator, the group generator's amount and mode, the timers, their lengths and their alarm sounds, the counters and their names, and the scoreboard's points per click. Results, running timers, counter values, the names on the wheels and the class list are not saved. **Counter names are saved exactly as the teacher typed them**, so if you name a counter after a student, that name is kept in the browser; on a shared computer, use neutral counter names or clear the browser's site data for this site.
@@ -56,6 +58,8 @@ Each tool remembers its settings in the browser, per activity, so they are still
 
 ### Stopwatch
 
+![The stopwatch with three laps](docs/stopwatch.png)
+
 Start, stop, **Lap** and reset. Time comes from timestamps, so it stays accurate if the tab is in the background.
 
 ### Timer
@@ -67,6 +71,8 @@ Start, stop, **Lap** and reset. Time comes from timestamps, so it stays accurate
 - Up to four timers at once. **Start all timers** starts every timer that is not already running. The browser is asked to keep the screen on while a timer runs.
 
 ### Counter
+
+![Two named counters](docs/counter.png)
 
 Up to eight counters. Rename each one, then raise, lower or reset it.
 
@@ -89,9 +95,16 @@ Every tool is keyboard operable and announces results to screen readers. The whe
 
 Spins, pairs, groups, laps, timers and counts live only in the open page. The tools' settings (see above) are kept in the browser's own storage on the teacher's computer, not on the server. They never include the class list or the names on the wheels, but counter names are saved as typed, so they could include a name if the teacher types one. The scoreboard stores the labels and points a teacher types in; they are plain text, never tied to a user account, and are removed when the entry or the activity is deleted. The plugin keeps no data linked to a user account, and its privacy provider declares the free text it stores so that it shows in Moodle's privacy registry. Note that "Add participants" copies enrolled users' names onto the scoreboard as plain text: after that they are not tied to the account, so deleting a user does not remove them. Remove the entry (or delete the activity) to erase them, and do not copy in more personal data than you need.
 
+## Requirements
+
+- Moodle 5.0 to 5.3 and PHP 8.2 to 8.4 (checked on every push by the CI workflow on Moodle 5.0, 5.1, 5.2 and 5.3, with PostgreSQL and MariaDB).
+- No third-party libraries, no external services and no files to download: the sounds are made in the browser.
+
 ## Install
 
 Copy this folder to `mod/classroomtoolbox` (Moodle 5.0 - 5.3: `public/mod/classroomtoolbox`) and run the Moodle upgrade, or upload the zip under Site administration > Plugins > Install plugins. Add "Classroom Toolbox" to a course as an activity.
+
+![The activity settings: tools, names, colours and timer presets](docs/settings.png)
 
 ### Coming from Name wheel (`mod_namewheel`)
 
@@ -103,6 +116,10 @@ php mod/classroomtoolbox/cli/migrate_from_namewheel.php
 ```
 
 Back up the site first. After checking the activities, uninstall the old plugin.
+
+## Support
+
+Report bugs and ask for features in the [issue tracker](https://github.com/billsensei/moodle-mod_classroomtoolbox/issues). Please say which Moodle and PHP versions you use. Each release is listed in `CHANGES.md` (latest changes) and `changelog.md` (all versions); developer notes are in `upgrade.txt`.
 
 ## Capabilities
 

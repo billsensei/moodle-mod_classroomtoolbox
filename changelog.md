@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.12.3 - 2026-11-23
+
+- Documentation only: new screenshots of every tool, README requirements and support sections; release zips leave out the CI folder.
+
 ## 0.12.2 - 2026-11-23
 
 - One "Spin both wheels" button: the second wheel starts half a second after the first and both winners appear together as "Student 1 and Student 2", with Remove both / Keep both.

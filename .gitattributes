@@ -1,0 +1,3 @@
+# Keep development-only files out of the release zip made by "git archive" (what is uploaded to the Plugins directory).
+/.github export-ignore
+/.gitattributes export-ignore
