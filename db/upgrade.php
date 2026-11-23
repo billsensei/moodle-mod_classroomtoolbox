@@ -161,5 +161,10 @@ function xmldb_classroomtoolbox_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2026122017, 'classroomtoolbox');
     }
 
+    if ($oldversion < 2026122018) {
+        // No schema change: the second wheel on the name wheel tab is code only.
+        upgrade_mod_savepoint(true, 2026122018, 'classroomtoolbox');
+    }
+
     return true;
 }

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.12.0 - 2026-11-23
+
+- Add second wheel button on the Name wheel tab: names are split at random between two wheels, each spun on its own, with nothing removed automatically. Replaces the Pick partners switch.
+
 ## 0.11.2 - 2026-11-23
 
 - The duck quack alarm sound was rebuilt, tuned against measurements of a real quack.

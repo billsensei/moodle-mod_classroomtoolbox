@@ -10,7 +10,7 @@ Each tool is a tab. Teachers choose which tools are on in the activity settings 
 
 | Tool | What it does |
 |---|---|
-| **Name wheel** | Spin a wheel of student names; remove the winner or keep them. A **Pick partners** switch makes it spin twice to pick pairs. |
+| **Name wheel** | Spin a wheel of student names; remove the winner or keep them. An **Add second wheel** button splits the names between two wheels, for picking partners. |
 | **Group generator** | Split the class into random groups, by number of groups or people per group. |
 | **Stopwatch** | Start, stop, lap and reset, with a lap list. |
 | **Timer** | Countdown timers with preset buttons, a choice of alarm sound for each timer and a flash at the end, up to four timers at once, and a **Start all timers** button. |
@@ -29,11 +29,12 @@ Each tool is a tab. Teachers choose which tools are on in the activity settings 
 - The names box beside the wheel can be edited live; **Shuffle**, **Sort A-Z** and **Reset wheel** are available.
 - Removing a name only changes the current page; reloading restores the full list.
 
-### Pick partners (on the Name wheel tab)
+### Second wheel (on the Name wheel tab)
 
-- Switch on **Pick partners (two spins per pair)** under the wheel. It is off each time the page opens. Spin once for the first person, then **Spin for a partner**; the second spin picks their partner from everyone left. **Next pair** takes both off the wheel and adds them to **Pairs so far**; **Pick someone else** puts the partner back and spins again.
-- If exactly one person is left after a pair, they join that pair, so a class of an odd size ends with one group of three.
-- Switching it on or off starts a fresh wheel. **Reset wheel** brings everyone back and clears the pairs. Pairs are never saved.
+- **Add second wheel** puts a second wheel beside the first and splits the names between the two at random (with an odd number, one wheel gets the extra name). Spin either wheel first, and the other whenever you are ready; the winner dialog says which wheel it came from.
+- Nothing is removed automatically: after each spin the teacher chooses **Remove from wheel** or **Keep on wheel**. Under each wheel a "Picked: ..." line shows its last pick, so the pair is easy to see.
+- **Split names again** mixes everyone still on a wheel at random; **Remove second wheel** puts all the names back on one wheel. Each wheel has its own names box; **Reset wheel** and the group tick boxes work across both wheels.
+- The second wheel is off each time the page opens, and nothing about it is saved.
 
 ### Settings that are remembered
 

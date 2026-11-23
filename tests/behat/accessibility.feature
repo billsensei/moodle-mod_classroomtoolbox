@@ -43,15 +43,15 @@ Feature: Accessibility checks (axe-core)
     And I wait "2" seconds
     Then the "[data-region='wheel-result']" "css_element" should meet accessibility standards with "best-practice" extra tests
 
-  Scenario: Wheel tab with partner mode on
+  Scenario: Wheel tab with a second wheel
     Given I am on the "Toolbox" "classroomtoolbox activity" page logged in as teacher1
-    When I click on "Pick partners (two spins per pair)" "checkbox"
+    When I press "Add second wheel"
     Then the "[data-region='toolbox']" "css_element" should meet accessibility standards with "best-practice" extra tests
 
-  Scenario: Partner mode result dialog
+  Scenario: Result dialog of the second wheel
     Given I am on the "Toolbox" "classroomtoolbox activity" page logged in as teacher1
-    When I click on "Pick partners (two spins per pair)" "checkbox"
-    And I press "Spin"
+    When I press "Add second wheel"
+    And I press "Spin (Wheel 2)"
     And I wait until the page is ready
     And I wait "2" seconds
     Then the "[data-region='wheel-result']" "css_element" should meet accessibility standards with "best-practice" extra tests

@@ -1,6 +1,13 @@
 This files describes API changes in /mod/classroomtoolbox/*,
 information provided here is intended especially for developers.
 
+=== 0.12.0 ===
+* The "Pick partners" switch of 0.11.0 was replaced by an "Add second wheel" button on the name wheel tab. The
+  mod_classroomtoolbox/wheel module now makes each wheel as its own unit (canvas, spin, names list) and shares the winner
+  dialog, group chooser and sound switch. The wheel template has data-region attributes wheel-unit, wheel-stagecol and
+  wheel-namescard that the script copies for the second wheel. The partner_* language strings were removed and wheel_*
+  strings added. classroomtoolbox_replace_partner_tool() is kept for activities that still list the old tool.
+
 === 0.11.0 ===
 * The separate 'partners' tool added in 0.10.0 was removed again: the partner wheel is now a "Pick partners" switch on the
   name wheel tab (mod_classroomtoolbox/wheel, templates/wheel.mustache). classroomtoolbox_replace_partner_tool() turns

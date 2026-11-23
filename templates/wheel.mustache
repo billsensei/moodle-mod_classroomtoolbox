@@ -32,25 +32,30 @@
     }
 }}
 <div class="mod_classroomtoolbox row mx-0" data-region="wheel">
-    <div class="col-lg-8 mb-3">
-        <div class="mod_classroomtoolbox-wheel-stage position-relative mx-auto">
-            <div class="mod_classroomtoolbox-wheel-pointer" aria-hidden="true"></div>
-            <canvas class="mod_classroomtoolbox-wheel-canvas" data-region="wheel-canvas" tabindex="0" role="button"
-                aria-label="{{#str}} clickhere, mod_classroomtoolbox {{/str}}" width="600" height="600"></canvas>
-            <button type="button" class="mod_classroomtoolbox-wheel-hub btn btn-primary" data-action="spin">
-                {{#str}} spin, mod_classroomtoolbox {{/str}}
-            </button>
+    <div class="col-lg-8 mb-3" data-region="wheel-stagecol">
+        <div data-region="wheel-unit">
+            <h2 class="h5 text-center" data-region="wheel-title" hidden></h2>
+            <div class="mod_classroomtoolbox-wheel-stage position-relative mx-auto">
+                <div class="mod_classroomtoolbox-wheel-pointer" aria-hidden="true"></div>
+                <canvas class="mod_classroomtoolbox-wheel-canvas" data-region="wheel-canvas" tabindex="0" role="button"
+                    aria-label="{{#str}} clickhere, mod_classroomtoolbox {{/str}}" width="600" height="600"></canvas>
+                <button type="button" class="mod_classroomtoolbox-wheel-hub btn btn-primary" data-action="spin">
+                    {{#str}} spin, mod_classroomtoolbox {{/str}}
+                </button>
+            </div>
+            <p class="text-center text-muted mt-2 mb-0" data-region="wheel-hint">{{#str}} clickhere, mod_classroomtoolbox {{/str}}</p>
+            <p class="text-center fw-bold mt-1 mb-0" data-region="wheel-picked" hidden></p>
+            <div class="visually-hidden" role="status" aria-live="polite" data-region="wheel-live"></div>
         </div>
         <div class="form-check form-switch d-flex justify-content-center gap-2 mt-2 mb-0 ps-0">
             <input class="form-check-input ms-0" type="checkbox" role="switch" id="wheel-sound-{{uniqid}}" data-action="wheel-sound" checked>
             <label class="form-check-label" for="wheel-sound-{{uniqid}}">{{#str}} sound, mod_classroomtoolbox {{/str}}</label>
         </div>
-        <div class="form-check form-switch d-flex justify-content-center gap-2 mt-2 mb-0 ps-0">
-            <input class="form-check-input ms-0" type="checkbox" role="switch" id="wheel-partners-{{uniqid}}" data-action="partner-mode">
-            <label class="form-check-label" for="wheel-partners-{{uniqid}}">{{#str}} partner_mode, mod_classroomtoolbox {{/str}}</label>
+        <div class="d-flex justify-content-center flex-wrap gap-2 mt-3">
+            <button type="button" class="btn btn-outline-secondary btn-sm" data-action="wheel-add">{{#str}} wheel_add, mod_classroomtoolbox {{/str}}</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm" data-action="wheel-resplit" hidden>{{#str}} wheel_resplit, mod_classroomtoolbox {{/str}}</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm" data-action="wheel-removesecond" hidden>{{#str}} wheel_removesecond, mod_classroomtoolbox {{/str}}</button>
         </div>
-        <p class="text-center text-muted mt-2 mb-0" data-region="wheel-hint">{{#str}} clickhere, mod_classroomtoolbox {{/str}}</p>
-        <div class="visually-hidden" role="status" aria-live="polite" data-region="wheel-live"></div>
     </div>
     <div class="col-lg-4">
         {{#hasgroups}}
@@ -67,7 +72,7 @@
             </div>
         </div>
         {{/hasgroups}}
-        <div class="card">
+        <div class="card" data-region="wheel-namescard">
             <div class="card-body">
                 <h2 class="h5 card-title">
                     <label for="wheel-entries-{{uniqid}}">{{#str}} entries, mod_classroomtoolbox {{/str}}</label>
@@ -79,13 +84,6 @@
                     <button type="button" class="btn btn-secondary btn-sm" data-action="sort">{{#str}} sort, mod_classroomtoolbox {{/str}}</button>
                     <button type="button" class="btn btn-secondary btn-sm" data-action="reset">{{#str}} resetwheel, mod_classroomtoolbox {{/str}}</button>
                 </div>
-            </div>
-        </div>
-        <div class="card mt-3" data-region="partners-card" hidden>
-            <div class="card-body">
-                <h2 class="h5 card-title">{{#str}} partner_pairs, mod_classroomtoolbox {{/str}}</h2>
-                <p class="small text-muted mb-2" data-region="partners-empty">{{#str}} partner_nopairs, mod_classroomtoolbox {{/str}}</p>
-                <ol class="mb-0" data-region="partners-pairs"></ol>
             </div>
         </div>
     </div>

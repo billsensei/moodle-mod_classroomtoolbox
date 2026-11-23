@@ -87,10 +87,10 @@ final class tools_test extends \advanced_testcase {
             // The page title is the h1, so tool headings start at h2 (no skipped level).
             $this->assertStringNotContainsString('<h3', $html, $id);
         }
-        // "Pick partners" is an option on the name wheel, off until the teacher switches it on.
+        // A second wheel can be added from the name wheel tab; it is not a separate tool.
         $html = $tools['wheel']->render($cm, $course, $row, $context);
-        $this->assertStringContainsString('data-action="partner-mode"', $html);
-        $this->assertStringContainsString('data-region="partners-pairs"', $html);
+        $this->assertStringContainsString('data-action="wheel-add"', $html);
+        $this->assertStringNotContainsString('partner-mode', $html);
     }
 
     /**

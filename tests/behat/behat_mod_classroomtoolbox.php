@@ -233,4 +233,34 @@ class behat_mod_classroomtoolbox extends behat_base {
             );
         }
     }
+
+    /**
+     * Check that the two wheels together hold exactly these names, each on one wheel only, and neither is empty.
+     *
+     * @Then /^the two wheels should share the names "(?P<names>(?:[^"]|\\")*)" between them$/
+     * @param string $names Comma-separated names.
+     */
+    public function the_two_wheels_should_share_the_names(string $names): void {
+        $this->wait_for_pending_js();
+        $lists = json_decode($this->evaluate_script(
+            'JSON.stringify([...document.querySelectorAll(\'[data-region="wheel-entries"]\')].map(function (box) {' .
+            ' return box.value.split(/\\r?\\n/).filter(function (n) { return n.trim() !== \'\'; }); }))'
+        ), true);
+        if (!is_array($lists) || count($lists) !== 2) {
+            throw new ExpectationException('Expected two wheels with names boxes', $this->getSession());
+        }
+        $expected = array_map('trim', explode(',', $names));
+        sort($expected);
+        $heard = array_merge($lists[0], $lists[1]);
+        sort($heard);
+        if ($heard !== $expected) {
+            throw new ExpectationException(
+                'The wheels hold ' . implode(', ', $heard) . ' but expected ' . implode(', ', $expected),
+                $this->getSession()
+            );
+        }
+        if (count($lists[0]) === 0 || count($lists[1]) === 0) {
+            throw new ExpectationException('A wheel is empty: the names were not split between both', $this->getSession());
+        }
+    }
 }

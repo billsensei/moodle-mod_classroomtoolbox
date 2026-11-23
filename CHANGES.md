@@ -1,6 +1,9 @@
-# Changes in 0.11.2 (2026-11-23)
+# Changes in 0.12.0 (2026-11-23)
 
-- **Duck quack** (one of the timer's alarm sounds) was rebuilt again, this time tuned against measurements of a real recorded quack (the macOS "Quack" sound, used only as a measuring example: no recording is included). The real quack turned out to be low and buzzy (about 145 Hz rising to 182 Hz and falling to 138 Hz over 0.17 s), with most of its energy between 1.4 and 2.0 kHz and almost none above 4 kHz, and no separate noise click. The new quack follows that: the same pitch contour and growl, three formant bands that match the measured spectrum within about 2 dB per band (except above 4 kHz), a similar volume shape, and soft saturation with a low-pass filter so it is as loud as the real clip (average -10.7 dB, peak 0.94). The alarm plays six quacks, each a little lower than the last, about 2.2 seconds in all.
-- The other five sounds are unchanged.
+- **Second wheel**: the Name wheel tab has a new **Add second wheel** button. The second wheel appears beside the first and the names are split between the two at random (with an odd number, one wheel, chosen at random, gets the extra name). Spin either wheel first, and the other whenever you are ready; each wheel is headed Wheel 1 or Wheel 2 and the winner dialog says which wheel it came from.
+- **Nothing is removed automatically.** After each spin the teacher chooses **Remove from wheel** or **Keep on wheel**, as on the normal wheel. A "Picked: ..." line under each wheel shows its last pick, so the pair is easy to see.
+- **Split names again** mixes everyone still on a wheel at random, and **Remove second wheel** puts all the names back on one wheel. Each wheel has its own names box; **Reset wheel** and the group tick boxes work across both wheels. Only one wheel can spin at a time.
+- The second wheel is off each time the page opens, and nothing about it is saved.
+- **Removed**: the "Pick partners (two spins per pair)" switch from 0.11.0, with its "Pairs so far" list and the group-of-three rule. The second wheel replaces it.
 - No database changes (version number bump only).
-- Tests: the Behat check for the duck now expects six notes (one voice per quack).
+- Tests: 7 new second-wheel scenarios, accessibility checks of the two-wheel page and the second wheel's dialog, and a step that checks the names are shared between the two wheels; 52 PHPUnit tests.
