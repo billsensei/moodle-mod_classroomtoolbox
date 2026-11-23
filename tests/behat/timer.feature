@@ -57,4 +57,25 @@ Feature: Countdown timers
     And I press "Start timer"
     And I wait "3" seconds
     Then ".mod_classroomtoolbox-timer-done" "css_element" should exist
-    And at least "6" sounds should have been played
+    And at least "10" sounds should have been played
+
+  Scenario: Start all timers starts every timer that is not running
+    Given I am on the "Timers" "classroomtoolbox activity" page logged in as teacher1
+    And I press "Add timer"
+    When I press "Start all timers"
+    Then "Pause timer (Timer 1)" "button" should exist
+    And "Pause timer (Timer 2)" "button" should exist
+    And "Start timer (Timer 1)" "button" should not exist
+    When I press "Start all timers"
+    Then "Pause timer (Timer 1)" "button" should exist
+    And "Pause timer (Timer 2)" "button" should exist
+
+  Scenario: The timers and their lengths are remembered after a reload
+    Given I am on the "Timers" "classroomtoolbox activity" page logged in as teacher1
+    And I press "Add timer"
+    And I click on "2 min" "button" in the "(//div[@data-region='timer-card'])[2]" "xpath_element"
+    When I reload the page
+    Then I should see "Timer 2"
+    And I should see "00:30" in the "(//div[@data-region='timer-card'])[1]//*[@role='timer']" "xpath_element"
+    And I should see "02:00" in the "(//div[@data-region='timer-card'])[2]//*[@role='timer']" "xpath_element"
+    And I should not see "Pause timer"

@@ -21,6 +21,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+import * as store from 'mod_classroomtoolbox/store';
+
 const MAX_COUNTERS = 8;
 const LIMIT = 999999;
 
@@ -40,6 +42,13 @@ export const init = (config) => {
     const fill = (text, value) => text.replace('{$a}', () => value);
     let created = 0;
 
+    // Remember how many counters there are and what they are called (not their values).
+    const saveSettings = () => {
+        store.save('counter', {
+            names: [...list.querySelectorAll('input[type="text"]')].map((input) => input.value),
+        });
+    };
+
     const refresh = () => {
         const cards = list.querySelectorAll('[data-region="counter-card"]');
         cards.forEach((card) => {
@@ -48,7 +57,7 @@ export const init = (config) => {
         addButton.disabled = cards.length >= MAX_COUNTERS;
     };
 
-    const addCounter = () => {
+    const addCounter = (savedName = '') => {
         created++;
         const uid = 'counter-' + created + '-' + Math.random().toString(36).slice(2, 8);
         let value = 0;
@@ -66,7 +75,7 @@ export const init = (config) => {
         nameInput.className = 'form-control form-control-lg text-center fw-bold mb-2';
         nameInput.id = uid + '-name';
         nameInput.name = 'counter_name_' + created;
-        nameInput.value = fill(strings.counter_title, created);
+        nameInput.value = savedName || fill(strings.counter_title, created);
         nameInput.maxLength = 40;
         nameInput.setAttribute('aria-label', strings.counter_name);
 
@@ -116,7 +125,10 @@ export const init = (config) => {
             show();
         };
 
-        nameInput.addEventListener('input', labels);
+        nameInput.addEventListener('input', () => {
+            labels();
+            saveSettings();
+        });
         up.addEventListener('click', () => change(1));
         down.addEventListener('click', () => change(-1));
         reset.addEventListener('click', () => {
@@ -126,6 +138,7 @@ export const init = (config) => {
         remove.addEventListener('click', () => {
             col.remove();
             refresh();
+            saveSettings();
             addButton.focus();
         });
 
@@ -135,8 +148,17 @@ export const init = (config) => {
         list.append(col);
         labels();
         refresh();
+        saveSettings();
     };
 
-    addButton.addEventListener('click', addCounter);
-    addCounter();
+    addButton.addEventListener('click', () => addCounter());
+    const savedNames = store.load('counter').names;
+    const names = Array.isArray(savedNames)
+        ? savedNames.filter((n) => typeof n === 'string').slice(0, MAX_COUNTERS).map((n) => n.slice(0, 40))
+        : [];
+    if (names.length > 0) {
+        names.forEach((name) => addCounter(name));
+    } else {
+        addCounter();
+    }
 };

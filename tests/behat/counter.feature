@@ -37,3 +37,13 @@ Feature: Counters
     When I press "Add counter"
     Then the field "counter_name_2" matches value "Counter 2"
     And I should see "Remove" in the "[data-region='counter-list']" "css_element"
+
+  Scenario: The counters and their names are remembered after a reload, but not their values
+    Given I am on the "Counting" "classroomtoolbox activity" page logged in as teacher1
+    When I set the field "counter_name_1" to "Team Red"
+    And I press "Add counter"
+    And I press "Increase Team Red"
+    And I reload the page
+    Then the field "counter_name_1" matches value "Team Red"
+    And the field "counter_name_2" matches value "Counter 2"
+    And I should not see "1" in the "output" "css_element"

@@ -21,6 +21,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+import * as store from 'mod_classroomtoolbox/store';
+
 /**
  * Initialise the shell.
  */
@@ -45,6 +47,7 @@ export const init = () => {
         if (focus) {
             tab.focus();
         }
+        store.save('shell', {tool: tab.dataset.tool});
         // Tools that size themselves (such as the canvas wheel) redraw on resize.
         window.dispatchEvent(new Event('resize'));
     };
@@ -67,6 +70,12 @@ export const init = () => {
             fullscreen.textContent = on ? exitLabel : enterLabel;
             window.dispatchEvent(new Event('resize'));
         });
+    }
+
+    // Open on the tab that was open last time, if that tool is still switched on.
+    const remembered = tabs.find((t) => t.dataset.tool === store.load('shell').tool);
+    if (remembered && !remembered.classList.contains('active')) {
+        select(remembered, false);
     }
 
     tabs.forEach((tab, index) => {

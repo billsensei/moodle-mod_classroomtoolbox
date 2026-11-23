@@ -75,3 +75,12 @@ Feature: Combine groups on one wheel
       Alice Anderson
       Bob Brown
       """
+
+  Scenario: The ticked groups are remembered after a reload
+    Given I am on the "Pick one" "classroomtoolbox activity" page logged in as teacher1
+    When I press "Select none"
+    And I set the field "Group A (2)" to "1"
+    And I reload the page
+    Then I should see "2 names" in the "[data-region='wheel-count']" "css_element"
+    And the field "Group A (2)" matches value "1"
+    And the field "Group B (1)" matches value ""

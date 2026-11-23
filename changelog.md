@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.10.0 - 2026-11-23
+
+- New Partner wheel tool (two spins pick a pair; an odd one out joins the last pair).
+- Each tool's settings are remembered in the browser; the open tab is remembered too.
+- Start all timers button.
+- Timer alarm is now a hazard siren.
+
 ## 0.9.1 - 2026-11-23
 
 - Scoreboard services also require the view capability; erasing an activity's data now clears its extra names too.

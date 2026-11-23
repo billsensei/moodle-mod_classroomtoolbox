@@ -24,6 +24,7 @@
 import Ajax from 'core/ajax';
 import Notification from 'core/notification';
 import Pending from 'core/pending';
+import * as store from 'mod_classroomtoolbox/store';
 
 const POLL_MS = 5000;
 const MAX_POLL_MS = 30000;
@@ -63,6 +64,14 @@ export const init = (config) => {
     let timer = null;
 
     const step = () => Math.max(1, Math.min(100, parseInt(stepInput ? stepInput.value : '1', 10) || 1));
+    // The points-per-click setting is remembered in this browser.
+    if (stepInput) {
+        const savedStep = store.load('scoreboard').step;
+        if (Number.isInteger(savedStep) && savedStep >= 1 && savedStep <= 100) {
+            stepInput.value = String(savedStep);
+        }
+        stepInput.addEventListener('change', () => store.save('scoreboard', {step: step()}));
+    }
 
     const announce = (text) => {
         liveEl.textContent = '';

@@ -21,17 +21,21 @@
 
     Context variables required for this template:
     * uniqid - unique string used for element ids
+    * region - data-region name of this wheel: wheel, or partners for the partner wheel
+    * partners - whether this is the partner wheel (shows the pairs made so far)
     * hasnames - whether the wheel starts with any names
     * hasgroups - whether the group chooser is shown
 
     Example context (json):
     {
         "uniqid": "abc123",
+        "region": "wheel",
+        "partners": false,
         "hasnames": true,
         "hasgroups": true
     }
 }}
-<div class="mod_classroomtoolbox row mx-0" data-region="wheel">
+<div class="mod_classroomtoolbox row mx-0" data-region="{{region}}">
     <div class="col-lg-8 mb-3">
         <div class="mod_classroomtoolbox-wheel-stage position-relative mx-auto">
             <div class="mod_classroomtoolbox-wheel-pointer" aria-hidden="true"></div>
@@ -77,13 +81,22 @@
                 </div>
             </div>
         </div>
+        {{#partners}}
+        <div class="card mt-3">
+            <div class="card-body">
+                <h2 class="h5 card-title">{{#str}} partner_pairs, mod_classroomtoolbox {{/str}}</h2>
+                <p class="small text-muted mb-2" data-region="partners-empty">{{#str}} partner_nopairs, mod_classroomtoolbox {{/str}}</p>
+                <ol class="mb-0" data-region="partners-pairs"></ol>
+            </div>
+        </div>
+        {{/partners}}
     </div>
 
     <div class="mod_classroomtoolbox-wheel-result" data-region="wheel-result" hidden>
         <div class="mod_classroomtoolbox-wheel-result-box card shadow" role="dialog" aria-modal="true"
             aria-labelledby="wheel-winnerlabel-{{uniqid}} wheel-winner-{{uniqid}}">
             <div class="card-body text-center">
-                <p class="mb-1 text-muted" id="wheel-winnerlabel-{{uniqid}}">{{#str}} winner, mod_classroomtoolbox {{/str}}</p>
+                <p class="mb-1 text-muted" id="wheel-winnerlabel-{{uniqid}}" data-region="wheel-winnerlabel">{{#str}} winner, mod_classroomtoolbox {{/str}}</p>
                 <p class="mod_classroomtoolbox-wheel-winner display-4 mb-3" id="wheel-winner-{{uniqid}}" data-region="wheel-winner"></p>
                 <div class="d-flex justify-content-center flex-wrap gap-2">
                     <button type="button" class="btn btn-danger" data-action="remove">{{#str}} removename, mod_classroomtoolbox {{/str}}</button>

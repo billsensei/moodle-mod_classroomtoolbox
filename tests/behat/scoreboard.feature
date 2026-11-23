@@ -92,3 +92,9 @@ Feature: Scoreboard
     When I click on "Pause live updates" "checkbox"
     And I wait "2" seconds
     Then the scoreboard order should be "Team Blue, Team Red"
+
+  Scenario: Points per click is remembered after a reload
+    Given I am on the "Board" "classroomtoolbox activity" page logged in as teacher1
+    When I set the field "Points per click" to "5"
+    And I reload the page
+    Then the field "Points per click" matches value "5"

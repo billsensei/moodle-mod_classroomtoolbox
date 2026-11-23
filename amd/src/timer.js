@@ -22,6 +22,7 @@
  */
 
 import * as sound from 'mod_classroomtoolbox/sound';
+import * as store from 'mod_classroomtoolbox/store';
 
 const MAX_TIMERS = 4;
 
@@ -67,6 +68,12 @@ export const init = (config) => {
     let created = 0;
     let running = 0;
     let wakeLock = null;
+    // Every timer on the page, so that "Start all timers" can reach them and their lengths can be remembered.
+    const controls = new Set();
+    const startAllButton = root.querySelector('[data-action="timer-startall"]');
+    const saveSettings = () => {
+        store.save('timer', {totals: [...controls].map((control) => control.total())});
+    };
 
     // Ask the browser to keep the screen on while a timer runs (projector use). Best effort only.
     const updateWakeLock = async() => {
@@ -97,7 +104,7 @@ export const init = (config) => {
         addButton.disabled = cards.length >= MAX_TIMERS;
     };
 
-    const addTimer = () => {
+    const addTimer = (savedTotal = 0) => {
         created++;
         const number = created;
         const uid = 'timer-' + number + '-' + Math.random().toString(36).slice(2, 8);
@@ -107,7 +114,7 @@ export const init = (config) => {
             el.textContent = text;
             el.setAttribute('aria-label', text + ' (' + title + ')');
         };
-        let total = Math.round(presets[0] * 60000);
+        let total = savedTotal || Math.round(presets[0] * 60000);
         let remaining = total;
         let endAt = 0;
         let interval = null;
@@ -228,6 +235,7 @@ export const init = (config) => {
             remaining = total;
             showInputs();
             paint();
+            saveSettings();
         };
 
         presets.forEach((minutes) => {
@@ -247,13 +255,7 @@ export const init = (config) => {
         minInput.addEventListener('change', fromInputs);
         secInput.addEventListener('change', fromInputs);
 
-        toggle.addEventListener('click', () => {
-            if (isRunning()) {
-                remaining = Math.max(0, endAt - Date.now());
-                stopTicking();
-                paint();
-                return;
-            }
+        const start = () => {
             sound.prepare();
             if (remaining <= 0) {
                 remaining = total;
@@ -265,12 +267,25 @@ export const init = (config) => {
             updateWakeLock();
             named(toggle, strings.timer_pause);
             tick();
+        };
+        toggle.addEventListener('click', () => {
+            if (isRunning()) {
+                remaining = Math.max(0, endAt - Date.now());
+                stopTicking();
+                paint();
+                return;
+            }
+            start();
         });
+        const control = {start, isRunning, total: () => total};
+        controls.add(control);
         reset.addEventListener('click', () => setTotal(total));
         remove.addEventListener('click', () => {
             stopTicking();
+            controls.delete(control);
             col.remove();
             refresh();
+            saveSettings();
             addButton.focus();
         });
 
@@ -282,8 +297,26 @@ export const init = (config) => {
         showInputs();
         paint();
         refresh();
+        saveSettings();
     };
 
-    addButton.addEventListener('click', addTimer);
-    addTimer();
+    addButton.addEventListener('click', () => addTimer());
+    // Start every timer that is not already running, all at the same moment.
+    startAllButton.addEventListener('click', () => {
+        controls.forEach((control) => {
+            if (!control.isRunning()) {
+                control.start();
+            }
+        });
+    });
+    // Bring back the timers and lengths from last time (only sensible values).
+    const savedTotals = store.load('timer').totals;
+    const totals = Array.isArray(savedTotals)
+        ? savedTotals.filter((t) => Number.isInteger(t) && t >= 1000 && t <= 59999000).slice(0, MAX_TIMERS)
+        : [];
+    if (totals.length > 0) {
+        totals.forEach((total) => addTimer(total));
+    } else {
+        addTimer();
+    }
 };

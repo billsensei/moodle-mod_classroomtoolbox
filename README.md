@@ -11,11 +11,12 @@ Each tool is a tab. Teachers choose which tools are on in the activity settings 
 | Tool | What it does |
 |---|---|
 | **Name wheel** | Spin a wheel of student names; remove the winner or keep them. |
+| **Partner wheel** | Spin twice to pick a pair of partners; both leave the wheel and the pairs are listed. An odd one out joins the last pair. |
 | **Group generator** | Split the class into random groups, by number of groups or people per group. |
 | **Stopwatch** | Start, stop, lap and reset, with a lap list. |
-| **Timer** | Countdown timers with preset buttons, a submarine-style dive klaxon (three blasts, about 4 seconds) and a flash at the end, and up to four timers at once. |
+| **Timer** | Countdown timers with preset buttons, a hazard siren (five rising whoops, about 4 seconds) and a flash at the end, up to four timers at once, and a **Start all timers** button. |
 | **Counter** | Up to eight named counters with plus, minus and reset. |
-| **Scoreboard** | Teams or names with points, ranked live; teachers give points, students watch. |
+| **Scoreboard** | Teams or names with points, ranked live; the teacher shows it to the class. |
 
 ![The Name wheel tool with the tab bar](docs/screenshot.png)
 
@@ -28,6 +29,16 @@ Each tool is a tab. Teachers choose which tools are on in the activity settings 
 - Pick one of five colour schemes (Classic, Ocean, Sunset, Pastel, High contrast); it also colours the group generator's cards.
 - The names box beside the wheel can be edited live; **Shuffle**, **Sort A-Z** and **Reset wheel** are available.
 - Removing a name only changes the current page; reloading restores the full list.
+
+### Partner wheel
+
+- Spin once for the first person, then **Spin for a partner**; the second spin picks their partner from everyone left. **Next pair** takes both off the wheel and adds them to **Pairs so far**; **Pick someone else** puts the partner back and spins again.
+- If exactly one person is left after a pair, they join that pair, so a class of an odd size ends with one group of three.
+- Same names, group tick boxes, colours and Sound switch as the Name wheel. **Reset wheel** brings everyone back and clears the pairs. Pairs are never saved.
+
+### Settings that are remembered
+
+Each tool remembers its settings in the browser, per activity, so they are still there after a reload: the open tab, the groups ticked on the wheels and the group generator, the group generator's amount and mode, the timers and their lengths, the counters and their names, and the scoreboard's points per click. Results, running timers, counter values and student names are not saved.
 
 ### Group generator
 
@@ -47,8 +58,8 @@ Start, stop, **Lap** and reset. Time comes from timestamps, so it stays accurate
 ![Two timers side by side](docs/timer.png)
 
 - Preset buttons (set per activity, default 1, 3, 5, 10 minutes), or type minutes and seconds.
-- A beep (switch it off with **Sound**) and a flashing card when time is up; the end is also announced to screen readers.
-- Up to four timers at once. The browser is asked to keep the screen on while a timer runs.
+- A hazard siren (switch it off with **Sound**) and a flashing card when time is up; the end is also announced to screen readers.
+- Up to four timers at once. **Start all timers** starts every timer that is not already running. The browser is asked to keep the screen on while a timer runs.
 
 ### Counter
 
@@ -71,7 +82,7 @@ Every tool is keyboard operable and announces results to screen readers. The whe
 
 ### Privacy
 
-Spins, groups, laps, timers and counts live only in the open page. The scoreboard stores the labels and points a teacher types in; they are plain text, never tied to a user account, and are removed when the entry or the activity is deleted. The plugin keeps no data linked to a user account, and its privacy provider declares the free text it stores so that it shows in Moodle's privacy registry. Note that "Add participants" copies enrolled users' names onto the scoreboard as plain text: after that they are not tied to the account, so deleting a user does not remove them. Remove the entry (or delete the activity) to erase them, and do not copy in more personal data than you need.
+Spins, pairs, groups, laps, timers and counts live only in the open page. The tools' settings (see above, never student names) are kept in the browser's own storage on the teacher's computer, not on the server. The scoreboard stores the labels and points a teacher types in; they are plain text, never tied to a user account, and are removed when the entry or the activity is deleted. The plugin keeps no data linked to a user account, and its privacy provider declares the free text it stores so that it shows in Moodle's privacy registry. Note that "Add participants" copies enrolled users' names onto the scoreboard as plain text: after that they are not tied to the account, so deleting a user does not remove them. Remove the entry (or delete the activity) to erase them, and do not copy in more personal data than you need.
 
 ## Install
 

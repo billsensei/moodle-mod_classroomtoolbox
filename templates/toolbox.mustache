@@ -22,12 +22,14 @@
 
     Context variables required for this template:
     * uniqid - unique string used for element ids
+    * storekey - id of the activity, used to remember its settings in the browser
     * hastabs - whether to show the tab bar (more than one tool)
     * tabs - list of tools: id, label, html (rendered tool), active
 
     Example context (json):
     {
         "uniqid": "abc123",
+        "storekey": 7,
         "hastabs": true,
         "tabs": [
             {"id": "wheel", "label": "Name wheel", "html": "<p>Wheel</p>", "active": true},
@@ -35,7 +37,7 @@
         ]
     }
 }}
-<div class="mod_classroomtoolbox" data-region="toolbox">
+<div class="mod_classroomtoolbox" data-region="toolbox" data-storekey="{{storekey}}">
     <div class="d-flex align-items-end mb-3">
     {{#hastabs}}
     <ul class="nav nav-tabs flex-grow-1" role="tablist" aria-label="{{#str}} toolslabel, mod_classroomtoolbox {{/str}}">

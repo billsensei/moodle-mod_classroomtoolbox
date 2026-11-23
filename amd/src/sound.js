@@ -123,28 +123,26 @@ export const chime = () => guarded(() => {
 });
 
 /**
- * One blast of a horn: a harsh tone whose pitch rises, holds and falls ("ah-OOO-gah"), like an old diving klaxon.
+ * One "whoop" of a warning siren: a harsh tone whose pitch sweeps up quickly, then stops.
  *
- * Two slightly detuned square waves are layered, which gives the horn its rough, beating buzz.
+ * Two slightly detuned square waves are layered, which gives the siren its rough, beating edge.
  *
  * @param {number} delay Seconds from now.
- * @param {number} length Seconds the blast lasts.
+ * @param {number} length Seconds the whoop lasts.
  */
-const blast = (delay, length) => {
+const whoop = (delay, length) => {
     const start = context.currentTime + delay;
     const gain = context.createGain();
     gain.gain.setValueAtTime(0.0001, start);
-    gain.gain.exponentialRampToValueAtTime(0.48, start + 0.08);
-    gain.gain.setValueAtTime(0.48, start + length - 0.15);
+    gain.gain.exponentialRampToValueAtTime(0.48, start + 0.03);
+    gain.gain.setValueAtTime(0.48, start + length - 0.06);
     gain.gain.exponentialRampToValueAtTime(0.0001, start + length);
     gain.connect(context.destination);
-    [0, 6].forEach((detune) => {
+    [0, 8].forEach((detune) => {
         const osc = context.createOscillator();
         osc.type = 'square';
-        osc.frequency.setValueAtTime(300 + detune, start);
-        osc.frequency.linearRampToValueAtTime(520 + detune, start + length * 0.4);
-        osc.frequency.setValueAtTime(520 + detune, start + length * 0.6);
-        osc.frequency.linearRampToValueAtTime(300 + detune, start + length);
+        osc.frequency.setValueAtTime(450 + detune, start);
+        osc.frequency.linearRampToValueAtTime(1100 + detune, start + length);
         osc.connect(gain);
         osc.start(start);
         osc.stop(start + length + 0.02);
@@ -152,10 +150,11 @@ const blast = (delay, length) => {
 };
 
 /**
- * A submarine dive klaxon for a finished timer: three "aoo-gah" blasts, about 4 seconds in all.
+ * A hazard siren for a finished timer, like the alarm in a movie factory when something dangerous has spilled:
+ * five rising "whoops" in a row, about 4 seconds in all.
  */
 export const alarm = () => guarded(() => {
-    for (let i = 0; i < 3; i++) {
-        blast(i * 1.3, 1.2);
+    for (let i = 0; i < 5; i++) {
+        whoop(i * 0.8, 0.66);
     }
 });

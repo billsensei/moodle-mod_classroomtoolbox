@@ -53,6 +53,7 @@ foreach (\mod_classroomtoolbox\local\toolbox::enabled($classroomtoolbox) as $too
 echo $OUTPUT->header();
 echo $OUTPUT->render_from_template('mod_classroomtoolbox/toolbox', [
     'uniqid' => uniqid(),
+    'storekey' => $cm->id,
     'tabs' => $tabs,
     'hastabs' => count($tabs) > 1,
 ]);

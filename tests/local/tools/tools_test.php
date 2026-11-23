@@ -42,6 +42,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @covers \mod_classroomtoolbox\local\tools\wheel
+ * @covers \mod_classroomtoolbox\local\tools\partners
  * @covers \mod_classroomtoolbox\local\tools\groups
  * @covers \mod_classroomtoolbox\local\tools\stopwatch
  * @covers \mod_classroomtoolbox\local\tools\timer
@@ -72,6 +73,7 @@ final class tools_test extends \advanced_testcase {
 
         $expected = [
             'wheel' => 'data-region="wheel-canvas"',
+            'partners' => 'data-region="partners-pairs"',
             'groups' => 'data-region="groupgen-names"',
             'stopwatch' => 'data-region="sw-display"',
             'timer' => 'data-region="timer-list"',
@@ -87,6 +89,10 @@ final class tools_test extends \advanced_testcase {
             // The page title is the h1, so tool headings start at h2 (no skipped level).
             $this->assertStringNotContainsString('<h3', $html, $id);
         }
+        // The partner wheel is its own region, so it can sit beside the name wheel on one page.
+        $html = $tools['partners']->render($cm, $course, $row, $context);
+        $this->assertStringContainsString('data-region="partners"', $html);
+        $this->assertStringNotContainsString('data-region="wheel"', $html);
     }
 
     /**

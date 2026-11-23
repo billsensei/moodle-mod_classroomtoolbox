@@ -41,6 +41,7 @@ Feature: Configure a name wheel
     And I add a "classroomtoolbox" activity to course "Course 1" section "1"
     And I expand all fieldsets
     Then the field "id_tool_wheel" matches value "1"
+    And the field "id_tool_partners" matches value "1"
     And the field "id_tool_groups" matches value "1"
     And the field "id_tool_stopwatch" matches value "1"
     And the field "id_tool_timer" matches value "1"
@@ -54,6 +55,7 @@ Feature: Configure a name wheel
     When I set the following fields to these values:
       | Name              | No tools |
       | id_tool_wheel     | 0        |
+      | id_tool_partners  | 0        |
       | id_tool_groups    | 0        |
       | id_tool_stopwatch | 0        |
       | id_tool_timer     | 0        |

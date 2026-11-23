@@ -42,26 +42,40 @@ class wheel implements tool_interface {
 
         [$entries, $groups] = participants::get($cm, $record, $context);
 
+        // The partner wheel is this same wheel, run in a mode that picks two people in a row.
+        $tool = static::get_id();
+        $partners = $tool === 'partners';
+
         $html = $OUTPUT->render_from_template('mod_classroomtoolbox/wheel', [
             'uniqid' => uniqid(),
+            'region' => $tool,
+            'partners' => $partners,
             'hasnames' => !empty($entries),
             'hasgroups' => !empty($groups),
         ]);
 
         $scheme = classroomtoolbox_color_schemes()[classroomtoolbox_clean_color_scheme($record->colorscheme ?? null)];
+        $strings = [
+            'winner' => get_string('winner', 'mod_classroomtoolbox'),
+            'empty' => get_string('emptywheel', 'mod_classroomtoolbox'),
+            'spinning' => get_string('spinning', 'mod_classroomtoolbox'),
+            'clickhere' => get_string('clickhere', 'mod_classroomtoolbox'),
+            'entriescount' => get_string('entriescount', 'mod_classroomtoolbox'),
+            'removed' => get_string('removedannounce', 'mod_classroomtoolbox'),
+            'groupchanged' => get_string('groupchanged', 'mod_classroomtoolbox'),
+        ];
+        if ($partners) {
+            foreach (['first', 'pair', 'spinpartner', 'another', 'next', 'hint', 'notenough', 'made'] as $key) {
+                $strings['partner_' . $key] = get_string('partner_' . $key, 'mod_classroomtoolbox');
+            }
+        }
         $PAGE->requires->js_call_amd('mod_classroomtoolbox/wheel', 'init', [[
+            'tool' => $tool,
+            'partners' => $partners,
             'names' => $entries,
             'groups' => $groups,
             'scheme' => $scheme,
-            'strings' => [
-                'winner' => get_string('winner', 'mod_classroomtoolbox'),
-                'empty' => get_string('emptywheel', 'mod_classroomtoolbox'),
-                'spinning' => get_string('spinning', 'mod_classroomtoolbox'),
-                'clickhere' => get_string('clickhere', 'mod_classroomtoolbox'),
-                'entriescount' => get_string('entriescount', 'mod_classroomtoolbox'),
-                'removed' => get_string('removedannounce', 'mod_classroomtoolbox'),
-                'groupchanged' => get_string('groupchanged', 'mod_classroomtoolbox'),
-            ],
+            'strings' => $strings,
         ]]);
         return $html;
     }

@@ -1,6 +1,14 @@
 This files describes API changes in /mod/classroomtoolbox/*,
 information provided here is intended especially for developers.
 
+=== 0.10.0 ===
+* New tool 'partners' (class \mod_classroomtoolbox\local\tools\partners, extends tools\wheel) is registered in
+  toolbox::classes() after the wheel. The wheel template and the mod_classroomtoolbox/wheel module take a region name
+  ('wheel' or 'partners') and a partner mode, so two wheels can be on one page.
+* New AMD module mod_classroomtoolbox/store keeps each tool's settings in the browser's localStorage, per activity
+  (the toolbox template has a data-storekey attribute set to the course module id).
+* The timer alarm is now a siren; it only uses plain oscillators.
+
 === 0.9.0 ===
 * The toolbox is now a teacher-only tool. The capability mod/classroomtoolbox:view is no longer granted to the student
   archetype, and the upgrade step removes it from roles of the student archetype on existing sites. Grant it to a role

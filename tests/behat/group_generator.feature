@@ -76,3 +76,12 @@ Feature: Split people into random groups
     When I set the field "Amount" to "3"
     And I press "Generate groups"
     Then the generated groups should have different background colours
+
+  Scenario: The group settings are remembered after a reload
+    Given I am on the "Groupie" "classroomtoolbox activity" page logged in as teacher1
+    When I click on "People per group" "radio"
+    And I set the field "Amount" to "2"
+    And I reload the page
+    And I wait until the page is ready
+    Then the field "Amount" matches value "2"
+    And the field "People per group" matches value "1"

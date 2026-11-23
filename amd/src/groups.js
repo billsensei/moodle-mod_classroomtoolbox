@@ -22,6 +22,7 @@
  */
 
 import {readableText} from 'mod_classroomtoolbox/colour';
+import * as store from 'mod_classroomtoolbox/store';
 
 /**
  * Random float in [0, 1) from the browser's crypto source.
@@ -91,6 +92,30 @@ export const init = (config) => {
     const resultEl = root.querySelector('[data-region="groupgen-result"]');
     const liveEl = root.querySelector('[data-region="groupgen-live"]');
     let lastGroups = [];
+
+    // Settings from last time: the amount, how it is counted and which groups were ticked.
+    const saveSettings = () => {
+        const mode = root.querySelector('input[type="radio"]:checked');
+        store.save('groups', {
+            amount: parseInt(amountEl.value, 10) || 3,
+            mode: mode ? mode.value : 'count',
+            groups: [...selected],
+        });
+    };
+    const saved = store.load('groups');
+    if (Number.isInteger(saved.amount) && saved.amount >= 1 && saved.amount <= 100) {
+        amountEl.value = String(saved.amount);
+    }
+    const savedMode = root.querySelector('input[type="radio"][value="' + (saved.mode === 'size' ? 'size' : 'count') + '"]');
+    if (savedMode) {
+        savedMode.checked = true;
+    }
+    if (Array.isArray(saved.groups) && groups.length > 0) {
+        selected.clear();
+        groups.filter((g) => saved.groups.includes(g.id)).forEach((g) => selected.add(g.id));
+    }
+    amountEl.addEventListener('change', saveSettings);
+    root.querySelectorAll('input[type="radio"]').forEach((radio) => radio.addEventListener('change', saveSettings));
 
     const derive = () => pool
         .filter((e) => e.groups === null || groups.length === 0 || e.groups.some((id) => selected.has(id)))
@@ -180,13 +205,14 @@ export const init = (config) => {
             box.type = 'checkbox';
             box.className = 'form-check-input';
             box.id = 'groupgen-group-' + g.id + '-' + Math.random().toString(36).slice(2, 8);
-            box.checked = true;
+            box.checked = selected.has(g.id);
             box.addEventListener('change', () => {
                 if (box.checked) {
                     selected.add(g.id);
                 } else {
                     selected.delete(g.id);
                 }
+                saveSettings();
                 reset();
             });
             const label = document.createElement('label');
@@ -207,6 +233,7 @@ export const init = (config) => {
             filterBox.querySelectorAll('input').forEach((b) => {
                 b.checked = on;
             });
+            saveSettings();
             reset();
         };
         root.querySelector('[data-action="groupgen-all"]').addEventListener('click', () => setAll(true));

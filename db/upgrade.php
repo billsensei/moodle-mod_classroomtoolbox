@@ -133,5 +133,11 @@ function xmldb_classroomtoolbox_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2026122012, 'classroomtoolbox');
     }
 
+    if ($oldversion < 2026122013) {
+        // No schema change: new Partner wheel tool, remembered settings and timer changes are code only. Existing
+        // activities keep their current tools; the partner wheel is switched on in the activity settings.
+        upgrade_mod_savepoint(true, 2026122013, 'classroomtoolbox');
+    }
+
     return true;
 }

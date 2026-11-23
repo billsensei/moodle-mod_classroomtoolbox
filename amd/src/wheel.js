@@ -25,6 +25,7 @@ import Pending from 'core/pending';
 
 import {LIGHT_TEXT, readableText} from 'mod_classroomtoolbox/colour';
 import * as sound from 'mod_classroomtoolbox/sound';
+import * as store from 'mod_classroomtoolbox/store';
 
 const TWO_PI = Math.PI * 2;
 // The pointer sits at the top of the wheel (canvas angle 3 * PI / 2).
@@ -75,7 +76,10 @@ const random = () => {
  * @param {Object} config Names and language strings from PHP.
  */
 export const init = (config) => {
-    const root = document.querySelector('[data-region="wheel"]');
+    // This module runs both the name wheel and the partner wheel, which picks two people in a row.
+    const tool = config.tool || 'wheel';
+    const partnerMode = Boolean(config.partners);
+    const root = document.querySelector('[data-region="' + tool + '"]');
     if (!root) {
         return;
     }
@@ -95,6 +99,13 @@ export const init = (config) => {
     const groups = config.groups || [];
     const selected = new Set(groups.map((g) => g.id));
     const removed = new Set();
+    // The groups ticked last time (only groups that still exist), so the same split is there after a reload.
+    const savedGroups = store.load(tool).groups;
+    if (Array.isArray(savedGroups) && groups.length > 0) {
+        selected.clear();
+        groups.filter((g) => savedGroups.includes(g.id)).forEach((g) => selected.add(g.id));
+    }
+    const saveSettings = () => store.save(tool, {groups: [...selected]});
 
     // Names currently allowed on the wheel: typed names always, others when one of their groups is ticked.
     const derive = () => pool
@@ -103,6 +114,36 @@ export const init = (config) => {
         .map((e) => e.name);
 
     let names = derive();
+
+    // Partner wheel: the first person of the pair being made waits off the wheel until their partner is picked.
+    let first = null;
+    const pairs = [];
+    const pairsEl = root.querySelector('[data-region="partners-pairs"]');
+    const noPairsEl = root.querySelector('[data-region="partners-empty"]');
+    const labelEl = root.querySelector('[data-region="wheel-winnerlabel"]');
+    const keepButton = root.querySelector('[data-action="keep"]');
+    const removeButton = root.querySelector('[data-action="remove"]');
+    const joinNames = (list) => {
+        try {
+            return new Intl.ListFormat(document.documentElement.lang || undefined, {style: 'long', type: 'conjunction'})
+                .format(list);
+        } catch (e) {
+            return list.join(', ');
+        }
+    };
+    const idleHint = () => (first === null ? strings.clickhere : strings.partner_hint.replace('{$a}', () => first));
+    const renderPairs = () => {
+        if (!pairsEl) {
+            return;
+        }
+        pairsEl.textContent = '';
+        pairs.forEach((members) => {
+            const item = document.createElement('li');
+            item.textContent = joinNames(members);
+            pairsEl.append(item);
+        });
+        noPairsEl.hidden = pairs.length > 0;
+    };
     let rotation = 0;
     let spinning = false;
     let winnerIndex = -1;
@@ -200,7 +241,7 @@ export const init = (config) => {
         if (e.key !== 'Tab') {
             return;
         }
-        const buttons = [...resultEl.querySelectorAll('button:not([disabled])')];
+        const buttons = [...resultEl.querySelectorAll('button:not([disabled]):not([hidden])')];
         const first = buttons[0];
         const last = buttons[buttons.length - 1];
         const active = document.activeElement;
@@ -218,13 +259,27 @@ export const init = (config) => {
 
     const showResult = (index) => {
         winnerIndex = index;
-        winnerEl.textContent = names[index];
+        if (!partnerMode) {
+            winnerEl.textContent = names[index];
+        } else if (first === null) {
+            // The first person: the only way on is to go and find their partner.
+            labelEl.textContent = strings.partner_first;
+            winnerEl.textContent = names[index];
+            keepButton.textContent = strings.partner_spinpartner;
+            removeButton.hidden = true;
+        } else {
+            labelEl.textContent = strings.partner_pair;
+            winnerEl.textContent = joinNames([first, names[index]]);
+            keepButton.textContent = strings.partner_another;
+            removeButton.textContent = strings.partner_next;
+            removeButton.hidden = false;
+        }
         resultEl.hidden = false;
         releaseModal = makeModal(resultEl);
         document.addEventListener('keydown', onDialogKey);
         sound.chime();
-        announce(strings.winner + ' ' + names[index]);
-        resultEl.querySelector('[data-action="keep"]').focus();
+        announce((partnerMode ? labelEl.textContent : strings.winner) + ' ' + winnerEl.textContent);
+        keepButton.focus();
     };
 
     hideResult = () => {
@@ -240,6 +295,11 @@ export const init = (config) => {
 
     const spin = () => {
         if (spinning || names.length === 0 || !resultEl.hidden) {
+            return;
+        }
+        if (partnerMode && first === null && names.length < 2) {
+            hintEl.textContent = strings.partner_notenough;
+            announce(strings.partner_notenough);
             return;
         }
         spinning = true;
@@ -287,7 +347,7 @@ export const init = (config) => {
             rotation = ((rotation % TWO_PI) + TWO_PI) % TWO_PI;
             spinning = false;
             hub.disabled = false;
-            hintEl.textContent = strings.clickhere;
+            hintEl.textContent = idleHint();
             draw();
             showResult(index);
             pending.resolve();
@@ -322,9 +382,48 @@ export const init = (config) => {
     });
     hub.addEventListener('click', spin);
 
-    root.querySelector('[data-action="keep"]').addEventListener('click', hideResult);
-    root.querySelector('[data-action="remove"]').addEventListener('click', () => {
+    // Partner wheel: the first person leaves the wheel to wait for a partner.
+    const takeFirst = () => {
+        first = names[winnerIndex];
+        removed.add(first);
+        names.splice(winnerIndex, 1);
+        syncText();
+        hideResult();
+        hintEl.textContent = idleHint();
+        announce(idleHint());
+    };
+    // Partner wheel: the pair is done. If exactly one person is left, they join this pair, so nobody is left out.
+    const finishPair = () => {
+        const members = [first, names[winnerIndex]];
+        removed.add(names[winnerIndex]);
+        names.splice(winnerIndex, 1);
+        if (names.length === 1) {
+            members.push(names[0]);
+            removed.add(names[0]);
+            names.splice(0, 1);
+        }
+        pairs.push(members);
+        first = null;
+        syncText();
+        renderPairs();
+        hideResult();
+        hintEl.textContent = idleHint();
+        announce(strings.partner_made.replace('{$a}', () => joinNames(members)));
+    };
+
+    keepButton.addEventListener('click', () => {
+        if (partnerMode && first === null && winnerIndex >= 0) {
+            takeFirst();
+            return;
+        }
+        hideResult();
+    });
+    removeButton.addEventListener('click', () => {
         if (winnerIndex < 0) {
+            return;
+        }
+        if (partnerMode) {
+            finishPair();
             return;
         }
         const gone = names[winnerIndex];
@@ -349,6 +448,10 @@ export const init = (config) => {
     root.querySelector('[data-action="reset"]').addEventListener('click', () => {
         if (!spinning) {
             removed.clear();
+            first = null;
+            pairs.length = 0;
+            renderPairs();
+            hintEl.textContent = strings.clickhere;
             names = derive();
             syncText();
         }
@@ -383,13 +486,14 @@ export const init = (config) => {
             box.className = 'form-check-input';
             box.id = 'wheel-group-' + g.id;
             box.value = g.id;
-            box.checked = true;
+            box.checked = selected.has(g.id);
             box.addEventListener('change', () => {
                 if (box.checked) {
                     selected.add(g.id);
                 } else {
                     selected.delete(g.id);
                 }
+                saveSettings();
                 applyGroups();
             });
             const label = document.createElement('label');
@@ -410,6 +514,7 @@ export const init = (config) => {
             groupBox.querySelectorAll('input').forEach((b) => {
                 b.checked = on;
             });
+            saveSettings();
             applyGroups();
         };
         root.querySelector('[data-action="groups-all"]').addEventListener('click', () => setAll(true));
