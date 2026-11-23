@@ -270,7 +270,9 @@ export const init = (config) => {
     };
     poll = async() => {
         const panel = root.closest('[data-region="tool-panel"]');
-        const editing = canManage && root.contains(document.activeElement) && document.activeElement.tagName === 'INPUT';
+        // Typing in a text or number box pauses the refresh; a focused switch or button does not.
+        const editing = canManage && root.contains(document.activeElement)
+            && document.activeElement.matches('input:not([type="checkbox"])');
         if (busy || document.hidden || (panel && panel.hidden) || editing || (pauseBox && pauseBox.checked)) {
             schedule();
             return;

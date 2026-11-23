@@ -73,8 +73,3 @@ Feature: Accessibility checks (axe-core)
     Given I am on the "Toolbox" "classroomtoolbox activity" page logged in as teacher1
     When I click on "Scoreboard" "button" in the "[data-region='toolbox'] [role='tablist']" "css_element"
     Then the "[data-region='toolbox']" "css_element" should meet accessibility standards with "best-practice" extra tests
-
-  Scenario: Scoreboard tab as a student
-    Given I am on the "Toolbox" "classroomtoolbox activity" page logged in as student1
-    When I click on "Scoreboard" "button" in the "[data-region='toolbox'] [role='tablist']" "css_element"
-    Then the "[data-region='toolbox']" "css_element" should meet accessibility standards with "best-practice" extra tests

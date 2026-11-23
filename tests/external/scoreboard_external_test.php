@@ -133,55 +133,49 @@ final class scoreboard_external_test extends \advanced_testcase {
     }
 
     /**
-     * A student can read the board but none of the services that change it.
+     * The toolbox is for teachers: a student cannot read the board or use any service that changes it.
      */
-    public function test_student_is_read_only(): void {
+    public function test_student_is_refused_by_every_service(): void {
         $id = $this->toolbox->id;
         $this->setUser($this->teacher);
         $list = $this->call(add_scores::class, [$id, ['Red']]);
         $entry = $list[0]['id'];
 
         $this->setUser($this->student);
-        $this->assertSame($list, $this->call(get_scores::class, [$id]));
-        $writes = [
+        $calls = [
+            [get_scores::class, [$id]],
             [add_scores::class, [$id, ['Sneaky']]],
             [change_score::class, [$id, $entry, 5]],
             [update_score::class, [$id, $entry, 'Hacked', 99]],
             [delete_score::class, [$id, $entry]],
             [reset_scores::class, [$id]],
         ];
-        foreach ($writes as [$class, $args]) {
+        foreach ($calls as [$class, $args]) {
             try {
                 $class::execute(...$args);
-                $this->fail($class . ' must require mod/classroomtoolbox:managescores');
-            } catch (\required_capability_exception $e) {
-                $this->assertSame('nopermissions', $e->errorcode);
+                $this->fail($class . ' must refuse a student');
+            } catch (\moodle_exception $e) {
+                // Refused: the activity is hidden from students, and they lack the capability.
+                $this->assertNotEmpty($e->errorcode);
             }
         }
-        $this->assertSame([['id' => $entry, 'label' => 'Red', 'score' => 0]], scores::get_all($id));
+        $this->setUser($this->teacher);
+        $this->assertSame($list, $this->call(get_scores::class, [$id]));
     }
 
     /**
-     * People who are not in the course cannot read the board either.
+     * The activity does not show up for students on the course page, but does for the teacher.
      */
-    public function test_outsider_and_guest_cannot_read(): void {
-        $id = $this->toolbox->id;
-        $this->setUser(self::getDataGenerator()->create_user());
-        try {
-            get_scores::execute($id);
-            $this->fail('A user outside the course must not read the board');
-        } catch (\moodle_exception $e) {
-            $this->assertNotEmpty($e->errorcode);
-        }
-        $this->setGuestUser();
-        $this->expectException(\moodle_exception::class);
-        get_scores::execute($id);
+    public function test_toolbox_is_hidden_from_students(): void {
+        $cmid = $this->toolbox->cmid;
+        $this->assertFalse(get_fast_modinfo($this->course, $this->student->id)->get_cm($cmid)->uservisible);
+        $this->assertTrue(get_fast_modinfo($this->course, $this->teacher->id)->get_cm($cmid)->uservisible);
     }
 
     /**
-     * An entry id from another toolbox cannot be reached through this toolbox's id.
+     * Entries and labels are limited to a sane size.
      */
-    public function test_other_toolbox_entry_is_not_reachable(): void {
+    public function test_labels_are_limited(): void {
         $this->setUser($this->teacher);
         $other = self::getDataGenerator()->create_module('classroomtoolbox', [
             'course' => $this->course->id, 'tools' => 'scoreboard',

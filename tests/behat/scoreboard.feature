@@ -2,7 +2,7 @@
 Feature: Scoreboard
   In order to run a points competition in class
   As a teacher
-  I need a scoreboard I can add teams to and give points, that students can watch
+  I need a scoreboard I can add teams to and give points, that I can show the class
 
   Background:
     Given the following "users" exist:
@@ -77,25 +77,11 @@ Feature: Scoreboard
     Then the scoreboard score of "Team Red" should be "0"
     And the scoreboard order should be "Team Red"
 
-  Scenario: A student sees the board but cannot change it
-    Given the scoreboard of "Board" has these entries:
-      | label     | score |
-      | Team Blue | 7     |
-      | Team Red  | 12    |
-    When I am on the "Board" "classroomtoolbox activity" page logged in as student1
-    Then the scoreboard order should be "Team Red, Team Blue"
-    And the scoreboard score of "Team Red" should be "12"
-    And I should see "This board updates by itself."
-    And "[data-region='score-add-form']" "css_element" should not exist
-    And "[data-region='score-list'] input" "css_element" should not exist
-    And "[data-region='score-list'] button" "css_element" should not exist
-    And I should not see "Reset scores"
-
-  Scenario: A viewer can pause the live updates
+  Scenario: The live updates can be paused
     Given the scoreboard of "Board" has these entries:
       | label    | score |
       | Team Red | 12    |
-    And I am on the "Board" "classroomtoolbox activity" page logged in as student1
+    And I am on the "Board" "classroomtoolbox activity" page logged in as teacher1
     And the scoreboard order should be "Team Red"
     When I click on "Pause live updates" "checkbox"
     And the scoreboard of "Board" has these entries:

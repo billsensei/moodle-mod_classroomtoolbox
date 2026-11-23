@@ -40,16 +40,28 @@ function classroomtoolbox_supports($feature) {
         case FEATURE_SHOW_DESCRIPTION:
         case FEATURE_GROUPS:
         case FEATURE_BACKUP_MOODLE2:
-        case FEATURE_COMPLETION_TRACKS_VIEWS:
             return true;
         case FEATURE_MOD_PURPOSE:
             return MOD_PURPOSE_COLLABORATION;
+        case FEATURE_COMPLETION_TRACKS_VIEWS: // Students never open it, so there is nothing for them to complete.
         case FEATURE_GRADE_HAS_GRADE:
         case FEATURE_GRADE_OUTCOMES:
         case FEATURE_GROUPINGS:
             return false;
         default:
             return null;
+    }
+}
+
+/**
+ * Hide the toolbox from anyone who may not use it, so students do not see it on the course page at all.
+ *
+ * @param cm_info $cm Course module information.
+ */
+function classroomtoolbox_cm_info_dynamic(cm_info $cm) {
+    // Check for the user this course information is built for, which is not always the logged-in user.
+    if (!has_capability('mod/classroomtoolbox:view', $cm->context, $cm->get_modinfo()->get_user_id())) {
+        $cm->set_user_visible(false);
     }
 }
 

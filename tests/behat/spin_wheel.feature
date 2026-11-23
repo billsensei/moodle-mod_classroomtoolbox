@@ -1,7 +1,7 @@
 @mod @mod_classroomtoolbox @javascript
 Feature: Spin the name wheel
   In order to pick a student at random
-  As a teacher or student
+  As a teacher
   I need to spin the wheel and choose whether to remove the winner
 
   Background:
@@ -25,7 +25,7 @@ Feature: Spin the name wheel
       | classroomtoolbox | Pick one   | C1     | wheel1   | Guest Speaker |
 
   Scenario: The wheel lists the enrolled students and the typed names
-    When I am on the "Pick one" "classroomtoolbox activity" page logged in as student1
+    When I am on the "Pick one" "classroomtoolbox activity" page logged in as teacher1
     Then I should see "4 names" in the "[data-region='wheel-count']" "css_element"
     And the field "Names on the wheel" matches multiline:
       """
@@ -36,7 +36,7 @@ Feature: Spin the name wheel
       """
 
   Scenario: Spinning shows a winner who can be kept
-    Given I am on the "Pick one" "classroomtoolbox activity" page logged in as student1
+    Given I am on the "Pick one" "classroomtoolbox activity" page logged in as teacher1
     When I click on "[data-region='wheel-canvas']" "css_element"
     And I wait until the page is ready
     Then I should see "The winner is" in the "[data-region='wheel-result']" "css_element"
@@ -45,7 +45,7 @@ Feature: Spin the name wheel
     And I should see "4 names" in the "[data-region='wheel-count']" "css_element"
 
   Scenario: Spinning shows a winner who can be removed
-    Given I am on the "Pick one" "classroomtoolbox activity" page logged in as student1
+    Given I am on the "Pick one" "classroomtoolbox activity" page logged in as teacher1
     When I press "Spin"
     And I wait until the page is ready
     Then I should see "The winner is" in the "[data-region='wheel-result']" "css_element"
@@ -55,7 +55,7 @@ Feature: Spin the name wheel
     And I should see "was removed from the wheel" in the "[data-region='wheel-live']" "css_element"
 
   Scenario: Reset brings removed names back and the names box can be edited
-    Given I am on the "Pick one" "classroomtoolbox activity" page logged in as student1
+    Given I am on the "Pick one" "classroomtoolbox activity" page logged in as teacher1
     And I press "Spin"
     And I wait until the page is ready
     And I press "Remove from wheel"
@@ -75,7 +75,7 @@ Feature: Spin the name wheel
       """
 
   Scenario: The winner dialog keeps keyboard focus inside and closes with Escape
-    Given I am on the "Pick one" "classroomtoolbox activity" page logged in as student1
+    Given I am on the "Pick one" "classroomtoolbox activity" page logged in as teacher1
     When I click on "[data-region='wheel-canvas']" "css_element"
     And I wait until the page is ready
     Then the focus should be on "[data-action='keep']"
@@ -90,7 +90,7 @@ Feature: Spin the name wheel
     And "[data-region='wheel-canvas']" should not be inert
 
   Scenario: The wheel ticks while it spins and chimes when a name is picked
-    Given I am on the "Pick one" "classroomtoolbox activity" page logged in as student1
+    Given I am on the "Pick one" "classroomtoolbox activity" page logged in as teacher1
     And I install an audio spy
     When I click on "[data-region='wheel-canvas']" "css_element"
     And I wait until the page is ready
@@ -98,7 +98,7 @@ Feature: Spin the name wheel
     And at least "15" sounds should have been played
 
   Scenario: Sound can be switched off, the choice is remembered, and it can be switched back on
-    Given I am on the "Pick one" "classroomtoolbox activity" page logged in as student1
+    Given I am on the "Pick one" "classroomtoolbox activity" page logged in as teacher1
     And I install an audio spy
     When I click on "Sound" "checkbox"
     And I press "Spin"

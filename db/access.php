@@ -35,11 +35,11 @@ $capabilities = [
         ],
         'clonepermissionsfrom' => 'moodle/course:manageactivities',
     ],
+    // The toolbox is a teacher's tool: students are not given this, so they cannot open it or see it in the course.
     'mod/classroomtoolbox:view' => [
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => [
-            'student' => CAP_ALLOW,
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW,
@@ -47,7 +47,7 @@ $capabilities = [
     ],
     // Change the scoreboard: add and remove entries, change points, reset.
     'mod/classroomtoolbox:managescores' => [
-        // Teachers write the names and points that every viewer then sees.
+        // The scoreboard is shown to the class by the teacher, who writes every name and point on it.
         'riskbitmask' => RISK_SPAM,
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,

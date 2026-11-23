@@ -119,5 +119,14 @@ function xmldb_classroomtoolbox_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2026122010, 'classroomtoolbox');
     }
 
+    if ($oldversion < 2026122011) {
+        // The toolbox became a teacher-only tool. New sites no longer grant students the view capability, but
+        // existing sites still have it granted to the student role, so take it away there. Teachers keep it.
+        foreach (get_archetype_roles('student') as $role) {
+            unassign_capability('mod/classroomtoolbox:view', $role->id);
+        }
+        upgrade_mod_savepoint(true, 2026122011, 'classroomtoolbox');
+    }
+
     return true;
 }

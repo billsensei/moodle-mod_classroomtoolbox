@@ -220,21 +220,24 @@ final class lib_test extends \advanced_testcase {
         $this->assertTrue(classroomtoolbox_supports(FEATURE_GROUPS));
         $this->assertTrue(classroomtoolbox_supports(FEATURE_BACKUP_MOODLE2));
         $this->assertFalse(classroomtoolbox_supports(FEATURE_GRADE_HAS_GRADE));
+        $this->assertFalse(classroomtoolbox_supports(FEATURE_COMPLETION_TRACKS_VIEWS));
         $this->assertNull(classroomtoolbox_supports('something_unknown'));
     }
 
     /**
-     * Guests must not get the view capability by default; students can view and appear, teachers cannot appear.
+     * Only teachers get the view capability by default; students appear on the wheel but cannot open the toolbox.
      */
     public function test_default_capabilities(): void {
         $guest = get_default_capabilities('guest');
         $this->assertArrayNotHasKey('mod/classroomtoolbox:view', $guest);
 
         $student = get_default_capabilities('student');
-        $this->assertSame(CAP_ALLOW, $student['mod/classroomtoolbox:view']);
+        $this->assertArrayNotHasKey('mod/classroomtoolbox:view', $student);
         $this->assertSame(CAP_ALLOW, $student['mod/classroomtoolbox:appear']);
 
+        $this->assertSame(CAP_ALLOW, get_default_capabilities('teacher')['mod/classroomtoolbox:view']);
         $teacher = get_default_capabilities('editingteacher');
+        $this->assertSame(CAP_ALLOW, $teacher['mod/classroomtoolbox:view']);
         $this->assertSame(CAP_ALLOW, $teacher['mod/classroomtoolbox:addinstance']);
         $this->assertArrayNotHasKey('mod/classroomtoolbox:appear', $teacher);
     }

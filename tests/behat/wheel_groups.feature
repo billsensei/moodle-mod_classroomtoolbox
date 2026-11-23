@@ -8,6 +8,7 @@ Feature: Combine groups on one wheel
     Given the following "users" exist:
       | username | firstname | lastname |
       | teacher1 | Tina      | Teacher  |
+      | teacher2 | Nora      | Nonedit  |
       | student1 | Alice     | Anderson |
       | student2 | Bob       | Brown    |
       | student3 | Carla     | Chen     |
@@ -18,6 +19,7 @@ Feature: Combine groups on one wheel
     And the following "course enrolments" exist:
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
+      | teacher2 | C1     | teacher        |
       | student1 | C1     | student        |
       | student2 | C1     | student        |
       | student3 | C1     | student        |
@@ -28,6 +30,7 @@ Feature: Combine groups on one wheel
       | Group B | C1     | GB       |
     And the following "group members" exist:
       | user     | group |
+      | teacher2 | GA    |
       | student1 | GA    |
       | student2 | GA    |
       | student3 | GB    |
@@ -56,13 +59,13 @@ Feature: Combine groups on one wheel
     When I press "Select all"
     Then I should see "4 names" in the "[data-region='wheel-count']" "css_element"
 
-  Scenario: A student in separate groups only sees their own group
+  Scenario: A non-editing teacher in separate groups only sees their own group
     Given I am on the "Pick one" "classroomtoolbox activity" page logged in as teacher1
     And I log out
     And the following "activities" exist:
       | activity  | name      | course | idnumber | groupmode |
       | classroomtoolbox | Separate  | C1     | wheel2   | 1         |
-    When I am on the "Separate" "classroomtoolbox activity" page logged in as student1
+    When I am on the "Separate" "classroomtoolbox activity" page logged in as teacher2
     Then I should see "Group A (2)"
     And I should not see "Group B"
     And I should not see "Not in any group"

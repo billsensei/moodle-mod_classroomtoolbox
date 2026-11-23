@@ -1,6 +1,13 @@
 This files describes API changes in /mod/classroomtoolbox/*,
 information provided here is intended especially for developers.
 
+=== 0.9.0 ===
+* The toolbox is now a teacher-only tool. The capability mod/classroomtoolbox:view is no longer granted to the student
+  archetype, and the upgrade step removes it from roles of the student archetype on existing sites. Grant it to a role
+  yourself if some other users should open the toolbox.
+* New classroomtoolbox_cm_info_dynamic() hides the activity from users without that capability.
+* FEATURE_COMPLETION_TRACKS_VIEWS is no longer supported (students never open the toolbox).
+
 === 0.8.0 ===
 * New AMD modules mod_classroomtoolbox/sound (Web Audio sounds and the shared sound preference) and
   mod_classroomtoolbox/colour (readable text colour for a background colour).

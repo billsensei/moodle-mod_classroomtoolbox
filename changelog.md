@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.0 - 2026-11-23
+
+- Fix: the scoreboard refreshes again after a teacher unpauses it.
+- Teacher-only: students no longer have the view capability (removed from the student role on upgrade), cannot open the toolbox and do not see it on the course page. Completion on view is no longer offered.
+
 ## 0.8.8 - 2026-11-23
 
 - Timer klaxon is a little louder (about +1.6 dB, near the limit before clipping).
