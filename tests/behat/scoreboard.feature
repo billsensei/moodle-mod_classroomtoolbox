@@ -30,13 +30,17 @@ Feature: Scoreboard
     And I click on "[data-region='score-add-form'] button[type='submit']" "css_element"
     Then the scoreboard order should be "Team Red, Team Blue"
     When I press "Add points to Team Blue"
+    And the scoreboard has settled
     And I press "Add points to Team Blue"
+    And the scoreboard has settled
     And I press "Add points to Team Red"
+    And the scoreboard has settled
     Then the scoreboard order should be "Team Blue, Team Red"
     And the scoreboard score of "Team Blue" should be "2"
     And the scoreboard score of "Team Red" should be "1"
     When I set the field "Points per click" to "5"
     And I press "Add points to Team Red"
+    And the scoreboard has settled
     Then the scoreboard order should be "Team Red, Team Blue"
     And the scoreboard score of "Team Red" should be "6"
     When I press "Subtract points from Team Red"

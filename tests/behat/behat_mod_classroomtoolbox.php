@@ -305,4 +305,19 @@ class behat_mod_classroomtoolbox extends behat_base {
             );
         }
     }
+
+    /**
+     * Wait until the scoreboard rows have stopped sliding into their new order, so the next click lands on the button
+     * it was aimed at (a row that is still moving can be under the pointer instead).
+     *
+     * @Given /^the scoreboard has settled$/
+     */
+    public function the_scoreboard_has_settled(): void {
+        $this->wait_for_pending_js();
+        $this->getSession()->wait(
+            3000,
+            'Array.from(document.querySelectorAll(\'.mod_classroomtoolbox-score-row\')).every(function (row) {' .
+            ' return getComputedStyle(row).transform === \'none\'; })'
+        );
+    }
 }
