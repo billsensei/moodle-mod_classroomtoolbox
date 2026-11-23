@@ -171,5 +171,10 @@ function xmldb_classroomtoolbox_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2026122019, 'classroomtoolbox');
     }
 
+    if ($oldversion < 2026122020) {
+        // No schema change: one button spins both wheels, in the script only.
+        upgrade_mod_savepoint(true, 2026122020, 'classroomtoolbox');
+    }
+
     return true;
 }

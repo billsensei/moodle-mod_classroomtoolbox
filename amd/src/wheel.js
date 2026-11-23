@@ -34,6 +34,8 @@ const TWO_PI = Math.PI * 2;
 const POINTER = Math.PI * 1.5;
 // Soft clicks as wedges pass the pointer, but never faster than this (milliseconds apart).
 const MIN_TICK_GAP = 28;
+// With two wheels, the second one starts spinning this long (milliseconds) after the first.
+const SECOND_WHEEL_DELAY = 500;
 
 /**
  * Make a dialog modal: everything outside it becomes inert (not focusable, hidden from assistive technology), except
@@ -130,14 +132,17 @@ export const init = (config) => {
     const addButton = root.querySelector('[data-action="wheel-add"]');
     const resplitButton = root.querySelector('[data-action="wheel-resplit"]');
     const removeSecondButton = root.querySelector('[data-action="wheel-removesecond"]');
+    const spinBothButton = root.querySelector('[data-action="wheel-spinboth"]');
     const units = [];
-    // Results waiting for the winner dialog, when both wheels stop close together: they are shown one after the other.
-    const waiting = [];
-    let activeUnit = null;
+    // What the winner dialog is showing: [wheel, index it stopped on] for one wheel, or for both wheels (a pair).
+    let shown = [];
+    const normalKeep = keepButton.textContent;
+    const normalRemove = removeButton.textContent;
     let releaseModal = null;
     let hideResult;
     // Words for the second wheel are fetched when it is first added, to keep the wheel's start-up data small.
-    const EXTRA_KEYS = ['title', 'picked', 'added', 'removedsecond', 'resplitdone'];
+    const EXTRA_KEYS = ['title', 'picked', 'added', 'removedsecond', 'resplitdone', 'winners', 'removeboth', 'keepboth',
+        'removedboth', 'pair', 'clickboth', 'needboth'];
     let extra = null;
     const loadExtra = async() => {
         if (extra) {
@@ -177,27 +182,29 @@ export const init = (config) => {
         }
     };
 
-    const present = (unit, index) => {
-        activeUnit = unit;
-        unit.setWinner(index);
-        const label = units.length > 1 ? strings.winner + ' (' + unit.title() + ')' : strings.winner;
+    // Show the dialog for one wheel's winner, or for the pair of winners when two wheels were spun together.
+    const present = (items) => {
+        shown = items;
+        items.forEach(([unit, index]) => unit.setWinner(index));
+        const picked = items.map(([unit, index]) => unit.getNames()[index]);
+        let label = strings.winner;
+        let text = picked[0];
+        keepButton.textContent = normalKeep;
+        removeButton.textContent = normalRemove;
+        if (items.length > 1) {
+            label = extra.winners;
+            text = extra.pair.replace('{$a->one}', () => picked[0]).replace('{$a->two}', () => picked[1]);
+            keepButton.textContent = extra.keepboth;
+            removeButton.textContent = extra.removeboth;
+        }
         labelEl.textContent = label;
-        winnerEl.textContent = unit.getNames()[index];
+        winnerEl.textContent = text;
         resultEl.hidden = false;
         releaseModal = makeModal(resultEl);
         document.addEventListener('keydown', onDialogKey);
         sound.chime();
-        unit.announce(label + ' ' + winnerEl.textContent);
+        items[0][0].announce(label + ' ' + text);
         keepButton.focus();
-    };
-
-    // Show a wheel's winner, or put it in line if the dialog is already showing the other wheel's winner.
-    const showResult = (unit, index) => {
-        if (resultEl.hidden) {
-            present(unit, index);
-        } else {
-            waiting.push([unit, index]);
-        }
     };
 
     hideResult = () => {
@@ -207,12 +214,19 @@ export const init = (config) => {
             releaseModal = null;
         }
         resultEl.hidden = true;
-        if (activeUnit) {
-            activeUnit.setWinner(-1);
-            activeUnit.focus();
+        shown.forEach(([unit]) => unit.setWinner(-1));
+        if (shown.length > 0) {
+            shown[0][0].focus();
         }
-        if (waiting.length > 0) {
-            present(...waiting.shift());
+        shown = [];
+    };
+
+    // Pressing a wheel (or its button): one wheel spins by itself, but with two wheels both are spun together.
+    const requestSpin = (unit) => {
+        if (units.length > 1) {
+            spinBoth();
+        } else {
+            unit.spin((index) => present([[unit, index]]));
         }
     };
 
@@ -230,13 +244,13 @@ export const init = (config) => {
         const liveEl = unitEl.querySelector('[data-region="wheel-live"]');
         const titleEl = unitEl.querySelector('[data-region="wheel-title"]');
         const entriesLabel = card.querySelector('label');
-        const hubText = hub.textContent.trim();
         const entriesText = entriesLabel.textContent.trim();
         let names = [];
         let rotation = 0;
         let spinning = false;
         let winnerIndex = -1;
         let title = '';
+        let idleText = strings.clickhere;
 
         const draw = () => {
             const size = canvas.clientWidth || 600;
@@ -317,7 +331,7 @@ export const init = (config) => {
             }, 50);
         };
 
-        const spin = () => {
+        const spin = (onStop) => {
             if (spinning || names.length === 0 || !resultEl.hidden) {
                 return;
             }
@@ -366,22 +380,22 @@ export const init = (config) => {
                 rotation = ((rotation % TWO_PI) + TWO_PI) % TWO_PI;
                 spinning = false;
                 hub.disabled = false;
-                hintEl.textContent = strings.clickhere;
+                hintEl.textContent = idleText;
                 draw();
-                showResult(api, index);
+                onStop(index);
                 pending.resolve();
             };
             window.requestAnimationFrame(frame);
         };
 
-        canvas.addEventListener('click', spin);
+        canvas.addEventListener('click', () => requestSpin(api));
         canvas.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
-                spin();
+                requestSpin(api);
             }
         });
-        hub.addEventListener('click', spin);
+        hub.addEventListener('click', () => requestSpin(api));
 
         card.querySelector('[data-action="shuffle"]').addEventListener('click', () => {
             if (!spinning) {
@@ -416,6 +430,7 @@ export const init = (config) => {
                 syncText();
             },
             isSpinning: () => spinning,
+            spin,
             focus: () => canvas.focus(),
             announce,
             draw,
@@ -445,8 +460,11 @@ export const init = (config) => {
                 title = text;
                 titleEl.textContent = text;
                 titleEl.hidden = text === '';
-                hub.setAttribute('aria-label', text ? hubText + ' (' + text + ')' : hubText);
-                canvas.setAttribute('aria-label', text ? strings.clickhere + ' (' + text + ')' : strings.clickhere);
+                // With two wheels one shared button spins both, so the button in the wheel's middle is hidden.
+                hub.hidden = text !== '';
+                idleText = text ? extra.clickboth : strings.clickhere;
+                hintEl.textContent = idleText;
+                canvas.setAttribute('aria-label', text ? extra.clickboth + ' (' + text + ')' : strings.clickhere);
                 entriesLabel.textContent = text ? entriesText + ' (' + text + ')' : entriesText;
             },
             destroy: () => window.removeEventListener('resize', draw),
@@ -527,6 +545,7 @@ export const init = (config) => {
         second.setTitle(extra.title.replace('{$a}', () => 2));
         split(everyone());
         addButton.hidden = true;
+        spinBothButton.hidden = false;
         resplitButton.hidden = false;
         removeSecondButton.hidden = false;
         second.announce(extra.added);
@@ -546,6 +565,7 @@ export const init = (config) => {
         units[0].setTitle('');
         units[0].setNames(all);
         addButton.hidden = false;
+        spinBothButton.hidden = true;
         resplitButton.hidden = true;
         removeSecondButton.hidden = true;
         units[0].announce(extra.removedsecond);
@@ -570,22 +590,49 @@ export const init = (config) => {
         });
     }
 
-    // The winner dialog: keep the name on its wheel, or take it off.
-    keepButton.addEventListener('click', () => {
-        if (activeUnit) {
-            activeUnit.showPicked(winnerEl.textContent);
+    // Spin both wheels with one button: the first wheel starts, and the second starts by itself half a second later.
+    // The winners are shown together once both wheels have stopped.
+    const spinBoth = () => {
+        if (units.length < 2 || anySpinning() || !resultEl.hidden) {
+            return;
         }
+        if (units.some((unit) => unit.getNames().length === 0)) {
+            units[0].announce(extra.needboth);
+            return;
+        }
+        // Tell Behat (and other automation) that async work is running until both wheels have stopped.
+        const pending = new Pending('mod_classroomtoolbox/wheel:spinboth');
+        const stops = [];
+        const stopped = (which, index) => {
+            stops[which] = index;
+            if (stops[0] !== undefined && stops[1] !== undefined) {
+                present([[units[0], stops[0]], [units[1], stops[1]]]);
+                pending.resolve();
+            }
+        };
+        units[0].spin((index) => stopped(0, index));
+        window.setTimeout(() => units[1].spin((index) => stopped(1, index)), SECOND_WHEEL_DELAY);
+    };
+    spinBothButton.addEventListener('click', spinBoth);
+
+    // The winner dialog: keep the name (or both names) on the wheels, or take them off.
+    keepButton.addEventListener('click', () => {
+        shown.forEach(([unit, index]) => unit.showPicked(unit.getNames()[index]));
         hideResult();
     });
     removeButton.addEventListener('click', () => {
-        if (!activeUnit || activeUnit.winnerIndex() < 0) {
+        if (shown.length === 0) {
             return;
         }
-        const unit = activeUnit;
-        const gone = unit.removeWinner();
+        const taken = shown.map(([unit]) => [unit, unit.removeWinner()]);
         hideResult();
-        unit.showPicked(gone);
-        unit.announce(strings.removed.replace('{$a}', () => gone));
+        taken.forEach(([unit, gone]) => unit.showPicked(gone));
+        const goneNames = taken.map(([, gone]) => gone);
+        const text = goneNames.length > 1
+            ? extra.removedboth.replace('{$a}', () => extra.pair.replace('{$a->one}', () => goneNames[0])
+                .replace('{$a->two}', () => goneNames[1]))
+            : strings.removed.replace('{$a}', () => goneNames[0]);
+        taken[0][0].announce(text);
     });
 
     root.querySelector('[data-action="reset"]').addEventListener('click', () => {

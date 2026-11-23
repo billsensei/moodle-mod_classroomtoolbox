@@ -265,15 +265,42 @@ class behat_mod_classroomtoolbox extends behat_base {
     }
 
     /**
-     * Press both wheels' Spin buttons straight after each other, without waiting for the first wheel to stop, as a
-     * teacher pressing them one after the other would (the ordinary steps wait for a spin to end first).
+     * Press the "Spin both wheels" button and record when each wheel starts turning, by watching their hints change.
      *
-     * @When /^I start both wheels spinning at once$/
+     * @When /^I start both wheels with the button and note when each starts turning$/
      */
-    public function i_start_both_wheels_spinning_at_once(): void {
+    public function i_start_both_wheels_and_note_when_each_starts(): void {
         $this->evaluate_script(
-            '(function () { var hubs = document.querySelectorAll(\'[data-action="spin"]\');' .
-            ' hubs[0].click(); hubs[1].click(); })()'
+            '(function () { window.__wheelStarts = [null, null]; var t0 = performance.now();' .
+            ' var hints = document.querySelectorAll(\'[data-region="wheel-hint"]\');' .
+            ' var watch = new MutationObserver(function () { hints.forEach(function (hint, i) {' .
+            ' if (window.__wheelStarts[i] === null && hint.textContent !== hint.dataset.idle) {' .
+            ' window.__wheelStarts[i] = performance.now() - t0; } }); });' .
+            ' hints.forEach(function (hint) { hint.dataset.idle = hint.textContent;' .
+            ' watch.observe(hint, { childList: true, characterData: true, subtree: true }); });' .
+            ' document.querySelector(\'[data-action="wheel-spinboth"]\').click(); })()'
         );
+        $this->wait_for_pending_js();
+    }
+
+    /**
+     * Check how long after the first wheel the second one started turning.
+     *
+     * @Then /^the second wheel should have started between "(?P<min>\d+)" and "(?P<max>\d+)" milliseconds after the first$/
+     * @param string $min Least milliseconds.
+     * @param string $max Most milliseconds.
+     */
+    public function the_second_wheel_should_have_started_between(string $min, string $max): void {
+        $starts = json_decode($this->evaluate_script('JSON.stringify(window.__wheelStarts)'), true);
+        if (!is_array($starts) || $starts[0] === null || $starts[1] === null) {
+            throw new ExpectationException('Both wheels should have started turning', $this->getSession());
+        }
+        $gap = $starts[1] - $starts[0];
+        if ($gap < (int) $min || $gap > (int) $max) {
+            throw new ExpectationException(
+                'The second wheel started ' . round($gap) . ' ms after the first, expected ' . $min . ' to ' . $max,
+                $this->getSession()
+            );
+        }
     }
 }

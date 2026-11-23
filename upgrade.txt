@@ -1,6 +1,14 @@
 This files describes API changes in /mod/classroomtoolbox/*,
 information provided here is intended especially for developers.
 
+=== 0.12.2 ===
+* With two wheels, one "Spin both wheels" button (data-action="wheel-spinboth" in templates/wheel.mustache) spins both:
+  the second wheel starts 500 ms after the first and the winners are shown together in the one dialog. The 0.12.1
+  behaviour of spinning the wheels independently was replaced. The unit's spin() now takes a callback that receives the
+  index the wheel stopped on.
+* New language strings wheel_spinboth, wheel_winners, wheel_pair, wheel_keepboth, wheel_removeboth, wheel_removedboth,
+  wheel_clickboth and wheel_needboth.
+
 === 0.12.0 ===
 * The "Pick partners" switch of 0.11.0 was replaced by an "Add second wheel" button on the name wheel tab. The
   mod_classroomtoolbox/wheel module now makes each wheel as its own unit (canvas, spin, names list) and shares the winner

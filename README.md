@@ -10,7 +10,7 @@ Each tool is a tab. Teachers choose which tools are on in the activity settings 
 
 | Tool | What it does |
 |---|---|
-| **Name wheel** | Spin a wheel of student names; remove the winner or keep them. An **Add second wheel** button splits the names between two wheels, for picking partners. |
+| **Name wheel** | Spin a wheel of student names; remove the winner or keep them. An **Add second wheel** button splits the names between two wheels and one button spins both, for picking partners. |
 | **Group generator** | Split the class into random groups, by number of groups or people per group. |
 | **Stopwatch** | Start, stop, lap and reset, with a lap list. |
 | **Timer** | Countdown timers with preset buttons, a choice of alarm sound for each timer and a flash at the end, up to four timers at once, and a **Start all timers** button. |
@@ -31,15 +31,17 @@ Each tool is a tab. Teachers choose which tools are on in the activity settings 
 
 ### Second wheel (on the Name wheel tab)
 
-- **Add second wheel** puts a second wheel beside the first and splits the names between the two at random (with an odd number, one wheel gets the extra name). Spin either wheel first, and the other whenever you are ready, or press both Spin buttons one after the other so that both wheels spin at the same time. The winner dialog says which wheel it came from; if both wheels stop close together, the second winner appears as soon as the first dialog is closed.
-- Nothing is removed automatically: after each spin the teacher chooses **Remove from wheel** or **Keep on wheel**. Under each wheel a "Picked: ..." line shows its last pick, so the pair is easy to see.
-- **Split names again** mixes everyone still on a wheel at random; **Remove second wheel** puts all the names back on one wheel. Each wheel has its own names box; **Reset wheel** and the group tick boxes work across both wheels.
-- While a wheel is spinning, the buttons that change the names (add or remove the second wheel, split again, reset, shuffle, sort and the group tick boxes) wait until all the wheels have stopped.
+- **Add second wheel** puts a second wheel beside the first and splits the names between the two at random (with an odd number, one wheel gets the extra name). The wheels are headed Wheel 1 and Wheel 2.
+- A single **Spin both wheels** button spins them (clicking either wheel does the same; the buttons in the middle of the wheels are hidden). Wheel 1 starts, and Wheel 2 starts by itself half a second later.
+- When both wheels have stopped, one dialog shows both winners together, joined by "and": "Student 1 and Student 2", the first from Wheel 1 and the second from Wheel 2. If either wheel has no names, nothing spins and a message says so.
+- Nothing is removed automatically: the teacher chooses **Remove both from wheels** (one name comes off each wheel) or **Keep both on wheels**. Under each wheel a "Picked: ..." line shows its last pick.
+- **Split names again** mixes everyone still on a wheel at random; **Remove second wheel** puts all the names back on one wheel and brings back the normal Spin button. Each wheel has its own names box; **Reset wheel** and the group tick boxes work across both wheels.
+- While the wheels are spinning, the buttons that change the names (add or remove the second wheel, split again, reset, shuffle, sort and the group tick boxes) wait until they have stopped.
 - The second wheel is off each time the page opens, and nothing about it is saved.
 
 ### Settings that are remembered
 
-Each tool remembers its settings in the browser, per activity, so they are still there after a reload: the open tab, the groups ticked on the wheels and the group generator, the group generator's amount and mode, the timers, their lengths and their alarm sounds, the counters and their names, and the scoreboard's points per click. Results, running timers, counter values and student names are not saved.
+Each tool remembers its settings in the browser, per activity, so they are still there after a reload: the open tab, the groups ticked on the wheels and the group generator, the group generator's amount and mode, the timers, their lengths and their alarm sounds, the counters and their names, and the scoreboard's points per click. Results, running timers, counter values, the names on the wheels and the class list are not saved. **Counter names are saved exactly as the teacher typed them**, so if you name a counter after a student, that name is kept in the browser; on a shared computer, use neutral counter names or clear the browser's site data for this site.
 
 ### Group generator
 
@@ -83,7 +85,7 @@ Every tool is keyboard operable and announces results to screen readers. The whe
 
 ### Privacy
 
-Spins, pairs, groups, laps, timers and counts live only in the open page. The tools' settings (see above, never student names) are kept in the browser's own storage on the teacher's computer, not on the server. The scoreboard stores the labels and points a teacher types in; they are plain text, never tied to a user account, and are removed when the entry or the activity is deleted. The plugin keeps no data linked to a user account, and its privacy provider declares the free text it stores so that it shows in Moodle's privacy registry. Note that "Add participants" copies enrolled users' names onto the scoreboard as plain text: after that they are not tied to the account, so deleting a user does not remove them. Remove the entry (or delete the activity) to erase them, and do not copy in more personal data than you need.
+Spins, pairs, groups, laps, timers and counts live only in the open page. The tools' settings (see above) are kept in the browser's own storage on the teacher's computer, not on the server. They never include the class list or the names on the wheels, but counter names are saved as typed, so they could include a name if the teacher types one. The scoreboard stores the labels and points a teacher types in; they are plain text, never tied to a user account, and are removed when the entry or the activity is deleted. The plugin keeps no data linked to a user account, and its privacy provider declares the free text it stores so that it shows in Moodle's privacy registry. Note that "Add participants" copies enrolled users' names onto the scoreboard as plain text: after that they are not tied to the account, so deleting a user does not remove them. Remove the entry (or delete the activity) to erase them, and do not copy in more personal data than you need.
 
 ## Install
 

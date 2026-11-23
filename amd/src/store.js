@@ -17,7 +17,8 @@
  * Remembers each tool's settings in this browser, so they are still there after a reload or a later visit.
  *
  * Only settings are kept (amounts, modes, timer lengths, ticked groups, counter names): never results, and never the
- * names of students. Everything is stored per activity, in the browser's own storage; nothing is sent to the server.
+ * class list or the names on the wheels. Counter names are saved as the teacher typed them, so they could hold a
+ * name. Everything is stored per activity, in the browser's own storage; nothing is sent to the server.
  * Whatever is read back must be checked by the caller, since stored text can be edited or can come from an old version.
  *
  * @module     mod_classroomtoolbox/store

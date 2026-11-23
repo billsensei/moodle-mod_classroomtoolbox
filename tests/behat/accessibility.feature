@@ -48,10 +48,10 @@ Feature: Accessibility checks (axe-core)
     When I press "Add second wheel"
     Then the "[data-region='toolbox']" "css_element" should meet accessibility standards with "best-practice" extra tests
 
-  Scenario: Result dialog of the second wheel
+  Scenario: Result dialog with two wheels
     Given I am on the "Toolbox" "classroomtoolbox activity" page logged in as teacher1
     When I press "Add second wheel"
-    And I press "Spin (Wheel 2)"
+    And I press "Spin both wheels"
     And I wait until the page is ready
     And I wait "2" seconds
     Then the "[data-region='wheel-result']" "css_element" should meet accessibility standards with "best-practice" extra tests

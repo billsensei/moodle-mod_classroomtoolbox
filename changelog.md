@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.12.2 - 2026-11-23
+
+- One "Spin both wheels" button: the second wheel starts half a second after the first and both winners appear together as "Student 1 and Student 2", with Remove both / Keep both.
+- README now says counter names are saved as typed in the browser.
+
 ## 0.12.1 - 2026-11-23
 
 - Both wheels can spin at the same time; their winners are shown one after the other.
