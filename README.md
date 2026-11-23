@@ -1,5 +1,7 @@
 # Classroom Toolbox (mod_classroomtoolbox)
 
+[![ci](https://github.com/billsensei/moodle-mod_classroomtoolbox/actions/workflows/ci.yml/badge.svg)](https://github.com/billsensei/moodle-mod_classroomtoolbox/actions/workflows/ci.yml)
+
 A Moodle activity with classroom tools shown as tabs, **for the teacher to use on the classroom screen**. Teachers add it once and switch on the tools they want. Students cannot open it, and it does not appear for them on the course page.
 
 ![The Name wheel tool: a colourful wheel of student names with the names list beside it](docs/screenshot.png)

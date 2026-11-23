@@ -171,13 +171,15 @@ class behat_mod_classroomtoolbox extends behat_base {
             ' Spy.prototype.createBiquadFilter = function () { return { type: \'\', frequency: { setValueAtTime: function () {},' .
             ' linearRampToValueAtTime: function () {} }, Q: {}, connect: function () {} }; };' .
             ' Spy.prototype.createWaveShaper = function () { return { curve: null, connect: function () {} }; };' .
-            ' Spy.prototype.createBuffer = function () { return { getChannelData: function () { return new Float32Array(8); } }; };' .
+            ' Spy.prototype.createBuffer = function () { return { getChannelData: function () {' .
+            ' return new Float32Array(8); } }; };' .
             ' Spy.prototype.createBufferSource = function () { return { connect: function () {}, start: function () {} }; };' .
             ' Spy.prototype.createDynamicsCompressor = function () { return { threshold: {}, knee: {}, ratio: {}, attack: {},' .
             ' release: {}, connect: function () {} }; };' .
             ' Spy.prototype.createGain = function () { return { connect: function () {}, gain: { value: 1,' .
             ' setValueAtTime: function () {}, exponentialRampToValueAtTime: function () {} } }; };' .
-            ' Spy.prototype.createOscillator = function () { window.__sounds++; return { frequency: { setValueAtTime: function () {},' .
+            ' Spy.prototype.createOscillator = function () { window.__sounds++;' .
+            ' return { frequency: { setValueAtTime: function () {},' .
             ' linearRampToValueAtTime: function () {} }, connect: function () {},' .
             ' start: function () {}, stop: function () {} }; };' .
             ' window.AudioContext = Spy; window.webkitAudioContext = Spy; })()'
